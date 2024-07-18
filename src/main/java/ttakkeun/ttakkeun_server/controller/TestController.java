@@ -12,4 +12,9 @@ public class TestController {
         return "Hello, ttakkeun!";
     }
 
+    @GetMapping("/health")
+    public String healthCheck() {
+        // health check용
+        return "I'm healthy!";
+    }
 }
