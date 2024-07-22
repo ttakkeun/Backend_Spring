@@ -17,7 +17,11 @@ public enum ErrorStatus implements BaseErrorCode {
     _FORBIDDEN(HttpStatus.FORBIDDEN, "COMMON403", "금지된 요청입니다."),
 
     //테스트 응답
-    TEMP_EXCEPTION(HttpStatus.BAD_REQUEST, "TEMP4001", "this is test");
+    TEMP_EXCEPTION(HttpStatus.BAD_REQUEST, "TEMP4001", "this is test"),
+
+    //JWT 토큰 에러
+    INVALID_APPLE_ID_TOKEN(HttpStatus.UNAUTHORIZED,"TOKEN400", "Apple OAuth Identity Token 값이 올바르지 않습니다."),
+    INVALID_APPLE_ID_TOKEN_INFO(HttpStatus.UNAUTHORIZED,"TOKEN401", "Apple id_token 값의 alg, kid 정보가 올바르지 않습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

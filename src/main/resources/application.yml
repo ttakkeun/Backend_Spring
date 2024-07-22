@@ -1,4 +1,6 @@
 spring:
+  main:
+    allow-bean-definition-overriding: true
   datasource:
     url: ${db.url}
     username: ${db.username}
@@ -15,5 +17,16 @@ spring:
         format_sql: true
         use_sql_comments: true
         hbm2ddl:
-          auto: update
+          auto: create
         default_batch_fetch_size: 1000
+  social-login:
+    provider:
+      apple:
+        grant-type: authorization_code
+        client-id: YOUR_APPLE_CLIENT_ID
+        key-id: YOUR_APPLE_KEY_ID
+        team-id: YOUR_APPLE_TEAM_ID
+        audience: https://appleid.apple.com
+        private-key: YOUR_APPLE_P8_KEY (-----BEGIN PRIVATE KEY-----, -----END PRIVATE KEY----- 를 제외한 key 문자열을 띄어쓰기 없이 넣어야 합니다)
+jwt:
+  secretKey: secretKeysecretKeysecretKeysecretKeysecretKeysecretKeysecretKeysecretKeysecretKeysecretKey
