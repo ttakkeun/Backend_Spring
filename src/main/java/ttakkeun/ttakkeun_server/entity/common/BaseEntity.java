@@ -1,4 +1,4 @@
-package ttakkeun.ttakkeun_server.domain.common;
+package ttakkeun.ttakkeun_server.entity.common;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
