@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import ttakkeun.ttakkeun_server.entity.common.BaseEntity;
 import ttakkeun.ttakkeun_server.entity.enums.Category;
-import ttakkeun.ttakkeun_server.entity.enums.TodoStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,25 +13,18 @@ import java.util.List;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class Todo extends BaseEntity {
+public class History extends BaseEntity {
 
     @Id
-    @Column(name = "todo_id")
+    @Column(name = "history_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long todoId;
-
-    private String todoName;
+    private Long historyId;
 
     @Enumerated(EnumType.STRING)
-    private Category todoCategory;
-
-    @Enumerated(EnumType.STRING)
-    private TodoStatus todoStatus;
+    private Category historyCategory;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pet_id")
-    private Pet petId;
+    @JoinColumn(name = "todo_id")
+    private Todo todoId;
 
-    @OneToMany(mappedBy = "todoId", cascade = CascadeType.ALL)
-    private List<History> HistoryList = new ArrayList<>();
 }
