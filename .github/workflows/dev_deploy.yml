@@ -58,8 +58,8 @@ jobs:
         with:
           aws_access_key: ${{ secrets.AWS_ACTION_ACCESS_KEY_ID }} # 깃허브에 secrets로 설정함
           aws_secret_key: ${{ secrets.AWS_ACTION_SECRET_ACCESS_KEY }} # 깃허브에 secrets로 설정함
-          application_name: ttakkeun-dev
-          environment_name: Ttakkeun-dev-env # Elastic Beanstalk명
+          application_name: umc-ttakkeun-dev
+          environment_name: Umc-ttakkeun-dev-env # Elastic Beanstalk명
           version_label: github-action-${{ steps.current-time.outputs.formattedTime }} # 타임스탬프
           region: ap-northeast-2
           deployment_package: deploy/deploy.zip
