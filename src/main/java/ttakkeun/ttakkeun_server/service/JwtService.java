@@ -3,11 +3,12 @@ package ttakkeun.ttakkeun_server.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Header;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.io.Encoders;
+import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import ttakkeun.ttakkeun_server.apiPayLoad.ExceptionHandler;
@@ -15,11 +16,14 @@ import ttakkeun.ttakkeun_server.apiPayLoad.code.status.ErrorStatus;
 import ttakkeun.ttakkeun_server.dto.auth.TokenDto;
 
 import java.nio.charset.StandardCharsets;
+import java.security.Key;
 import java.security.PublicKey;
 import java.util.Base64;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 
+@Slf4j
 @RequiredArgsConstructor
 @Component
 public class JwtService {
@@ -32,39 +36,87 @@ public class JwtService {
 
     private final ObjectMapper objectMapper;
 
-    private Long tokenValidTime = 1000L * 60 * 60 * 24; // 1d
+    private Long accesstokenValidTime = 1000L * 60 * 60 * 24; // 1d
     private Long refreshTokenValidTime = 1000L * 60 * 60 * 24 * 7; // 7d
 
+    public String encodeBase64SecretKey(String secretKey) {
+        return Encoders.BASE64.encode(secretKey.getBytes(StandardCharsets.UTF_8));
+    }
+
+    //JWT 서명에 사용할 Secret Key 생성
+    private Key getKeyFromBase64EncodedKey(String base64EncodedSecretKey) {
+        byte[] keyBytes = Decoders.BASE64.decode(base64EncodedSecretKey);
+
+        return Keys.hmacShaKeyFor(keyBytes);
+    }
+
     // access token 생성
-    public String encodeJwtToken(TokenDto tokenDto) {
+    public String generateAccessToken(TokenDto tokenDto) {
         Date now = new Date();
+        String base64EncodedSecretKey = encodeBase64SecretKey("" + JWT_SECRET);
+        Key key = getKeyFromBase64EncodedKey(base64EncodedSecretKey);
 
         return Jwts.builder()
-                .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
-                .setIssuer("juinjang")
-                .setIssuedAt(now)
-                .setSubject(tokenDto.getMemberId().toString())
-                .setExpiration(new Date(now.getTime() + tokenValidTime))
-                .claim("memberId", tokenDto.getMemberId())
-                .signWith(SignatureAlgorithm.HS256,
-                        Base64.getEncoder().encodeToString(("" + JWT_SECRET).getBytes(
-                                StandardCharsets.UTF_8)))
-                .compact();
+                .setHeaderParam(Header.TYPE, Header.JWT_TYPE)   // JWT 헤더 설정, "typ" : "JWT"
+                .setIssuer("ttakkeun")  // 발행자 설정
+                .setIssuedAt(now)       // JWT 발행 일자 설정
+                .setSubject(tokenDto.getMemberId().toString())  // JWT 제목 설정
+                .setExpiration(new Date(now.getTime() + accesstokenValidTime))  // JWT 만료 일자 설정
+                .claim("memberId", tokenDto.getMemberId())  // 커스텀 클레임 설정
+                .signWith(key)          // 서명을 위한 Key 객체 설정
+                .compact();             // JWT 생성 및 직렬화
     }
 
     // refresh token 생성
-    public String encodeJwtRefreshToken(Long memberId) {
+    public String generateRefreshToken(Long memberId) {
         Date now = new Date();
+        String base64EncodedSecretKey = encodeBase64SecretKey("" + JWT_SECRET);
+        Key key = getKeyFromBase64EncodedKey(base64EncodedSecretKey);
+
         return Jwts.builder()
                 .setIssuedAt(now)
                 .setSubject(memberId.toString())
                 .setExpiration(new Date(now.getTime() + refreshTokenValidTime))
-                .claim("memberId", memberId)
-                .claim("roles", "USER")
-                .signWith(SignatureAlgorithm.HS256,
-                        Base64.getEncoder().encodeToString(("" + JWT_SECRET).getBytes(
-                                StandardCharsets.UTF_8)))
+                .claim("memberId", memberId) //payload에 들어갈 내용
+                //.claim("roles", "USER")
+                .signWith(key)
                 .compact();
+    }
+
+    // JWT 토큰 으로부터 memberId 추출
+    public Long getMemberIdFromJwtToken(String token) {
+        try {
+            String base64EncodedSecretKey = encodeBase64SecretKey("" + JWT_SECRET);
+            Key key = getKeyFromBase64EncodedKey(base64EncodedSecretKey);
+
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+            return Long.parseLong(claims.getSubject());
+        } catch(Exception e) {
+            throw new JwtException(e.getMessage());
+        }
+    }
+
+    // 토큰 유효성 + 만료일자 확인
+    public Boolean validateTokenBoolean(String token) {
+        Date now = new Date();
+
+        try{
+            String base64EncodedSecretKey = encodeBase64SecretKey("" + JWT_SECRET);
+            Key key = getKeyFromBase64EncodedKey(base64EncodedSecretKey);
+
+            // 주어진 토큰을 파싱하고 검증.
+            Jws<Claims> claims = Jwts.parser()
+                    .setSigningKey(key)
+                    .parseClaimsJws(token);
+            return !claims.getBody().getExpiration().before(new Date(now.getTime()));
+        }catch (JwtException e){
+            log.error("유효하지 않은 토큰입니다. {}", e.getMessage());
+            return false;
+        }
     }
 
     public Map<String, String> parseHeader(final String appleToken) {

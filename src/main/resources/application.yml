@@ -2,9 +2,13 @@ spring:
   main:
     allow-bean-definition-overriding: true
   datasource:
-    url: ${db.url}
-    username: ${db.username}
-    password: ${db.password}
+#    url: ${db.url}
+#    username: ${db.username}
+#    password: ${db.password}
+#
+    url: jdbc:mysql://localhost:3306/ttakkeun
+    username: root
+    password: sallyjane
     driver-class-name: com.mysql.cj.jdbc.Driver
   sql:
     init:
@@ -29,4 +33,4 @@ spring:
         audience: https://appleid.apple.com
         private-key: YOUR_APPLE_P8_KEY (-----BEGIN PRIVATE KEY-----, -----END PRIVATE KEY----- 를 제외한 key 문자열을 띄어쓰기 없이 넣어야 합니다)
 jwt:
-  secretKey: secretKeysecretKeysecretKeysecretKeysecretKeysecretKeysecretKeysecretKeysecretKeysecretKey
+  secretKey: stressstressstresstresstresstressstressstressstressstressstressstress
