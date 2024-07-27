@@ -17,6 +17,10 @@ public class Product extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long productId;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "result_id")
+    private Result result;
+
     private String productTitle;
     private String productLink;
     private String productImage;
