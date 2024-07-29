@@ -2,6 +2,7 @@ package ttakkeun.ttakkeun_server.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.relational.core.sql.Like;
 import ttakkeun.ttakkeun_server.entity.common.BaseEntity;
 import ttakkeun.ttakkeun_server.entity.enums.LoginType;
 
@@ -38,6 +39,9 @@ public class Member extends BaseEntity {
 
     @OneToMany(mappedBy = "memberId", cascade = CascadeType.ALL)
     private List<Pet> petList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "memberId", cascade = CascadeType.ALL)
+    private List<LikeProduct> likeProductList = new ArrayList<>();
 
     // refreshToken 재발급
     public void updateRefreshToken(String refreshToken) {

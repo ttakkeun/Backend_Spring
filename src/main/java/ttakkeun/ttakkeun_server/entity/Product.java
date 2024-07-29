@@ -5,6 +5,9 @@ import lombok.*;
 import ttakkeun.ttakkeun_server.entity.common.BaseEntity;
 import ttakkeun.ttakkeun_server.entity.enums.Category;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @Builder
@@ -16,6 +19,13 @@ public class Product extends BaseEntity {
     @Column(name = "product_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long productId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "result_id")
+    private Result result;
+
+    @OneToMany(mappedBy = "productId", cascade = CascadeType.ALL)
+    private List<LikeProduct> likeProductList = new ArrayList<>();
 
     private String productTitle;
     private String productLink;
