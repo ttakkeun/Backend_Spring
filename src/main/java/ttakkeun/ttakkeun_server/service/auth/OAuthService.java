@@ -7,9 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ttakkeun.ttakkeun_server.apiPayLoad.ExceptionHandler;
 import ttakkeun.ttakkeun_server.dto.auth.LoginResponseDto;
-import ttakkeun.ttakkeun_server.dto.auth.TokenDto;
 import ttakkeun.ttakkeun_server.dto.auth.apple.AppleAuthClient;
-import ttakkeun.ttakkeun_server.dto.auth.apple.AppleInfo;
 import ttakkeun.ttakkeun_server.dto.auth.apple.AppleLoginRequestDto;
 import ttakkeun.ttakkeun_server.dto.auth.apple.AppleSignUpRequestDto;
 import ttakkeun.ttakkeun_server.entity.Member;
@@ -37,7 +35,7 @@ public class OAuthService {
     //accessToken, refreshToken 발급
     @Transactional
     public LoginResponseDto createToken(Member member) {
-        String newAccessToken = jwtService.generateAccessToken(new TokenDto(member.getMemberId()));
+        String newAccessToken = jwtService.generateAccessToken(member.getMemberId());
         String newRefreshToken = jwtService.generateRefreshToken(member.getMemberId());
 
         System.out.println("newAccessToken : " + newAccessToken);
@@ -47,16 +45,16 @@ public class OAuthService {
         member.updateRefreshToken(newRefreshToken);
         memberRepository.save(member);
 
-        System.out.println("member nickname : " + member.getNickname());
+        System.out.println("member nickname : " + member.getUserName());
 
         return new LoginResponseDto(newAccessToken, newRefreshToken);
     }
 
     // refreshToken으로 accessToken 발급하기
     @Transactional
-    public LoginResponseDto regenerateAccessToken(String accessToken, String refreshToken) {
-        if(jwtService.validateTokenBoolean(accessToken))  // access token 유효성 검사
-            throw new ExceptionHandler(ACCESS_TOKEN_UNAUTHORIZED);
+    public LoginResponseDto regenerateAccessToken(String refreshToken) {
+//        if(jwtService.validateTokenBoolean(accessToken))  // access token 유효성 검사
+//            throw new ExceptionHandler(ACCESS_TOKEN_UNAUTHORIZED);
 
         if(!jwtService.validateTokenBoolean(refreshToken))  // refresh token 유효성 검사
             throw new ExceptionHandler(REFRESH_TOKEN_UNAUTHORIZED);
@@ -73,12 +71,12 @@ public class OAuthService {
             throw new ExceptionHandler(REFRESH_TOKEN_UNAUTHORIZED);
 
         String newRefreshToken = jwtService.generateRefreshToken(memberId);
-        String newAccessToken = jwtService.generateAccessToken(new TokenDto(memberId));
+        String newAccessToken = jwtService.generateAccessToken(memberId);
 
         member.updateRefreshToken(newRefreshToken);
         memberRepository.save(member);
 
-        System.out.println("member nickname : " + member.getNickname());
+        System.out.println("member nickname : " + member.getUserName());
 
         return new LoginResponseDto(newAccessToken, newRefreshToken);
     }

@@ -21,7 +21,9 @@ public class Member extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long memberId;
 
-    private String nickname;
+    private String userName;
+
+    private String email;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

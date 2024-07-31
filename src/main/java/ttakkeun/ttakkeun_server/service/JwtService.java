@@ -7,19 +7,24 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.io.Encoders;
 import io.jsonwebtoken.security.Keys;
+import io.micrometer.common.util.StringUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+//import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+//import org.springframework.security.core.Authentication;
+//import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import ttakkeun.ttakkeun_server.apiPayLoad.ExceptionHandler;
 import ttakkeun.ttakkeun_server.apiPayLoad.code.status.ErrorStatus;
-import ttakkeun.ttakkeun_server.dto.auth.TokenDto;
+//import ttakkeun.ttakkeun_server.jwt.JwtAuthenticationFilter;
+//import ttakkeun.ttakkeun_server.service.auth.UserDetailServiceImpl;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.security.PublicKey;
 import java.util.Base64;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 
@@ -28,17 +33,19 @@ import java.util.Map;
 @Component
 public class JwtService {
 
-    @Value("${jwt.secretKey}")
+    @Value("${jwt.secretKey}")    //application.yml에 저장된 시크릿키
     private String JWT_SECRET;
 
     private static final String IDENTITY_TOKEN_VALUE_DELIMITER = "\\.";
     private static final int HEADER_INDEX = 0;
 
     private final ObjectMapper objectMapper;
+    //private final UserDetailServiceImpl userDetailService;
 
     private Long accesstokenValidTime = 1000L * 60 * 60 * 24; // 1d
     private Long refreshTokenValidTime = 1000L * 60 * 60 * 24 * 7; // 7d
 
+    //Secret Key 인코딩
     public String encodeBase64SecretKey(String secretKey) {
         return Encoders.BASE64.encode(secretKey.getBytes(StandardCharsets.UTF_8));
     }
@@ -46,12 +53,11 @@ public class JwtService {
     //JWT 서명에 사용할 Secret Key 생성
     private Key getKeyFromBase64EncodedKey(String base64EncodedSecretKey) {
         byte[] keyBytes = Decoders.BASE64.decode(base64EncodedSecretKey);
-
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
     // access token 생성
-    public String generateAccessToken(TokenDto tokenDto) {
+    public String generateAccessToken(Long memberId) {
         Date now = new Date();
         String base64EncodedSecretKey = encodeBase64SecretKey("" + JWT_SECRET);
         Key key = getKeyFromBase64EncodedKey(base64EncodedSecretKey);
@@ -60,9 +66,9 @@ public class JwtService {
                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE)   // JWT 헤더 설정, "typ" : "JWT"
                 .setIssuer("ttakkeun")  // 발행자 설정
                 .setIssuedAt(now)       // JWT 발행 일자 설정
-                .setSubject(tokenDto.getMemberId().toString())  // JWT 제목 설정
+                .setSubject(String.valueOf(memberId))  // JWT 제목 설정
                 .setExpiration(new Date(now.getTime() + accesstokenValidTime))  // JWT 만료 일자 설정
-                .claim("memberId", tokenDto.getMemberId())  // 커스텀 클레임 설정
+                .claim("memberId", memberId)  // 커스텀 클레임 설정
                 .signWith(key)          // 서명을 위한 Key 객체 설정
                 .compact();             // JWT 생성 및 직렬화
     }
@@ -78,7 +84,6 @@ public class JwtService {
                 .setSubject(memberId.toString())
                 .setExpiration(new Date(now.getTime() + refreshTokenValidTime))
                 .claim("memberId", memberId) //payload에 들어갈 내용
-                //.claim("roles", "USER")
                 .signWith(key)
                 .compact();
     }
@@ -100,6 +105,15 @@ public class JwtService {
         }
     }
 
+    // Autorization : Bearer에서 token 추출 (refreshToken, accessToken 포함)
+    public String resolveToken(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
+        }
+        return null; // 혹은 적절한 예외 처리
+    }
+
     // 토큰 유효성 + 만료일자 확인
     public Boolean validateTokenBoolean(String token) {
         Date now = new Date();
@@ -118,6 +132,14 @@ public class JwtService {
             return false;
         }
     }
+
+    // JWT 토큰 인증 정보 조회 (토큰 복호화)
+//    public Authentication getAuthentication(String token) {
+//        System.out.println(this.getMemberIdFromJwtToken(token));
+//
+//        UserDetails userDetails = userDetailService.loadUserByUsername(this.getMemberIdFromJwtToken(token).toString());
+//        return new UsernamePasswordAuthenticationToken(userDetails, token, userDetails.getAuthorities());
+//    }
 
     public Map<String, String> parseHeader(final String appleToken) {
         try {

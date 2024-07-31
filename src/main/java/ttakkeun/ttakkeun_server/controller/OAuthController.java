@@ -28,14 +28,14 @@ public class OAuthController {
 
     @PostMapping("/refresh")
     public ApiResponse<LoginResponseDto> regenerateAccessToken(HttpServletRequest request) {
-        String accessToken = request.getHeader("Authorization");
-        String refreshToken = request.getHeader("Refresh-Token");
+        //String accessToken = request.getHeader("Authorization");
+        String refreshToken = request.getHeader("Authorization");
 
-        System.out.println("Access Token: " + accessToken.substring(7));
+        //System.out.println("Access Token: " + accessToken.substring(7));
         System.out.println("Refresh Token: " + refreshToken.substring(7));
 
-        if (StringUtils.hasText(accessToken) && accessToken.startsWith("Bearer ") && StringUtils.hasText(refreshToken) && refreshToken.startsWith("Bearer ")) {
-            LoginResponseDto result = oAuthService.regenerateAccessToken(accessToken.substring(7), refreshToken.substring(7));
+        if (StringUtils.hasText(refreshToken) && refreshToken.startsWith("Bearer ")) {
+            LoginResponseDto result = oAuthService.regenerateAccessToken(refreshToken.substring(7));
             return ApiResponse.onSuccess(result);
         } else
             throw new ExceptionHandler(TOKEN_EMPTY);
