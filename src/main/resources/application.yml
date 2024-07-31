@@ -21,7 +21,7 @@ spring:
         format_sql: true
         use_sql_comments: true
         hbm2ddl:
-          auto: create
+          auto: update
         default_batch_fetch_size: 1000
   social-login:
     provider:
@@ -35,3 +35,6 @@ spring:
         private-key: MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgPQGPRZ9oIGAb6vrac5qBDEedIMdWGC5XoQ2vA9lEv9OgCgYIKoZIzj0DAQehRANCAAS/SY9RpfX94Ok3ZyDGK0FLQbU/eM9k87x3FsD7evBxGLZuF+eyVFSJedGDq7jifLEQiaV0tRkhZdVoF3CzBPNE
 jwt:
   secretKey: stressstressstresstresstresstressstressstressstressstressstressstress
+
+server:
+  port: 8080

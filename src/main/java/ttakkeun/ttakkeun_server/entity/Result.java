@@ -20,6 +20,9 @@ public class Result extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long resultId;
 
+    @OneToMany(mappedBy = "result")
+    private List<Product> ProductList = new ArrayList<>();
+
     @OneToMany(mappedBy = "resultId", cascade = CascadeType.ALL)
     private List<Record> RecordList = new ArrayList<>();
 
