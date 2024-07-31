@@ -2,22 +2,24 @@ package ttakkeun.ttakkeun_server.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import ttakkeun.ttakkeun_server.entity.common.BaseEntity;
 
 @Entity
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class CheckList extends BaseEntity {
+public class Image {
 
     @Id
-    @Column(name = "checklist_id")
+    @Column(name = "image_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long checklistId;
+    private Long imageId;
+
+    @Column(nullable = false)
+    private String imageUrl;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "record_id")
-    private Record recordId;
+    @JoinColumn(name = "answer_id")
+    private ChecklistAnswer answerId;
 
 }

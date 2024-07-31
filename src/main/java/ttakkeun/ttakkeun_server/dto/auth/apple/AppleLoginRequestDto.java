@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class AppleSignUpRequestDto {
+public class AppleLoginRequestDto {
 
     @NotEmpty
     private String identityToken;
