@@ -21,7 +21,7 @@ public class Record extends BaseEntity {
     private Long recordId;
 
     @Enumerated(EnumType.STRING)
-    private Category recordCategory;
+    private Category category;
 
     private String etc; //기타 사항 입력
 
@@ -34,6 +34,6 @@ public class Record extends BaseEntity {
     private Pet petId;
 
     @OneToMany(mappedBy = "recordId", cascade = CascadeType.ALL)
-    private List<CheckList> CheckListList = new ArrayList<>();
+    private List<ChecklistAnswer> answerList = new ArrayList<>();
 
 }

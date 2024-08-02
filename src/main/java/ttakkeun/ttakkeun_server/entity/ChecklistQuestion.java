@@ -13,25 +13,19 @@ import java.util.List;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class Result extends BaseEntity {
+public class ChecklistQuestion extends BaseEntity {
 
     @Id
-    @Column(name = "result_id")
+    @Column(name = "question_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long resultId;
-
-    @OneToMany(mappedBy = "result")
-    private List<Product> ProductList = new ArrayList<>();
-
-    @OneToMany(mappedBy = "resultId", cascade = CascadeType.ALL)
-    private List<Record> RecordList = new ArrayList<>();
+    private Long questionId;
 
     @Enumerated(EnumType.STRING)
-    private Category resultCategory;
+    private Category questionCategory;
 
-    private Integer score;
+    private String questionText;
 
-    private String resultDetail;
+    @OneToMany(mappedBy = "questionId", cascade = CascadeType.ALL)
+    private List<ChecklistAnswer> answerList = new ArrayList<>();
 
-    private String resultCare;
 }

@@ -53,6 +53,31 @@ jobs:
         # Github Action을 통해 깃허브가 자체적으로 리눅스 가상 환경을 만들어서
         # 배포에 필요한 빌드 과정을 진행하는 과정
 
+      - name: List deploy directory contents
+        run: |
+          echo "Contents of deploy directory:"
+          ls -R deploy
+        shell: bash
+
+      - name: Check nginx.conf existence
+        run: |
+          if [ -f deploy/.platform/nginx.conf ]; then
+            echo "nginx.conf found"
+          else
+            echo "nginx.conf not found"
+            exit 1
+          fi
+        shell: bash
+        # nginx 상태 점검용 코드 추가
+
+      - name: Unzip deploy package
+        run: |
+          unzip deploy/deploy.zip -d deploy/unzipped
+          echo "Contents of unzipped deploy directory:"
+          ls -R deploy/unzipped
+        shell: bash
+      # deploy.zip 파일 내 내용 확인
+
       - name: Beanstalk Deploy
         uses: einaregilsson/beanstalk-deploy@v21
         with:
