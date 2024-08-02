@@ -8,7 +8,8 @@ import ttakkeun.ttakkeun_server.converter.PetProfileConverter;
 import ttakkeun.ttakkeun_server.dto.PetProfileRequestDTO;
 import ttakkeun.ttakkeun_server.dto.PetProfileResponseDTO;
 import ttakkeun.ttakkeun_server.entity.Pet;
-import ttakkeun.ttakkeun_server.service.PetProfileCommandService;
+import ttakkeun.ttakkeun_server.service.PetProfileService.PetProfileCommandService;
+import ttakkeun.ttakkeun_server.service.PetProfileService.PetProfileQueryService;
 
 @RestController
 @RequiredArgsConstructor
@@ -16,6 +17,7 @@ import ttakkeun.ttakkeun_server.service.PetProfileCommandService;
 public class PetProfileController {
 
     private final PetProfileCommandService petProfileCommandService;
+    private final PetProfileQueryService petProfileQueryService;
 
     @PostMapping("/add")
     public ApiResponse<PetProfileResponseDTO.AddResultDTO> add(
@@ -27,4 +29,14 @@ public class PetProfileController {
 
         return ApiResponse.onSuccess(resultDTO);
     }
+
+
+    @GetMapping("/{pet_id}")
+    public ApiResponse<PetProfileResponseDTO.LoadResultDTO> load(
+            @PathVariable("pet_id") Long petId
+    ) {
+        PetProfileResponseDTO.LoadResultDTO resultDTO = petProfileQueryService.load(petId);
+        return ApiResponse.onSuccess(resultDTO);
+    }
+
 }

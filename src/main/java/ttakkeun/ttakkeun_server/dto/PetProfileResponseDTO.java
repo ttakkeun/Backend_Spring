@@ -13,4 +13,18 @@ public class PetProfileResponseDTO {
     public static class AddResultDTO {
         Long petId;
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class LoadResultDTO {
+        String petName;
+        String petImageUrl;
+        String petType;
+        String petVariety;
+        String birth;
+        Boolean neutralization;
+    }
+
 }

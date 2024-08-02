@@ -1,4 +1,4 @@
-package ttakkeun.ttakkeun_server.service;
+package ttakkeun.ttakkeun_server.service.PetProfileService;
 
 import ttakkeun.ttakkeun_server.dto.PetProfileRequestDTO;
 import ttakkeun.ttakkeun_server.entity.Pet;

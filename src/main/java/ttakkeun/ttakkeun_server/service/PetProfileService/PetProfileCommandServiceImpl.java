@@ -1,4 +1,4 @@
-package ttakkeun.ttakkeun_server.service;
+package ttakkeun.ttakkeun_server.service.PetProfileService;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
