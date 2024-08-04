@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@Setter // 포인트 조회 후 points와 updatedAt 값을 업데이트하는 부분이 있어 @Setter 어노테이션 추가함
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
