@@ -8,6 +8,7 @@ import ttakkeun.ttakkeun_server.entity.Point;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Transactional
@@ -38,8 +39,9 @@ public class DiagnoseService {
                 return 10;
             }
         } else {
-            // optional 객체에서 값이 비어있는 경우 0 반환
-            return 0;
+            // Optional 객체에서 값이 비어있는 경우 예외를 던짐
+            // 0 반환에서 오류 발생하도록 수정함
+            throw new NoSuchElementException("Member with ID " + memberId + " not found");
         }
     }
 
