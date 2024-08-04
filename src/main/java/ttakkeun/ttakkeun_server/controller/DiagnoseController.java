@@ -34,8 +34,8 @@ public class DiagnoseController {
             ApiResponse<GetMyPointResponseDTO> response = ApiResponse.of(SuccessStatus._OK, new GetMyPointResponseDTO(point));
             return ResponseEntity.ok(response);
         } catch (NoSuchElementException e) {
-            ApiResponse<GetMyPointResponseDTO> response = ApiResponse.ofFailure(ErrorStatus._MEMBER_NOT_FOUND, null);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            ApiResponse<GetMyPointResponseDTO> response = ApiResponse.ofFailure(ErrorStatus.MEMBER_NOT_FOUND, null);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         } catch (Exception e) {
             ApiResponse<GetMyPointResponseDTO> response = ApiResponse.ofFailure(ErrorStatus._INTERNAL_SERVER_ERROR, null);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
