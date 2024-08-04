@@ -40,7 +40,7 @@ public class Member extends BaseEntity {
     @OneToMany(mappedBy = "memberId", cascade = CascadeType.ALL)
     private List<Pet> petList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "memberId", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<LikeProduct> likeProductList = new ArrayList<>();
 
     // refreshToken 재발급

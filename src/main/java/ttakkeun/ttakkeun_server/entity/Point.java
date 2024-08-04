@@ -2,6 +2,9 @@ package ttakkeun.ttakkeun_server.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.LastModifiedDate;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -20,4 +23,8 @@ public class Point {
     @MapsId // 'memberId'를 'Member' 엔티티의 PK와 매핑
     @JoinColumn(name = "member_id")
     private Member member;
+
+    @LastModifiedDate
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 }
