@@ -26,15 +26,26 @@ public class ProductRepository {
                 .getResultList();
     }
 
-    //product데이터 베이스에서 좋아요 순으로 불러오기, 페이지네이션 이용
+    //product 데이터베이스에서 좋아요 순으로 불러오기, 페이지네이션 이용
     public List<Product> sortedByLikesWithPaging(int page, int pageSize) {
         int cursor = page * pageSize;
 
         return em.createQuery("SELECT p FROM Product p " +
-                "order by p.totalLikes desc, p.productId desc " +
-                "LIMIT :page OFFSET :cursor", Product.class)
-                .setParameter("page", page)
-                .setParameter("cursor", cursor)
+                "order by p.totalLikes desc, p.productId desc", Product.class)
+                .setFirstResult(cursor)
+                .setMaxResults(pageSize)
+                .getResultList();
+    }
+
+    //product 데이터베이스에서 부위별로 태그 상품을 가져옴
+    public List<Product> findByTag(String tag, int page, int pageSize) {
+        int cursor = page * pageSize;
+
+        return em.createQuery("SELECT p FROM Product p WHERE p.tag = :tag " +
+                        "ORDER BY p.totalLikes DESC, p.productId DESC", Product.class)
+                .setParameter("tag", tag)
+                .setFirstResult(cursor)  // 조회 시작 지점
+                .setMaxResults(pageSize)  // 페이지 크기
                 .getResultList();
     }
 }

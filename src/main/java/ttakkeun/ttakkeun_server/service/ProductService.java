@@ -35,4 +35,11 @@ public class ProductService {
 
         return products.stream().map(productConverter::toDTO).collect(Collectors.toList());
     }
+
+    //부위 별 랭킹(한 페이지당 20개)
+    public List<ProductDTO> getTagRankingProducts(String tag, int page) {
+        List<Product> products = productRepository.findByTag(tag, page, 20);
+
+        return products.stream().map(productConverter::toDTO).collect(Collectors.toList());
+    }
 }

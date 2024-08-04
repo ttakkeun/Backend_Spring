@@ -62,5 +62,29 @@ public class ProductController {
             return ResponseEntity.status(500).body(response);
         }
     }
+
+    //부위 별 랭킹 제품
+    @GetMapping("/tag/{tag}/{page}")
+    public ResponseEntity<ProductApiResponseDTO> getTagRankingProducts(@PathVariable String tag, @PathVariable int page) {
+        try {
+            List<ProductDTO> products = productService.getTagRankingProducts(tag, page);
+            ProductApiResponseDTO response = ProductApiResponseDTO.builder()
+                    .isSuccess(true)
+                    .code(200)
+                    .message("성공")
+                    .result(products)
+                    .build();
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            ProductApiResponseDTO response = ProductApiResponseDTO.builder()
+                    .isSuccess(false)
+                    .code(500)
+                    .message("에러: " + e.getMessage())
+                    .build();
+
+            return ResponseEntity.status(500).body(response);
+        }
+    }
 }
 
