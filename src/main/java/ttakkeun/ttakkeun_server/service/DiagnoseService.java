@@ -51,4 +51,23 @@ public class DiagnoseService {
         return today.equals(date);
         // 입력받은 값이 오늘 날짜와 같다면 true 반환, 오늘 날짜와 다르다면 false 반환
     }
+
+    public Integer updatePointsByMember(Long memberId) throws Exception {
+        Optional<Point> pointOpt = pointRepository.findByMemberId(memberId);
+
+        if (pointOpt.isPresent()) {
+            Point point = pointOpt.get(); // Optinal 객체에서 point를 가져옴
+            Integer points = point.getPoints();
+
+            // 진단시 포인트가 1점 차감됨
+            point.setPoints(points-1);
+            point.setUpdatedAt(LocalDateTime.now());
+            pointRepository.save(point);
+            return point.getPoints();
+        } else {
+            // Optional 객체에서 값이 비어있는 경우 예외를 던짐
+            // 0 반환에서 오류 발생하도록 수정함
+            throw new NoSuchElementException("Member with ID " + memberId + " not found");
+        }
+    }
 }
