@@ -28,4 +28,11 @@ public class ProductService {
 
         return products.stream().map(productConverter::toDTO).collect(Collectors.toList());
     }
+
+    //랭킹별 추천제품(한 페이지당 20개)
+    public List<ProductDTO> getRankedProducts(int page) {
+        List<Product> products = productRepository.sortedByLikesWithPaging(page, 20);
+
+        return products.stream().map(productConverter::toDTO).collect(Collectors.toList());
+    }
 }

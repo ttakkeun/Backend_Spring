@@ -15,7 +15,6 @@ public class ProductConverter {
     public ProductDTO toDTO(Product product) {
         Long productId = product.getProductId();
         //임시 멤버값
-        Integer totalLikes = likeService.getTotalLikes(productId);
         boolean isLike = likeService.getLikeStatus(productId);
 
         return ProductDTO.builder()
@@ -29,7 +28,7 @@ public class ProductConverter {
                 .category2(product.getCategory2())
                 .category3(product.getCategory3())
                 .category4(product.getCategory4())
-                .total_likes(totalLikes)
+                .total_likes(product.getTotalLikes())
                 .isLike(isLike)
                 .build();
     }

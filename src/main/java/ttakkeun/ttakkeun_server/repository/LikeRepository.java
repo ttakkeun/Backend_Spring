@@ -21,9 +21,9 @@ public class LikeRepository {
     }
 
     //제품과 연관된 멤버들 반환(특정 제품에 좋아요한 사용자 목록)
-    public List<Member> findMembersByProductId(Long productId) {
-        return em.createQuery("SELECT lp.member FROM LikeProduct lp WHERE lp.product.productId = :productId", Member.class)
-                .setParameter("productId", productId)
-                .getResultList();
-    }
+//    public List<Member> findMembersByProductId(Long productId) {
+//        return em.createQuery("SELECT lp.member FROM LikeProduct lp WHERE lp.product.productId = :productId", Member.class)
+//                .setParameter("productId", productId)
+//                .getResultList();
+//    }
 }

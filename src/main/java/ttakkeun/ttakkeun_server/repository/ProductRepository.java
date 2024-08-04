@@ -25,4 +25,16 @@ public class ProductRepository {
                 .setMaxResults(5)
                 .getResultList();
     }
+
+    //product데이터 베이스에서 좋아요 순으로 불러오기, 페이지네이션 이용
+    public List<Product> sortedByLikesWithPaging(int page, int pageSize) {
+        int cursor = page * pageSize;
+
+        return em.createQuery("SELECT p FROM Product p " +
+                "order by p.totalLikes desc, p.productId desc " +
+                "LIMIT :page OFFSET :cursor", Product.class)
+                .setParameter("page", page)
+                .setParameter("cursor", cursor)
+                .getResultList();
+    }
 }

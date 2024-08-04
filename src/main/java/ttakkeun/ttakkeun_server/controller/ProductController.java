@@ -38,5 +38,29 @@ public class ProductController {
             return ResponseEntity.status(500).body(response);
         }
     }
+
+    //랭킹별 추천제품
+    @GetMapping("/rank/{page}")
+    public ResponseEntity<ProductApiResponseDTO> getRankedProducts(@PathVariable int page) {
+        try {
+            List<ProductDTO> products = productService.getRankedProducts(page);
+            ProductApiResponseDTO response = ProductApiResponseDTO.builder()
+                    .isSuccess(true)
+                    .code(200)
+                    .message("성공")
+                    .result(products)
+                    .build();
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            ProductApiResponseDTO response = ProductApiResponseDTO.builder()
+                    .isSuccess(false)
+                    .code(500)
+                    .message("에러: " + e.getMessage())
+                    .build();
+
+            return ResponseEntity.status(500).body(response);
+        }
+    }
 }
 

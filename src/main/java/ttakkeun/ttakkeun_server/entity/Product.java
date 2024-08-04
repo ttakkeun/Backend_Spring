@@ -2,6 +2,7 @@ package ttakkeun.ttakkeun_server.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Formula;
 import ttakkeun.ttakkeun_server.entity.common.BaseEntity;
 import ttakkeun.ttakkeun_server.entity.enums.Category;
 
@@ -42,4 +43,8 @@ public class Product extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private Category tag;
+
+    //좋아요 수
+    @Formula("(SELECT COUNT(lp.member_id) FROM like_product lp WHERE lp.product_id = product_id)")
+    private int totalLikes;
 }

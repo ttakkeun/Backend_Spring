@@ -18,9 +18,9 @@ public class LikeService {
     private final ProductRepository productRepository;
 
     //제품의 좋아요 수 반환
-    public int getTotalLikes(Long productId) {
-        return likeRepository.findMembersByProductId(productId).size();
-    }
+//    public int getTotalLikes(Long productId) {
+//        return likeRepository.findMembersByProductId(productId).size();
+//    }
 
     //사용자의 좋아요 판단
     public Boolean getLikeStatus(Long productId) {
