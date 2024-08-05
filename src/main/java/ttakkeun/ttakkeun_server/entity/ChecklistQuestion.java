@@ -13,27 +13,19 @@ import java.util.List;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class Record extends BaseEntity {
+public class ChecklistQuestion extends BaseEntity {
 
     @Id
-    @Column(name = "record_id")
+    @Column(name = "question_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long recordId;
+    private Long questionId;
 
     @Enumerated(EnumType.STRING)
-    private Category category;
+    private Category questionCategory;
 
-    private String etc; //기타 사항 입력
+    private String questionText;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "result_id")
-    private Result resultId;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pet_id")
-    private Pet petId;
-
-    @OneToMany(mappedBy = "recordId", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "questionId", cascade = CascadeType.ALL)
     private List<ChecklistAnswer> answerList = new ArrayList<>();
 
 }

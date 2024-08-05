@@ -7,7 +7,6 @@ import ttakkeun.ttakkeun_server.entity.enums.Neutralization;
 import ttakkeun.ttakkeun_server.entity.enums.PetType;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -28,7 +27,7 @@ public class Pet extends BaseEntity {
 
     private String petVariety;
 
-    private Date birth;
+    private String birth;
 
     @Enumerated(EnumType.STRING)
     private Neutralization neutralization;
