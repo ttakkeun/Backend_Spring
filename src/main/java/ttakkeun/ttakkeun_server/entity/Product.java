@@ -47,4 +47,6 @@ public class Product extends BaseEntity {
     //좋아요 수
     @Formula("(SELECT COUNT(lp.member_id) FROM like_product lp WHERE lp.product_id = product_id)")
     private int totalLikes;
+
+
 }

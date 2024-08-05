@@ -2,6 +2,9 @@ package ttakkeun.ttakkeun_server.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ttakkeun.ttakkeun_server.converter.ProductConverter;
 import ttakkeun.ttakkeun_server.dto.ProductDTO;
@@ -31,14 +34,16 @@ public class ProductService {
 
     //랭킹별 추천제품(한 페이지당 20개)
     public List<ProductDTO> getRankedProducts(int page) {
-        List<Product> products = productRepository.sortedByLikesWithPaging(page, 20);
+        Pageable pageable = PageRequest.of(page, 20);
+        List<Product> products = productRepository.sortedByLikesWithPaging(pageable).getContent();
 
         return products.stream().map(productConverter::toDTO).collect(Collectors.toList());
     }
 
     //부위 별 랭킹(한 페이지당 20개)
     public List<ProductDTO> getTagRankingProducts(String tag, int page) {
-        List<Product> products = productRepository.findByTag(tag, page, 20);
+        Pageable pageable = PageRequest.of(page, 20);
+        List<Product> products = productRepository.findByTag(tag, pageable).getContent();
 
         return products.stream().map(productConverter::toDTO).collect(Collectors.toList());
     }
@@ -46,10 +51,8 @@ public class ProductService {
     //좋아요를 누른 새로운 제품을 저장
     public void saveNewProduct(ProductDTO productDTO) {
         if (productDTO.getProduct_id() != null && productRepository.existsById(productDTO.getProduct_id())) {
-
             return;
         }
-
         Product product = productConverter.toEntity(productDTO);
         productRepository.save(product);
     }
