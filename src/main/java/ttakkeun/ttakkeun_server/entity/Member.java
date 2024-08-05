@@ -13,7 +13,7 @@ import java.util.List;
 @Entity
 @Getter
 @Builder
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @AllArgsConstructor
 public class Member extends BaseEntity {
 
