@@ -35,6 +35,11 @@ public enum ErrorStatus implements BaseErrorCode {
     // Dignose 에러
     DIAGNOSE_NOT_FOUND(HttpStatus.BAD_REQUEST, "DIAGNOSE4001", "해당하는 진단 결과를 찾을 수 없습니다.");
 
+    //Pet 에러
+    PET_ID_NOT_AVAILABLE(HttpStatus.BAD_REQUEST, "PET4001", "유효하지 않은 Pet ID입니다."),
+    PET_NOT_FOUND(HttpStatus.BAD_REQUEST, "PET4002", "해당 사용자의 반려동물이 아닙니다.");
+  
+
     private final HttpStatus httpStatus;
     private final String code;
     private final String message;
