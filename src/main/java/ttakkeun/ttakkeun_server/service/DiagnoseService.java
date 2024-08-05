@@ -10,9 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import ttakkeun.ttakkeun_server.dto.GetMyDiagnoseResponseDTO;
-import ttakkeun.ttakkeun_server.dto.NaverProductDTO;
 import ttakkeun.ttakkeun_server.dto.ProductDTO;
-import ttakkeun.ttakkeun_server.dto.UpdateProductsDTO;
 import ttakkeun.ttakkeun_server.entity.Product;
 import ttakkeun.ttakkeun_server.entity.Result;
 import ttakkeun.ttakkeun_server.repository.PointRepository;
@@ -34,18 +32,12 @@ public class DiagnoseService {
     private final PointRepository pointRepository;
     private final ResultRepository resultRepository;
     private final ProductRepository productRepository;
-    private final String naverClientId;
-    private final String naverClientSecret;
 
     @Autowired
-    public DiagnoseService(PointRepository pointRepository, ResultRepository resultRepository, ProductRepository productRepository,
-                           @Value("${naver.clientId}") String naverClientId,
-                           @Value("${naver.clientSecret") String naverClientSecret) {
+    public DiagnoseService(PointRepository pointRepository, ResultRepository resultRepository, ProductRepository productRepository) {
         this.pointRepository = pointRepository;
         this.resultRepository = resultRepository;
         this.productRepository = productRepository;
-        this.naverClientId = naverClientId;
-        this.naverClientSecret = naverClientSecret;
     }
 
     // 사용자 포인트 조회
