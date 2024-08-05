@@ -1,5 +1,6 @@
 package ttakkeun.ttakkeun_server.repository;
 
+
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -10,7 +11,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ttakkeun.ttakkeun_server.entity.Product;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
