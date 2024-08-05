@@ -30,7 +30,10 @@ public enum ErrorStatus implements BaseErrorCode {
 
     //Member 에러
     MEMBER_NOT_FOUND(HttpStatus.BAD_REQUEST, "MEMBER4001", "해당하는 사용자를 찾을 수 없습니다."),
-    MEMBER_NOT_REGISTERED(HttpStatus.BAD_REQUEST, "MEMBER4002", "등록된 사용자가 아닙니다.");
+    MEMBER_NOT_REGISTERED(HttpStatus.BAD_REQUEST, "MEMBER4002", "등록된 사용자가 아닙니다."),
+
+    // Pet Profile 에러
+    PET_ID_NOT_AVAILABLE(HttpStatus.BAD_REQUEST, "PET4001", "유효하지 않은 Pet ID입니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
