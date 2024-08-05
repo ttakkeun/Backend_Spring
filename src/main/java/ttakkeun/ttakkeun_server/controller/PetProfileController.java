@@ -1,5 +1,6 @@
 package ttakkeun.ttakkeun_server.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +20,7 @@ public class PetProfileController {
     private final PetProfileCommandService petProfileCommandService;
     private final PetProfileQueryService petProfileQueryService;
 
+    @Operation(summary = "반려동물 프로필 추가 API")
     @PostMapping("/add")
     public ApiResponse<PetProfileResponseDTO.AddResultDTO> add(
 //            @RequestHeader("Authorization") String accessToken,
@@ -32,6 +34,7 @@ public class PetProfileController {
 
 
     @GetMapping("/{pet_id}")
+    @Operation(summary = "특정 반려동물 프로필 조회 API")
     public ApiResponse<PetProfileResponseDTO.LoadResultDTO> load(
             @PathVariable("pet_id") Long petId
     ) {

@@ -2,6 +2,8 @@ package ttakkeun.ttakkeun_server.service.PetProfileService;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ttakkeun.ttakkeun_server.apiPayLoad.code.status.ErrorStatus;
+import ttakkeun.ttakkeun_server.apiPayLoad.exception.handler.TempHandler;
 import ttakkeun.ttakkeun_server.dto.PetProfileResponseDTO;
 import ttakkeun.ttakkeun_server.entity.Pet;
 import ttakkeun.ttakkeun_server.entity.enums.Neutralization;
@@ -15,7 +17,7 @@ public class PetProfileQueryServiceImpl implements PetProfileQueryService {
     @Override
     public PetProfileResponseDTO.LoadResultDTO load(Long petId) {
         Pet pet = petProfileRepository.findById(petId)
-                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 Pet ID입니다."));
+                .orElseThrow(() -> new TempHandler(ErrorStatus.PET_ID_NOT_AVAILABLE));
 
         return PetProfileResponseDTO.LoadResultDTO.builder()
                 .petName(pet.getPetName())
