@@ -2,6 +2,7 @@ package ttakkeun.ttakkeun_server.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,7 +28,7 @@ public class RecordController {
     @Operation(summary = "일지 목록 조회 API")
     @GetMapping("/{pet_id}/{category}")
     public ApiResponse<RecordListResponse> getRecordList(
-           // @AuthenticationPrincipal Member member,
+            @AuthenticationPrincipal Member member,
             @PathVariable(name = "pet_id") Long petId, @PathVariable(name = "category") Category category
     ){
         System.out.println("일지 목록 조회 API Controller");
