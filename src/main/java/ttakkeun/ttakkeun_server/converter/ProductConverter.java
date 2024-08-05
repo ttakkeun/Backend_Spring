@@ -32,4 +32,19 @@ public class ProductConverter {
                 .isLike(isLike)
                 .build();
     }
+
+    public Product toEntity(ProductDTO productDTO) {
+        return Product.builder()
+                .productId(productDTO.getProduct_id())
+                .productTitle(productDTO.getTitle())
+                .productImage(productDTO.getImage())
+                .lprice(productDTO.getPrice())
+                .brand(productDTO.getBrand())
+                .productLink(productDTO.getLink())
+                .category1(productDTO.getCategory1())
+                .category2(productDTO.getCategory2())
+                .category3(productDTO.getCategory3())
+                .category4(productDTO.getCategory4())
+                .build();
+    }
 }

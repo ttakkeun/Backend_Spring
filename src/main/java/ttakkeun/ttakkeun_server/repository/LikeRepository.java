@@ -3,6 +3,7 @@ package ttakkeun.ttakkeun_server.repository;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import ttakkeun.ttakkeun_server.entity.LikeProduct;
 import ttakkeun.ttakkeun_server.entity.Member;
 import ttakkeun.ttakkeun_server.entity.Product;
 
@@ -26,4 +27,14 @@ public class LikeRepository {
 //                .setParameter("productId", productId)
 //                .getResultList();
 //    }
+
+    //좋아요 제품 저장
+    public LikeProduct save(LikeProduct likeProduct) {
+        if (likeProduct.getId() == null) {
+            em.persist(likeProduct);
+            return likeProduct;
+        } else {
+            return em.merge(likeProduct);
+        }
+    }
 }

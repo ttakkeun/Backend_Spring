@@ -42,4 +42,15 @@ public class ProductService {
 
         return products.stream().map(productConverter::toDTO).collect(Collectors.toList());
     }
+
+    //좋아요를 누른 새로운 제품을 저장
+    public void saveNewProduct(ProductDTO productDTO) {
+        if (productDTO.getProduct_id() != null && productRepository.existsById(productDTO.getProduct_id())) {
+
+            return;
+        }
+
+        Product product = productConverter.toEntity(productDTO);
+        productRepository.save(product);
+    }
 }

@@ -2,6 +2,7 @@ package ttakkeun.ttakkeun_server.dto;
 
 import lombok.Builder;
 import lombok.Getter;
+import ttakkeun.ttakkeun_server.entity.Product;
 
 import java.util.List;
 
