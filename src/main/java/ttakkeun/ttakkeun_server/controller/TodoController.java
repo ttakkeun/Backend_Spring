@@ -27,9 +27,9 @@ public class TodoController {
     @PatchMapping("/{todo_id}/check")
     public ApiResponse<TodoResponseDto> updateTodoStatus(
             // @RequestHeader("Authorization") String accessToken,
-            @PathVariable Long todoId,
+            @PathVariable Long todo_id,
             @RequestBody TodoStatusUpdateRequestDto requestDto) {
-        TodoResponseDto result = todoService.updateTodoStatus(todoId, requestDto);
+        TodoResponseDto result = todoService.updateTodoStatus(todo_id, requestDto);
         return ApiResponse.onSuccess(result);
     }
 
@@ -37,9 +37,9 @@ public class TodoController {
     @PatchMapping("/{todo_id}")
     public ApiResponse<TodoResponseDto> updateTodoContent(
             // @RequestHeader("Authorization") String accessToken,
-            @PathVariable Long todoId,
+            @PathVariable Long todo_id,
             @RequestBody TodoContentUpdateRequestDto requestDto) {
-        TodoResponseDto result = todoService.updateTodoContent(todoId, requestDto);
+        TodoResponseDto result = todoService.updateTodoContent(todo_id, requestDto);
         return ApiResponse.onSuccess(result);
     }
 
@@ -47,8 +47,8 @@ public class TodoController {
     @DeleteMapping("/{todo_id}")
     public ApiResponse<TodoDeleteResponseDto> deleteTodo(
             // @RequestHeader("Authorization") String accessToken,
-            @PathVariable Long todoId) {
-        TodoDeleteResponseDto result = todoService.deleteTodo(todoId);
+            @PathVariable Long todo_id) {
+        TodoDeleteResponseDto result = todoService.deleteTodo(todo_id);
         return ApiResponse.onSuccess(result);
     }
 
@@ -56,8 +56,8 @@ public class TodoController {
     @PostMapping("/{todo_id}/repeat-tomorrow")
     public ApiResponse<TodoResponseDto> repeatTodoTomorrow(
             // @RequestHeader("Authorization") String accessToken,
-            @PathVariable Long todoId) {
-        TodoResponseDto result = todoService.repeatTodoTomorrow(todoId);
+            @PathVariable Long todo_id) {
+        TodoResponseDto result = todoService.repeatTodoTomorrow(todo_id);
         return ApiResponse.onSuccess(result);
     }
 
@@ -65,8 +65,8 @@ public class TodoController {
     @PatchMapping("/{todo_id}/do-tomorrow")
     public ApiResponse<TodoResponseDto> doTomorrow(
             // @RequestHeader("Authorization") String accessToken,
-            @PathVariable Long todoId) {
-        TodoResponseDto result = todoService.doTomorrow(todoId);
+            @PathVariable Long todo_id) {
+        TodoResponseDto result = todoService.doTomorrow(todo_id);
         return ApiResponse.onSuccess(result);
     }
 
@@ -74,9 +74,9 @@ public class TodoController {
     @PostMapping("/{todo_id}/repeat-another-day")
     public ApiResponse<TodoResponseDto> repeatAnotherDay(
             // @RequestHeader("Authorization") String accessToken,
-            @PathVariable Long todoId,
+            @PathVariable Long todo_id,
             @RequestBody RepeatAnotherDayRequestDto requestDto) {
-        TodoResponseDto result = todoService.repeatAnotherDay(todoId, requestDto);
+        TodoResponseDto result = todoService.repeatAnotherDay(todo_id, requestDto);
         return ApiResponse.onSuccess(result);
     }
 
@@ -84,9 +84,9 @@ public class TodoController {
     @PatchMapping("/{todo_id}/change-date")
     public ApiResponse<TodoResponseDto> changeDate(
             // @RequestHeader("Authorization") String accessToken,
-            @PathVariable Long todoId,
+            @PathVariable Long todo_id,
             @RequestBody ChangeDateRequestDto requestDto) {
-        TodoResponseDto result = todoService.changeDate(todoId, requestDto);
+        TodoResponseDto result = todoService.changeDate(todo_id, requestDto);
         return ApiResponse.onSuccess(result);
     }
 }

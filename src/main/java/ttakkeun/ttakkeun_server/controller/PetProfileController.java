@@ -14,7 +14,7 @@ import ttakkeun.ttakkeun_server.service.PetProfileService.PetProfileQueryService
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/pet-profile")
+@RequestMapping("/api/pet-profile")
 public class PetProfileController {
 
     private final PetProfileCommandService petProfileCommandService;
