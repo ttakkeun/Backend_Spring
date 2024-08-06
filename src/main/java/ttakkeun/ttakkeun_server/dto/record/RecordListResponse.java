@@ -1,7 +1,6 @@
-package ttakkeun.ttakkeun_server.dto;
+package ttakkeun.ttakkeun_server.dto.record;
 
 import lombok.Getter;
-import ttakkeun.ttakkeun_server.entity.Record;
 import ttakkeun.ttakkeun_server.entity.enums.Category;
 
 import java.util.List;

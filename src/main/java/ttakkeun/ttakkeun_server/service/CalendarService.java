@@ -1,8 +1,8 @@
 package ttakkeun.ttakkeun_server.service;
 
 import org.springframework.stereotype.Service;
-import ttakkeun.ttakkeun_server.dto.CalendarResponseDto;
-import ttakkeun.ttakkeun_server.dto.TodoDto;
+import ttakkeun.ttakkeun_server.dto.todo.CalendarResponseDto;
+import ttakkeun.ttakkeun_server.dto.todo.TodoDto;
 import ttakkeun.ttakkeun_server.entity.Todo;
 import ttakkeun.ttakkeun_server.entity.enums.Category;
 import ttakkeun.ttakkeun_server.repository.TodoRepository;

@@ -1,16 +1,10 @@
 package ttakkeun.ttakkeun_server.service;
 
-import jakarta.persistence.EntityManager;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
-import ttakkeun.ttakkeun_server.dto.GetMyDiagnoseResponseDTO;
-import ttakkeun.ttakkeun_server.dto.ProductDTO;
+import ttakkeun.ttakkeun_server.dto.diagnose.GetMyDiagnoseResponseDTO;
+import ttakkeun.ttakkeun_server.dto.diagnose.ProductDTO;
 import ttakkeun.ttakkeun_server.entity.Product;
 import ttakkeun.ttakkeun_server.entity.Result;
 import ttakkeun.ttakkeun_server.repository.PointRepository;
@@ -20,7 +14,6 @@ import ttakkeun.ttakkeun_server.repository.ResultRepository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;

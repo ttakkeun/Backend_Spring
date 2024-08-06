@@ -1,7 +1,7 @@
 package ttakkeun.ttakkeun_server.converter;
 
-import ttakkeun.ttakkeun_server.dto.PetProfileRequestDTO;
-import ttakkeun.ttakkeun_server.dto.PetProfileResponseDTO;
+import ttakkeun.ttakkeun_server.dto.pet.PetProfileRequestDTO;
+import ttakkeun.ttakkeun_server.dto.pet.PetProfileResponseDTO;
 import ttakkeun.ttakkeun_server.entity.Pet;
 import ttakkeun.ttakkeun_server.entity.enums.Neutralization;
 import ttakkeun.ttakkeun_server.entity.enums.PetType;

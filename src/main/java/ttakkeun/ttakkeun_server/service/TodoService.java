@@ -3,7 +3,7 @@ package ttakkeun.ttakkeun_server.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ttakkeun.ttakkeun_server.dto.*;
+import ttakkeun.ttakkeun_server.dto.todo.*;
 import ttakkeun.ttakkeun_server.entity.Todo;
 import ttakkeun.ttakkeun_server.entity.Pet;
 import ttakkeun.ttakkeun_server.entity.enums.TodoStatus;
@@ -11,7 +11,6 @@ import ttakkeun.ttakkeun_server.repository.PetRepository;
 import ttakkeun.ttakkeun_server.repository.TodoRepository;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 @Service
 @RequiredArgsConstructor

@@ -1,7 +1,8 @@
-package ttakkeun.ttakkeun_server.dto;
+package ttakkeun.ttakkeun_server.dto.product;
 
 import lombok.Builder;
 import lombok.Getter;
+import ttakkeun.ttakkeun_server.dto.diagnose.ProductDTO;
 
 import java.util.List;
 

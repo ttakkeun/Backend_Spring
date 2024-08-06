@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ttakkeun.ttakkeun_server.apiPayLoad.ApiResponse;
-import ttakkeun.ttakkeun_server.dto.CompletionRateDto;
+import ttakkeun.ttakkeun_server.dto.todo.CompletionRateDto;
 import ttakkeun.ttakkeun_server.service.CompletionRateService;
 
 @RestController

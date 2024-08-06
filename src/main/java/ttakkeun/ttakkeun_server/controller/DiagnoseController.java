@@ -1,5 +1,4 @@
 package ttakkeun.ttakkeun_server.controller;
-import feign.Response;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -8,14 +7,14 @@ import org.springframework.web.bind.annotation.*;
 import ttakkeun.ttakkeun_server.apiPayLoad.ApiResponse;
 import ttakkeun.ttakkeun_server.apiPayLoad.code.status.ErrorStatus;
 import ttakkeun.ttakkeun_server.apiPayLoad.code.status.SuccessStatus;
-import ttakkeun.ttakkeun_server.dto.GetMyDiagnoseResponseDTO;
-import ttakkeun.ttakkeun_server.dto.GetMyPointResponseDTO;
-import ttakkeun.ttakkeun_server.dto.UpdateMyPointResponseDTO;
+import ttakkeun.ttakkeun_server.dto.diagnose.GetMyDiagnoseResponseDTO;
+import ttakkeun.ttakkeun_server.dto.diagnose.GetMyPointResponseDTO;
+import ttakkeun.ttakkeun_server.dto.diagnose.UpdateMyPointResponseDTO;
 import ttakkeun.ttakkeun_server.service.DiagnoseService;
 //import ttakkeun.ttakkeun_server.dto.UpdateProductsDTO;
 
 import java.util.NoSuchElementException;
-import java.util.Optional;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/diagnose")

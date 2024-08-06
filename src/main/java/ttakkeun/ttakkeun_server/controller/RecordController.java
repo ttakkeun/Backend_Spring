@@ -3,16 +3,14 @@ package ttakkeun.ttakkeun_server.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ttakkeun.ttakkeun_server.apiPayLoad.ApiResponse;
-import ttakkeun.ttakkeun_server.dto.RecordListResponse;
-import ttakkeun.ttakkeun_server.dto.RecordListResponseDto;
+import ttakkeun.ttakkeun_server.dto.record.RecordListResponse;
+import ttakkeun.ttakkeun_server.dto.record.RecordListResponseDto;
 import ttakkeun.ttakkeun_server.entity.Member;
-import ttakkeun.ttakkeun_server.entity.Record;
 import ttakkeun.ttakkeun_server.entity.enums.Category;
 import ttakkeun.ttakkeun_server.service.RecordService;
 

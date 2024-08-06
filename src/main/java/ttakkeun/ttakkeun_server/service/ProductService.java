@@ -4,7 +4,7 @@
 //import lombok.RequiredArgsConstructor;
 //import org.springframework.stereotype.Service;
 //import ttakkeun.ttakkeun_server.converter.ProductConverter;
-//import ttakkeun.ttakkeun_server.dto.ProductDTO;
+//import ttakkeun.ttakkeun_server.dto.diagnose.ProductDTO;
 //import ttakkeun.ttakkeun_server.entity.Product;
 //import ttakkeun.ttakkeun_server.repository.ProductRepository;
 //import ttakkeun.ttakkeun_server.repository.ResultRepository;

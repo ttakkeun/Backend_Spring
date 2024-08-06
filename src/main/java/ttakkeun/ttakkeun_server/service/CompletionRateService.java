@@ -2,7 +2,7 @@ package ttakkeun.ttakkeun_server.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ttakkeun.ttakkeun_server.dto.CompletionRateDto;
+import ttakkeun.ttakkeun_server.dto.todo.CompletionRateDto;
 import ttakkeun.ttakkeun_server.entity.Pet;
 import ttakkeun.ttakkeun_server.entity.enums.Category;
 import ttakkeun.ttakkeun_server.entity.enums.TodoStatus;

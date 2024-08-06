@@ -2,7 +2,7 @@
 //
 //import lombok.RequiredArgsConstructor;
 //import org.springframework.stereotype.Component;
-//import ttakkeun.ttakkeun_server.dto.ProductDTO;
+//import ttakkeun.ttakkeun_server.dto.diagnose.ProductDTO;
 //import ttakkeun.ttakkeun_server.entity.Product;
 //import ttakkeun.ttakkeun_server.service.LikeService;
 //

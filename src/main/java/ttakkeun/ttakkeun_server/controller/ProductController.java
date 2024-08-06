@@ -3,8 +3,8 @@
 //import lombok.RequiredArgsConstructor;
 //import org.springframework.http.ResponseEntity;
 //import org.springframework.web.bind.annotation.*;
-//import ttakkeun.ttakkeun_server.dto.ProductApiResponseDTO;
-//import ttakkeun.ttakkeun_server.dto.ProductDTO;
+//import ttakkeun.ttakkeun_server.dto.product.ProductApiResponseDTO;
+//import ttakkeun.ttakkeun_server.dto.diagnose.ProductDTO;
 //import ttakkeun.ttakkeun_server.service.ProductService;
 //
 //import java.util.List;
