@@ -15,7 +15,7 @@ public class CompletionRateController {
 
     @GetMapping("/completion-rate")
     public ApiResponse<CompletionRateDto> getCompletionRate(
-            @RequestHeader("Authorization") String accessToken,
+            // @RequestHeader("Authorization") String accessToken,
             @RequestParam Long petId) {
         CompletionRateDto result = completionRateService.getCompletionRate(petId);
         return ApiResponse.onSuccess(result);

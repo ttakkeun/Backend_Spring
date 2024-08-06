@@ -15,7 +15,7 @@ public class CalendarController {
 
     @GetMapping("/{year}/{month}/{date}")
     public ApiResponse<CalendarResponseDto> getCalendarData(
-            @RequestHeader("Authorization") String accessToken,
+            // @RequestHeader("Authorization") String accessToken,
             @PathVariable int year,
             @PathVariable int month,
             @PathVariable int date) {
