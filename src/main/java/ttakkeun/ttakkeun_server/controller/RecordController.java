@@ -32,7 +32,23 @@ public class RecordController {
             @PathVariable(name = "pet_id") Long petId, @PathVariable(name = "category") Category category
     ){
         System.out.println("일지 목록 조회 API Controller");
-        List<RecordListResponseDto> records = recordService.getRecordsByCategory(petId, category);
+        List<RecordListResponseDto> records = recordService.getRecordsByCategory(member, petId, category);
+        RecordListResponse result = new RecordListResponse(category, records);
+        return ApiResponse.onSuccess(result);
+    }
+
+    // 테스트용 메서드
+    @Operation(summary = "일지 목록 조회 API 테스트")
+    @GetMapping("/test/{pet_id}/{category}")
+    public ApiResponse<RecordListResponse> getRecordListForTest(
+            @PathVariable(name = "pet_id") Long petId, @PathVariable(name = "category") Category category
+    ){
+        // 임의의 Member 객체 생성
+        Member testMember = new Member();
+        testMember.setMemberId(1L); // 임의의 memberId 설정
+        System.out.println("Member ID: " + testMember.getMemberId());
+
+        List<RecordListResponseDto> records = recordService.getRecordsByCategory(testMember, petId, category);
         RecordListResponse result = new RecordListResponse(category, records);
         return ApiResponse.onSuccess(result);
     }
