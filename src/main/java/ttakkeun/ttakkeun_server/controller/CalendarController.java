@@ -1,5 +1,6 @@
 package ttakkeun.ttakkeun_server.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ttakkeun.ttakkeun_server.apiPayLoad.ApiResponse;
@@ -13,6 +14,7 @@ public class CalendarController {
 
     private final CalendarService calendarService;
 
+    @Operation(summary = "캘린더 조회 API")
     @GetMapping("/{year}/{month}/{date}")
     public ApiResponse<CalendarResponseDto> getCalendarData(
             // @RequestHeader("Authorization") String accessToken,

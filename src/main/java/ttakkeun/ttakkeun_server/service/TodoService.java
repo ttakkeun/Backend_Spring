@@ -74,16 +74,13 @@ public class TodoService {
 
     @Transactional
     public TodoResponseDto repeatTodoTomorrow(Long todoId) {
-        // 1. 원래 투두 항목을 조회
         Todo originalTodo = todoRepository.findById(todoId)
                 .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 Todo ID입니다."));
 
-        // 2. 투두 항목이 완료된 상태인지 확인
         if (originalTodo.getTodoStatus() != TodoStatus.DONE) {
             throw new IllegalStateException("투두 항목이 완료되지 않았습니다.");
         }
 
-        // 3. 새로운 투두 항목을 생성
         Todo newTodo = Todo.builder()
                 .todoName(originalTodo.getTodoName())
                 .todoCategory(originalTodo.getTodoCategory())
@@ -92,31 +89,24 @@ public class TodoService {
                 .createdAt(LocalDateTime.now().plusDays(1))
                 .build();
 
-        // 4. 새로운 투두 항목을 저장
         todoRepository.save(newTodo);
 
-        // 5. 응답 DTO를 반환
         return new TodoResponseDto(newTodo.getTodoId(), newTodo.getCreatedAt());
     }
 
     @Transactional
     public TodoResponseDto doTomorrow(Long todoId) {
-        // 1. 원래 투두 항목을 조회
         Todo todo = todoRepository.findById(todoId)
                 .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 Todo ID입니다."));
 
-        // 2. 투두 항목이 완료되지 않은 상태인지 확인
         if (todo.getTodoStatus() == TodoStatus.DONE) {
             throw new IllegalStateException("투두 항목이 이미 완료된 상태입니다.");
         }
 
-        // 3. 투두 항목의 날짜를 내일로 변경
         todo.setCreatedAt(LocalDateTime.now().plusDays(1));
 
-        // 4. 변경된 투두 항목을 저장
         todoRepository.save(todo);
 
-        // 5. 응답 DTO를 반환
         return new TodoResponseDto(todo.getTodoId(), todo.getCreatedAt());
     }
 

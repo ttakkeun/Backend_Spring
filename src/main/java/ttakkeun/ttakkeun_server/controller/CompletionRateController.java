@@ -1,5 +1,6 @@
 package ttakkeun.ttakkeun_server.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ttakkeun.ttakkeun_server.apiPayLoad.ApiResponse;
@@ -13,6 +14,7 @@ public class CompletionRateController {
 
     private final CompletionRateService completionRateService;
 
+    @Operation(summary = "일정 완수율 조회 API")
     @GetMapping("/completion-rate")
     public ApiResponse<CompletionRateDto> getCompletionRate(
             // @RequestHeader("Authorization") String accessToken,
