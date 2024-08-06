@@ -33,7 +33,7 @@ public enum ErrorStatus implements BaseErrorCode {
     MEMBER_NOT_REGISTERED(HttpStatus.BAD_REQUEST, "MEMBER4002", "등록된 사용자가 아닙니다."),
 
     // Dignose 에러
-    DIAGNOSE_NOT_FOUND(HttpStatus.BAD_REQUEST, "DIAGNOSE4001", "해당하는 진단 결과를 찾을 수 없습니다.");
+    DIAGNOSE_NOT_FOUND(HttpStatus.BAD_REQUEST, "DIAGNOSE4001", "해당하는 진단 결과를 찾을 수 없습니다."),
 
     //Pet 에러
     PET_ID_NOT_AVAILABLE(HttpStatus.BAD_REQUEST, "PET4001", "유효하지 않은 Pet ID입니다."),
