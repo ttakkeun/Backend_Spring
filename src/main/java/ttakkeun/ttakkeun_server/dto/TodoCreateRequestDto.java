@@ -6,6 +6,8 @@ import lombok.Setter;
 import ttakkeun.ttakkeun_server.entity.enums.Category;
 import ttakkeun.ttakkeun_server.entity.enums.TodoStatus;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -14,5 +16,5 @@ public class TodoCreateRequestDto {
     private Category todoCategory;
     private String todoName;
     private TodoStatus todoStatus;
-    private String createdAt;
+    private LocalDateTime createdAt;
 }
