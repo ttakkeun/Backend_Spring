@@ -33,6 +33,7 @@ public class Todo extends BaseEntity {
     @JoinColumn(name = "pet_id")
     private Pet petId;
 
+    @Builder.Default
     @OneToMany(mappedBy = "todoId", cascade = CascadeType.ALL)
     private List<History> HistoryList = new ArrayList<>();
 }

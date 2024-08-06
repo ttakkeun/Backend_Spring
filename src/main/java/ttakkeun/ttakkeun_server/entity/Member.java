@@ -39,9 +39,11 @@ public class Member extends BaseEntity {
     @Column(nullable = false)
     private LocalDateTime refreshTokenExpiresAt;    //토큰 만료 일자
 
+    @Builder.Default
     @OneToMany(mappedBy = "memberId", cascade = CascadeType.ALL)
     private List<Pet> petList = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<LikeProduct> likeProductList = new ArrayList<>();
 

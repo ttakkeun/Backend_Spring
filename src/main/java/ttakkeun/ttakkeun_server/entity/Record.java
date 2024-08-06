@@ -33,6 +33,7 @@ public class Record extends BaseEntity {
     @JoinColumn(name = "pet_id")
     private Pet petId;
 
+    @Builder.Default
     @OneToMany(mappedBy = "recordId", cascade = CascadeType.ALL)
     private List<ChecklistAnswer> answerList = new ArrayList<>();
 

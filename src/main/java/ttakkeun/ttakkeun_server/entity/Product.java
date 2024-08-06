@@ -24,6 +24,7 @@ public class Product extends BaseEntity {
     @JoinColumn(name = "result_id")
     private Result result;
 
+    @Builder.Default
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private List<LikeProduct> likeProductList = new ArrayList<>();
 

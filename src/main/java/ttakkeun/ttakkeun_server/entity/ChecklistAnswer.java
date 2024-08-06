@@ -30,6 +30,7 @@ public class ChecklistAnswer extends BaseEntity {
     @JoinColumn(name = "record_id")
     private Record recordId;
 
+    @Builder.Default
     @OneToMany(mappedBy = "answerId", cascade = CascadeType.ALL)
     private List<Image> imageList = new ArrayList<>();
 
