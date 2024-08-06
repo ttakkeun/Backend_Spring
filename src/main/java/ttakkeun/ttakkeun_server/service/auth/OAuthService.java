@@ -45,7 +45,7 @@ public class OAuthService {
         member.updateRefreshToken(newRefreshToken);
         memberRepository.save(member);
 
-        System.out.println("member nickname : " + member.getUserName());
+        System.out.println("member nickname : " + member.getUsername());
 
         return new LoginResponseDto(newAccessToken, newRefreshToken);
     }
@@ -76,7 +76,7 @@ public class OAuthService {
         member.updateRefreshToken(newRefreshToken);
         memberRepository.save(member);
 
-        System.out.println("member nickname : " + member.getUserName());
+        System.out.println("member nickname : " + member.getUsername());
 
         return new LoginResponseDto(newAccessToken, newRefreshToken);
     }
