@@ -1,1 +1,1 @@
-web: appstart
+web: java -jar build/libs/ttakkeun-server-0.0.1-SNAPSHOT.jar

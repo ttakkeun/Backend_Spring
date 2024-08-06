@@ -20,6 +20,10 @@ public class Result extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long resultId;
 
+    // Result 객체를 로드할 때 ProductList도 즉시 가져오도록 EAGER로 설정
+    @OneToMany(mappedBy = "result", fetch = FetchType.EAGER)
+    private List<Product> ProductList = new ArrayList<>();
+
     @OneToMany(mappedBy = "resultId", cascade = CascadeType.ALL)
     private List<Record> RecordList = new ArrayList<>();
 
