@@ -39,9 +39,11 @@ public class Pet extends BaseEntity {
     @JoinColumn(name = "member_id")
     private Member memberId;
 
+    @Builder.Default
     @OneToMany(mappedBy = "petId", cascade = CascadeType.ALL)
     private List<Todo> TodoList = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "petId", cascade = CascadeType.ALL)
     private List<Record> RecordList = new ArrayList<>();
 
