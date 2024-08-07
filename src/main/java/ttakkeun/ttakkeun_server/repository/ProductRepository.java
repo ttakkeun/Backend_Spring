@@ -27,4 +27,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     //product 데이터베이스에서 부위별로 태그 상품을 가져옴
     @Query("SELECT p FROM Product p WHERE p.tag = :tag ORDER BY p.totalLikes DESC, p.productId DESC")
     Page<Product> findByTag(@Param("tag") String tag, Pageable pageable);
+
+    List<Product> findByResultResultId(Long resultId);
 }
