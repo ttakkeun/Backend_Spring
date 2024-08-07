@@ -5,8 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ttakkeun.ttakkeun_server.dto.LikeResponseDTO;
 import ttakkeun.ttakkeun_server.dto.ProductApiResponseDTO;
-import ttakkeun.ttakkeun_server.dto.ProductDTO;
-import ttakkeun.ttakkeun_server.entity.LikeProduct;
+import ttakkeun.ttakkeun_server.dto.RecommendProductDTO;
 import ttakkeun.ttakkeun_server.service.LikeService;
 import ttakkeun.ttakkeun_server.service.ProductService;
 
@@ -23,7 +22,7 @@ public class ProductController {
     @GetMapping("/ai")
     public ResponseEntity<ProductApiResponseDTO> getAiProducts() {
         try {
-            List<ProductDTO> products = productService.getResultProducts();
+            List<RecommendProductDTO> products = productService.getResultProducts();
             ProductApiResponseDTO response = ProductApiResponseDTO.builder()
                     .isSuccess(true)
                     .code(200)
@@ -47,7 +46,7 @@ public class ProductController {
     @GetMapping("/rank/{page}")
     public ResponseEntity<ProductApiResponseDTO> getRankedProducts(@PathVariable int page) {
         try {
-            List<ProductDTO> products = productService.getRankedProducts(page);
+            List<RecommendProductDTO> products = productService.getRankedProducts(page);
             ProductApiResponseDTO response = ProductApiResponseDTO.builder()
                     .isSuccess(true)
                     .code(200)
@@ -71,7 +70,7 @@ public class ProductController {
     @GetMapping("/tag/{tag}/{page}")
     public ResponseEntity<ProductApiResponseDTO> getTagRankingProducts(@PathVariable String tag, @PathVariable int page) {
         try {
-            List<ProductDTO> products = productService.getTagRankingProducts(tag, page);
+            List<RecommendProductDTO> products = productService.getTagRankingProducts(tag, page);
             ProductApiResponseDTO response = ProductApiResponseDTO.builder()
                     .isSuccess(true)
                     .code(200)

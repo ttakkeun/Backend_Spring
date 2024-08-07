@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class ProductDTO {
+public class RecommendProductDTO {
     private Long product_id;
     private String title;
     private String image;

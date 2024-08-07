@@ -2,7 +2,7 @@ package ttakkeun.ttakkeun_server.converter;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ttakkeun.ttakkeun_server.dto.ProductDTO;
+import ttakkeun.ttakkeun_server.dto.RecommendProductDTO;
 import ttakkeun.ttakkeun_server.entity.Product;
 import ttakkeun.ttakkeun_server.service.LikeService;
 
@@ -12,12 +12,12 @@ public class ProductConverter {
     private final LikeService likeService;
 
     //Product를 ProductDTO로 convert
-    public ProductDTO toDTO(Product product) {
+    public RecommendProductDTO toDTO(Product product) {
         Long productId = product.getProductId();
         //임시 멤버값
         boolean isLike = likeService.getLikeStatus(productId);
 
-        return ProductDTO.builder()
+        return RecommendProductDTO.builder()
                 .product_id(product.getProductId())
                 .title(product.getProductTitle())
                 .image(product.getProductImage())
@@ -33,18 +33,18 @@ public class ProductConverter {
                 .build();
     }
 
-    public Product toEntity(ProductDTO productDTO) {
+    public Product toEntity(RecommendProductDTO recommendProductDTO) {
         return Product.builder()
-                .productId(productDTO.getProduct_id())
-                .productTitle(productDTO.getTitle())
-                .productImage(productDTO.getImage())
-                .lprice(productDTO.getPrice())
-                .brand(productDTO.getBrand())
-                .productLink(productDTO.getLink())
-                .category1(productDTO.getCategory1())
-                .category2(productDTO.getCategory2())
-                .category3(productDTO.getCategory3())
-                .category4(productDTO.getCategory4())
+                .productId(recommendProductDTO.getProduct_id())
+                .productTitle(recommendProductDTO.getTitle())
+                .productImage(recommendProductDTO.getImage())
+                .lprice(recommendProductDTO.getPrice())
+                .brand(recommendProductDTO.getBrand())
+                .productLink(recommendProductDTO.getLink())
+                .category1(recommendProductDTO.getCategory1())
+                .category2(recommendProductDTO.getCategory2())
+                .category3(recommendProductDTO.getCategory3())
+                .category4(recommendProductDTO.getCategory4())
                 .build();
     }
 }
