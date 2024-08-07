@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ttakkeun.ttakkeun_server.apiPayLoad.code.status.ErrorStatus;
 import ttakkeun.ttakkeun_server.apiPayLoad.exception.handler.TempHandler;
-import ttakkeun.ttakkeun_server.dto.PetProfileResponseDTO;
+import ttakkeun.ttakkeun_server.dto.pet.PetProfileResponseDTO;
 import ttakkeun.ttakkeun_server.entity.Pet;
 import ttakkeun.ttakkeun_server.entity.enums.Neutralization;
 import ttakkeun.ttakkeun_server.repository.PetProfileRepository;

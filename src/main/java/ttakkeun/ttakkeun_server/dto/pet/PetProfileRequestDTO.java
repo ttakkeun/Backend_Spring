@@ -1,4 +1,4 @@
-package ttakkeun.ttakkeun_server.dto;
+package ttakkeun.ttakkeun_server.dto.pet;
 
 import lombok.Getter;
 

@@ -15,9 +15,14 @@ import org.springframework.beans.factory.annotation.Value;
 //import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 //import org.springframework.security.core.Authentication;
 //import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import ttakkeun.ttakkeun_server.apiPayLoad.ExceptionHandler;
 import ttakkeun.ttakkeun_server.apiPayLoad.code.status.ErrorStatus;
+import ttakkeun.ttakkeun_server.service.auth.UserDetailServiceImpl;
 //import ttakkeun.ttakkeun_server.jwt.JwtAuthenticationFilter;
 //import ttakkeun.ttakkeun_server.service.auth.UserDetailServiceImpl;
 
@@ -31,11 +36,13 @@ import java.util.Map;
 @Slf4j
 @RequiredArgsConstructor
 @Component
+@Service
 public class JwtService {
 
     @Value("${jwt.secretKey}")    //application.yml에 저장된 시크릿키
     private String JWT_SECRET;
 
+    private final UserDetailServiceImpl userDetailService;
     private static final String IDENTITY_TOKEN_VALUE_DELIMITER = "\\.";
     private static final int HEADER_INDEX = 0;
 
@@ -133,13 +140,13 @@ public class JwtService {
         }
     }
 
-    // JWT 토큰 인증 정보 조회 (토큰 복호화)
-//    public Authentication getAuthentication(String token) {
-//        System.out.println(this.getMemberIdFromJwtToken(token));
-//
-//        UserDetails userDetails = userDetailService.loadUserByUsername(this.getMemberIdFromJwtToken(token).toString());
-//        return new UsernamePasswordAuthenticationToken(userDetails, token, userDetails.getAuthorities());
-//    }
+    //JWT 토큰 인증 정보 조회 (토큰 복호화)
+    public Authentication getAuthentication(String token) {
+        System.out.println(this.getMemberIdFromJwtToken(token));
+
+        UserDetails userDetails = userDetailService.loadUserByUsername(this.getMemberIdFromJwtToken(token).toString());
+        return new UsernamePasswordAuthenticationToken(userDetails, token, userDetails.getAuthorities());
+    }
 
     public Map<String, String> parseHeader(final String appleToken) {
         try {

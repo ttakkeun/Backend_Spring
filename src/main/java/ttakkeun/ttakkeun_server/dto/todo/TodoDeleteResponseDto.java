@@ -1,4 +1,4 @@
-package ttakkeun.ttakkeun_server.dto;
+package ttakkeun.ttakkeun_server.dto.todo;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -4,7 +4,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ttakkeun.ttakkeun_server.converter.PetProfileConverter;
-import ttakkeun.ttakkeun_server.dto.PetProfileRequestDTO;
+import ttakkeun.ttakkeun_server.dto.pet.PetProfileRequestDTO;
 import ttakkeun.ttakkeun_server.entity.Pet;
 import ttakkeun.ttakkeun_server.repository.PetProfileRepository;
 

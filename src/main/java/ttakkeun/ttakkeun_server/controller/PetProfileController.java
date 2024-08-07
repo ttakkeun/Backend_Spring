@@ -6,15 +6,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ttakkeun.ttakkeun_server.apiPayLoad.ApiResponse;
 import ttakkeun.ttakkeun_server.converter.PetProfileConverter;
-import ttakkeun.ttakkeun_server.dto.PetProfileRequestDTO;
-import ttakkeun.ttakkeun_server.dto.PetProfileResponseDTO;
+import ttakkeun.ttakkeun_server.dto.pet.PetProfileRequestDTO;
+import ttakkeun.ttakkeun_server.dto.pet.PetProfileResponseDTO;
 import ttakkeun.ttakkeun_server.entity.Pet;
 import ttakkeun.ttakkeun_server.service.PetProfileService.PetProfileCommandService;
 import ttakkeun.ttakkeun_server.service.PetProfileService.PetProfileQueryService;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/pet-profile")
+@RequestMapping("/api/pet-profile")
 public class PetProfileController {
 
     private final PetProfileCommandService petProfileCommandService;
