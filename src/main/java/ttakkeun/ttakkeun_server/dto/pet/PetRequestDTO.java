@@ -2,7 +2,7 @@ package ttakkeun.ttakkeun_server.dto.pet;
 
 import lombok.Getter;
 
-public class PetProfileRequestDTO {
+public class PetRequestDTO {
 
     @Getter
     public static class AddDTO {
