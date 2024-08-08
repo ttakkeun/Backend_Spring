@@ -2,10 +2,12 @@ package ttakkeun.ttakkeun_server.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.cglib.core.Local;
 import ttakkeun.ttakkeun_server.entity.common.BaseEntity;
 import ttakkeun.ttakkeun_server.entity.enums.Category;
 import ttakkeun.ttakkeun_server.entity.enums.TodoStatus;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +42,7 @@ public class Todo extends BaseEntity {
     private List<History> HistoryList = new ArrayList<>();
 
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     public Todo(String todoName, Category todoCategory, TodoStatus todoStatus, Pet petId) {
         this.todoName = todoName;
