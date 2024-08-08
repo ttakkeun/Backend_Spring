@@ -33,8 +33,9 @@ public class PetProfileController {
     }
 
 
-    @GetMapping("/{pet_id}")
+
     @Operation(summary = "특정 반려동물 프로필 조회 API")
+    @GetMapping("/{pet_id}")
     public ApiResponse<PetProfileResponseDTO.LoadResultDTO> load(
             @PathVariable("pet_id") Long petId
     ) {
