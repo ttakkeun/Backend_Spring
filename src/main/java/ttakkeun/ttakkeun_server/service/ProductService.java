@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import ttakkeun.ttakkeun_server.converter.ProductConverter;
 import ttakkeun.ttakkeun_server.dto.RecommendProductDTO;
 import ttakkeun.ttakkeun_server.entity.Product;
+import ttakkeun.ttakkeun_server.entity.enums.Category;
 import ttakkeun.ttakkeun_server.repository.ProductRepository;
 import ttakkeun.ttakkeun_server.repository.ResultRepository;
 
@@ -40,7 +41,7 @@ public class ProductService {
     }
 
     //부위 별 랭킹(한 페이지당 20개)
-    public List<RecommendProductDTO> getTagRankingProducts(String tag, int page) {
+    public List<RecommendProductDTO> getTagRankingProducts(Category tag, int page) {
         Pageable pageable = PageRequest.of(page, 20);
         List<Product> products = productRepository.findByTag(tag, pageable).getContent();
 

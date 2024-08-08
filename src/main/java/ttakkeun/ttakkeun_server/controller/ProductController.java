@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import ttakkeun.ttakkeun_server.dto.LikeResponseDTO;
 import ttakkeun.ttakkeun_server.dto.product.ProductApiResponseDTO;
 import ttakkeun.ttakkeun_server.dto.RecommendProductDTO;
+import ttakkeun.ttakkeun_server.entity.enums.Category;
 import ttakkeun.ttakkeun_server.service.LikeService;
 import ttakkeun.ttakkeun_server.service.ProductService;
 
@@ -68,7 +69,9 @@ public class ProductController {
 
     //부위 별 랭킹 제품
     @GetMapping("/tag/{tag}/{page}")
-    public ResponseEntity<ProductApiResponseDTO> getTagRankingProducts(@PathVariable String tag, @PathVariable int page) {
+    public ResponseEntity<ProductApiResponseDTO> getTagRankingProducts(
+            @PathVariable Category tag, @PathVariable int page
+    ) {
         try {
             List<RecommendProductDTO> products = productService.getTagRankingProducts(tag, page);
             ProductApiResponseDTO response = ProductApiResponseDTO.builder()

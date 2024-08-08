@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ttakkeun.ttakkeun_server.entity.Product;
+import ttakkeun.ttakkeun_server.entity.enums.Category;
 
 import java.util.List;
 
@@ -26,7 +27,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     //product 데이터베이스에서 부위별로 태그 상품을 가져옴
     @Query("SELECT p FROM Product p WHERE p.tag = :tag ORDER BY p.totalLikes DESC, p.productId DESC")
-    Page<Product> findByTag(@Param("tag") String tag, Pageable pageable);
+    Page<Product> findByTag(@Param("tag") Category tag, Pageable pageable);
 
     List<Product> findByResultResultId(Long resultId);
 }

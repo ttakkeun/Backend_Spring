@@ -1,5 +1,6 @@
 package ttakkeun.ttakkeun_server.service;
 
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.relational.core.sql.Like;
@@ -23,6 +24,7 @@ public class LikeService {
     private final LikeRepository likeRepository;
     private final ProductRepository productRepository;
     private final MemberRepository memberRepository;
+    private final EntityManager em;
 
     //사용자의 좋아요 판단
     public Boolean getLikeStatus(Long productId) {
@@ -33,8 +35,8 @@ public class LikeService {
         return likeRepository.findProductsByMemberId(memberId).contains(targetProduct);
     }
 
-    //좋아요를 누른 멤버와 그 제품을 저장
-    public LikeResponseDTO.Result toggleLikeProduct(Long productId) {
+    //좋아요 버튼 토글 기능
+    public void toggleLikeProduct(Long productId) {
 
         //임시 멤버값
         Long memberId = 526L;
@@ -53,9 +55,12 @@ public class LikeService {
         }
     }
 
+    //좋아요 수, 상태 반환
     public LikeResponseDTO.Result getLikeInfo(Long productId) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Product not found with id: " + productId));
+
+        em.refresh(product);
 
         int totalLike = product.getTotalLikes();
         Boolean isLike = getLikeStatus(productId);
