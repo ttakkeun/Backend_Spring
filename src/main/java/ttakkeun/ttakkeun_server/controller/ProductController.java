@@ -91,9 +91,11 @@ public class ProductController {
     }
 
     @PatchMapping("/like/{product_id}")
-    public ResponseEntity<LikeResponseDTO> addLikeProduct(@RequestBody Long product_id) {
+    public ResponseEntity<LikeResponseDTO> addLikeProduct(@PathVariable Long product_id) {
         try {
-            LikeResponseDTO.Result result = likeService.addLikeProduct(product_id);
+            likeService.toggleLikeProduct(product_id);
+            LikeResponseDTO.Result result = likeService.getLikeInfo(product_id);
+
 
             LikeResponseDTO response = LikeResponseDTO.builder()
                     .isSuccess(true)

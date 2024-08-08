@@ -14,6 +14,7 @@ import ttakkeun.ttakkeun_server.repository.MemberRepository;
 import ttakkeun.ttakkeun_server.repository.ProductRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -33,21 +34,32 @@ public class LikeService {
     }
 
     //좋아요를 누른 멤버와 그 제품을 저장
-    public LikeResponseDTO.Result addLikeProduct(Long productId) {
-        //임시 멤버값 사용
-        Product targetProduct = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Product not found with id: " + productId));;
-        Member targetMember = memberRepository.findById(526L)
-                .orElseThrow(() -> new RuntimeException("Member not found with id: 526L"));;
+    public LikeResponseDTO.Result toggleLikeProduct(Long productId) {
 
-        //LikeProduct테이블에 저장
-        LikeProduct likeProduct = new LikeProduct(null, targetProduct, targetMember);
-        likeRepository.save(likeProduct);
+        //임시 멤버값
+        Long memberId = 526L;
+        Optional<LikeProduct> likeProductOpt = likeRepository.findByProductIdAndMemberId(productId, memberId);
 
-        //좋아요 수, 좋아요 상태 값
-        int totalLikes = productRepository.findById(productId).orElse(null).getTotalLikes();
+        if(likeProductOpt.isPresent()) { //이미 존재할 경우 좋아요 테이블에서 삭제
+            likeRepository.delete(likeProductOpt.get());
+        } else { //존재하지 않을 경우 테이블에 추가
+            Product product = productRepository.findById(productId)
+                    .orElseThrow(() -> new RuntimeException("Product not found with id: " + productId));
+            Member member = memberRepository.findById(526L)
+                    .orElseThrow(() -> new RuntimeException("Member not found with id: 526L"));
+
+            LikeProduct likeProduct = new LikeProduct(null, product, member);
+            likeRepository.save(likeProduct);
+        }
+    }
+
+    public LikeResponseDTO.Result getLikeInfo(Long productId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found with id: " + productId));
+
+        int totalLike = product.getTotalLikes();
         Boolean isLike = getLikeStatus(productId);
 
-        return LikeProductConverter.toDTO(totalLikes, isLike);
+        return LikeProductConverter.toDTO(totalLike, isLike);
     }
 }
