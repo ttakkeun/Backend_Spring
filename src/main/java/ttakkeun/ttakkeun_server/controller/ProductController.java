@@ -93,6 +93,31 @@ public class ProductController {
         }
     }
 
+    @GetMapping("/search_db/{keyword}/{page}")
+    public ResponseEntity<ProductApiResponseDTO> getSearchProductsFromDB(
+            @PathVariable String keyword, @PathVariable int page
+    ) {
+        try {
+            List<RecommendProductDTO> products = productService.getProductByKeywordFromDB(keyword, page);
+            ProductApiResponseDTO response = ProductApiResponseDTO.builder()
+                    .isSuccess(true)
+                    .code(200)
+                    .message("성공")
+                    .result(products)
+                    .build();
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            ProductApiResponseDTO response = ProductApiResponseDTO.builder()
+                    .isSuccess(false)
+                    .code(500)
+                    .message("에러: " + e.getMessage())
+                    .build();
+
+            return ResponseEntity.status(500).body(response);
+        }
+    }
+
     @PatchMapping("/like/{product_id}")
     public ResponseEntity<LikeResponseDTO> addLikeProduct(@PathVariable Long product_id) {
         try {
@@ -116,4 +141,6 @@ public class ProductController {
             return ResponseEntity.status(500).body(response);
         }
     }
+
+
 }

@@ -13,6 +13,7 @@ import ttakkeun.ttakkeun_server.entity.Product;
 import ttakkeun.ttakkeun_server.entity.enums.Category;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
@@ -30,4 +31,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Page<Product> findByTag(@Param("tag") Category tag, Pageable pageable);
 
     List<Product> findByResultResultId(Long resultId);
+
+    @Query("SELECT p FROM Product p WHERE p.productTitle LIKE %:title%")
+    Page<Product> findByProductTitle(@Param("title") String title, Pageable pageable);
 }

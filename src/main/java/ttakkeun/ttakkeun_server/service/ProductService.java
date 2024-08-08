@@ -56,4 +56,13 @@ public class ProductService {
         Product product = productConverter.toEntity(recommendProductDTO);
         productRepository.save(product);
     }
+
+    //검색 기능 - 따끈 DB에서 불러오기
+    public List<RecommendProductDTO> getProductByKeywordFromDB(String keyword, int page) {
+        Pageable pageable = PageRequest.of(page, 10);
+        List<Product> products = productRepository.findByProductTitle(keyword, pageable).getContent();
+
+        return products.stream().map(productConverter::toDTO).collect(Collectors.toList());
+    }
+    //검색 기능 - 네이버 쇼핑에서 불러오기
 }
