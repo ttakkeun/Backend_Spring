@@ -21,9 +21,9 @@ public class Product extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long productId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "result_id")
-    private Result result;
+    @Builder.Default
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    private List<ResultProduct> resultProductList = new ArrayList<>();
 
     @Builder.Default
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
