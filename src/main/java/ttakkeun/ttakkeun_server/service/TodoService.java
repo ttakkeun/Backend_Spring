@@ -34,7 +34,7 @@ public class TodoService {
 
         todoRepository.save(todo);
 
-        return new TodoResponseDto(todo.getTodoId(), todo.getCreatedAt());
+        return new TodoResponseDto(todo.getTodoId(), todo.getCreatedAt(), null);
     }
 
     @Transactional
@@ -45,7 +45,7 @@ public class TodoService {
         todo.setTodoStatus(request.getTodoStatus());
         todoRepository.save(todo);
 
-        return new TodoResponseDto(todo.getTodoId(), todo.getCreatedAt());
+        return new TodoResponseDto(todo.getTodoId(), todo.getCreatedAt(), null);
     }
 
     @Transactional
@@ -58,7 +58,7 @@ public class TodoService {
         todo.setTodoStatus(request.getTodoStatus());
         todoRepository.save(todo);
 
-        return new TodoResponseDto(todo.getTodoId(), todo.getCreatedAt());
+        return new TodoResponseDto(todo.getTodoId(), todo.getCreatedAt(), null);
     }
 
     @Transactional
@@ -90,7 +90,7 @@ public class TodoService {
 
         todoRepository.save(newTodo);
 
-        return new TodoResponseDto(newTodo.getTodoId(), newTodo.getCreatedAt());
+        return new TodoResponseDto(newTodo.getTodoId(), newTodo.getCreatedAt(), null);
     }
 
     @Transactional
@@ -102,11 +102,11 @@ public class TodoService {
             throw new IllegalStateException("투두 항목이 이미 완료된 상태입니다.");
         }
 
-        todo.setCreatedAt(LocalDateTime.now().plusDays(1));
+        todo.setUpdatedAt(LocalDateTime.now().plusDays(1));
 
         todoRepository.save(todo);
 
-        return new TodoResponseDto(todo.getTodoId(), todo.getCreatedAt());
+        return new TodoResponseDto(todo.getTodoId(), null, todo.getUpdatedAt());
     }
 
     @Transactional
@@ -130,7 +130,7 @@ public class TodoService {
 
         todoRepository.save(newTodo);
 
-        return new TodoResponseDto(newTodo.getTodoId(), newTodo.getCreatedAt());
+        return new TodoResponseDto(newTodo.getTodoId(), newTodo.getCreatedAt(), null);
     }
 
     @Transactional
@@ -143,9 +143,9 @@ public class TodoService {
         }
 
         LocalDateTime newDate = requestDto.getNewDate();
-        todo.setCreatedAt(newDate);
+        todo.setUpdatedAt(newDate);
         todoRepository.save(todo);
 
-        return new TodoResponseDto(todo.getTodoId(), todo.getCreatedAt());
+        return new TodoResponseDto(todo.getTodoId(), null, todo.getUpdatedAt());
     }
 }
