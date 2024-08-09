@@ -15,6 +15,4 @@ public class TodoCreateRequestDto {
     private Long petId;
     private Category todoCategory;
     private String todoName;
-    private TodoStatus todoStatus;
-    private LocalDateTime createdAt;
 }

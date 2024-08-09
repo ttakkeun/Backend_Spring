@@ -29,7 +29,8 @@ public class Todo extends BaseEntity {
     private Category todoCategory;
 
     @Enumerated(EnumType.STRING)
-    private TodoStatus todoStatus;
+    @Builder.Default
+    private TodoStatus todoStatus = TodoStatus.ONPROGRESS;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pet_id")
@@ -39,7 +40,8 @@ public class Todo extends BaseEntity {
     @OneToMany(mappedBy = "todoId", cascade = CascadeType.ALL)
     private List<History> HistoryList = new ArrayList<>();
 
-    private LocalDateTime createdAt;
+    @Builder.Default
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     public Todo(String todoName, Category todoCategory, TodoStatus todoStatus, Pet petId) {
         this.todoName = todoName;
