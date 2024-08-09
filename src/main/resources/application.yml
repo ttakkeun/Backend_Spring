@@ -34,3 +34,7 @@ jwt:
 
 server:
   port: 8080
+
+naverApi:
+  clientId: ${NAVER_ClientID}
+  clientSecret: ${NAVER_ClientSecret}

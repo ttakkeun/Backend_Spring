@@ -13,6 +13,7 @@ import ttakkeun.ttakkeun_server.entity.Product;
 import ttakkeun.ttakkeun_server.entity.enums.Category;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
@@ -28,4 +29,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     //product 데이터베이스에서 부위별로 태그 상품을 가져옴
     @Query("SELECT p FROM Product p WHERE p.tag = :tag ORDER BY p.totalLikes DESC, p.productId DESC")
     Page<Product> findByTag(@Param("tag") Category tag, Pageable pageable);
+
+    boolean existsByproductId(Long productId);
+
+    Optional<Product> findByProductTitle(String productTitle);
 }

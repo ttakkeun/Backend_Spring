@@ -11,14 +11,15 @@ import java.util.List;
 
 @Entity
 @Getter
+@Setter
 @Builder
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
 @AllArgsConstructor
 public class Product extends BaseEntity {
 
     @Id
     @Column(name = "product_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    // productId는 네이버 쇼핑의 productId를 사용하므로 @GeneratedValue(strategy = GenerationType.IDENTITY) 제거하였음
     private Long productId;
 
     @Builder.Default
