@@ -93,7 +93,7 @@ public class DiagnoseService {
             Result result = resultOpt.get(); // result 가져옴
 
             // 진단 id값으로 제품 조회
-            List<Product> products = productRepository.findByResultResultId(diagnoseId);
+            List<Product> products = productRepository.findByResultId(diagnoseId);
 
             // ProductDTO에 리스트 형식으로 추천 제품들 담음
             List<ProductDTO> productsDTO = products.stream()
