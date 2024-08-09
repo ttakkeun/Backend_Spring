@@ -3,10 +3,7 @@ package ttakkeun.ttakkeun_server.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ttakkeun.ttakkeun_server.apiPayLoad.ApiResponse;
 import ttakkeun.ttakkeun_server.dto.record.RecordListResponse;
 import ttakkeun.ttakkeun_server.dto.record.RecordListResponseDto;
@@ -27,10 +24,12 @@ public class RecordController {
     @GetMapping("/{pet_id}/{category}")
     public ApiResponse<RecordListResponse> getRecordList(
             @AuthenticationPrincipal Member member,
-            @PathVariable(name = "pet_id") Long petId, @PathVariable(name = "category") Category category
+            @PathVariable(name = "pet_id") Long petId, @PathVariable(name = "category") Category category,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "21") int size
     ){
         System.out.println("일지 목록 조회 API Controller");
-        List<RecordListResponseDto> records = recordService.getRecordsByCategory(member, petId, category);
+        List<RecordListResponseDto> records = recordService.getRecordsByCategory(member, petId, category, page, size);
         RecordListResponse result = new RecordListResponse(category, records);
         return ApiResponse.onSuccess(result);
     }
@@ -39,14 +38,16 @@ public class RecordController {
     @Operation(summary = "일지 목록 조회 API 테스트")
     @GetMapping("/test/{pet_id}/{category}")
     public ApiResponse<RecordListResponse> getRecordListForTest(
-            @PathVariable(name = "pet_id") Long petId, @PathVariable(name = "category") Category category
+            @PathVariable(name = "pet_id") Long petId, @PathVariable(name = "category") Category category,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "21") int size
     ){
         // 임의의 Member 객체 생성
         Member testMember = new Member();
         testMember.setMemberId(1L); // 임의의 memberId 설정
         System.out.println("Member ID: " + testMember.getMemberId());
 
-        List<RecordListResponseDto> records = recordService.getRecordsByCategory(testMember, petId, category);
+        List<RecordListResponseDto> records = recordService.getRecordsByCategory(testMember, petId, category, page, size);
         RecordListResponse result = new RecordListResponse(category, records);
         return ApiResponse.onSuccess(result);
     }
