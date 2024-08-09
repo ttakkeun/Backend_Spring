@@ -43,6 +43,8 @@ public class Todo extends BaseEntity {
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    private LocalDateTime updatedAt;
+    
     public Todo(String todoName, Category todoCategory, TodoStatus todoStatus, Pet petId) {
         this.todoName = todoName;
         this.todoCategory = todoCategory;
