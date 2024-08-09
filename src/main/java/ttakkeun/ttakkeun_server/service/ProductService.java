@@ -2,6 +2,8 @@ package ttakkeun.ttakkeun_server.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -11,7 +13,9 @@ import ttakkeun.ttakkeun_server.entity.Product;
 import ttakkeun.ttakkeun_server.entity.enums.Category;
 import ttakkeun.ttakkeun_server.repository.ProductRepository;
 import ttakkeun.ttakkeun_server.repository.ResultRepository;
+import ttakkeun.ttakkeun_server.utils.NaverShopSearch;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,6 +27,7 @@ public class ProductService {
     private final ResultRepository resultRepository;
     private final LikeService likeService;
     private final ProductConverter productConverter;
+    private final NaverShopSearch naverShopSearch;
 
     //진단의 ai추천제품
     public List<RecommendProductDTO> getResultProducts() {
@@ -65,4 +70,21 @@ public class ProductService {
         return products.stream().map(productConverter::toDTO).collect(Collectors.toList());
     }
     //검색 기능 - 네이버 쇼핑에서 불러오기
+    public List<RecommendProductDTO> getProductByKeywordFromNaver(String keyword) {
+        //물품을 반려 동물 카테고리로 좁히기 위한 키워드 설정
+        String petKeyword = "반려 동물" + keyword;
+
+        String naverString = naverShopSearch.search(petKeyword);
+        JSONObject jsonObject = new JSONObject(naverString);
+        JSONArray jsonArray = jsonObject.getJSONArray("items");
+        List<RecommendProductDTO> productDTOs = new ArrayList<>();
+
+        for (int i = 0; i < jsonArray.length(); i++) {
+            JSONObject JSONProduct = (JSONObject) jsonArray.get(i);
+            RecommendProductDTO productDTO = productConverter.JSONToDTO(JSONProduct);
+            productDTOs.add(productDTO);
+        }
+
+        return productDTOs;
+    }
 }
