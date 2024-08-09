@@ -86,7 +86,7 @@ public class DiagnoseNaverProductService {
             }
         } catch (NoSuchElementException e) {
             log.error("DB에서 값을 찾을 수 없습니다.", e);
-            throw new RuntimeException("DB에서 값을 찾을 수 없습니다. 서버 관리자에게 문의해주세요"  + e.getMessage());
+            throw new NoSuchElementException("DB에서 값을 찾을 수 없습니다. 서버 관리자에게 문의해주세요"  + e.getMessage());
         } catch (Exception e) {
             log.error("DB 정보 업데이트에 실패했습니다.", e);
             throw new RuntimeException("DB 정보 업데이트에 실패했습니다. 서버 관리자에게 문의해주세요" + e.getMessage());
@@ -130,7 +130,7 @@ public class DiagnoseNaverProductService {
 
                 if (items.length() == 0) { // 네이버 쇼핑 API 결과에 제품이 존재하지 않을 경우
                     // 네이버 쇼핑 API는 유사도로 검색을 하기 때문에 items에 값이 없는 경우에는 예외로 처리하였음
-                    throw new RuntimeException("검색 결과가 없습니다. 다시 시도해주세요");
+                    throw new NoSuchElementException("검색 결과가 없습니다. 다시 시도해주세요");
                 }
 
                 JSONObject itemJson = items.getJSONObject(0); // 유사도가 가장 높은 제품, 즉 첫 번째 제품을 사용
@@ -210,5 +210,4 @@ public class DiagnoseNaverProductService {
         product.setTag(naverProductDTO.tag());
         return productRepository.save(product);
     }
-
 }
