@@ -27,4 +27,11 @@ public class PetProfileResponseDTO {
         Boolean neutralization;
     }
 
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class PetImageDTO {
+        String petImageUrl;
+    }
 }
