@@ -1,5 +1,6 @@
 package ttakkeun.ttakkeun_server.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +21,7 @@ public class ProductController {
     private final LikeService likeService;
 
     //ai 추천 제품
+    @Operation(summary = "가장 최근 진단 기준 최대 5개의 추천 제품 조회 API")
     @GetMapping("/ai")
     public ResponseEntity<ProductApiResponseDTO> getAiProducts() {
         try {
@@ -44,6 +46,7 @@ public class ProductController {
     }
 
     //랭킹별 추천제품
+    @Operation(summary = "랭킹별 추천 제품(전체) 조회 API")
     @GetMapping("/rank/{page}")
     public ResponseEntity<ProductApiResponseDTO> getRankedProducts(@PathVariable int page) {
         try {
@@ -68,6 +71,7 @@ public class ProductController {
     }
 
     //부위 별 랭킹 제품
+    @Operation(summary = "랭킹별 추천 제품(태그) 조회 API")
     @GetMapping("/tag/{tag}/{page}")
     public ResponseEntity<ProductApiResponseDTO> getTagRankingProducts(
             @PathVariable Category tag, @PathVariable int page
@@ -93,8 +97,61 @@ public class ProductController {
         }
     }
 
+    @Operation(summary = "검색 조회(따끈 DB) API")
+    @GetMapping("/search_db/{keyword}/{page}")
+    public ResponseEntity<ProductApiResponseDTO> getSearchProductsFromDB(
+            @PathVariable String keyword, @PathVariable int page
+    ) {
+        try {
+            List<RecommendProductDTO> products = productService.getProductByKeywordFromDB(keyword, page);
+            ProductApiResponseDTO response = ProductApiResponseDTO.builder()
+                    .isSuccess(true)
+                    .code(200)
+                    .message("성공")
+                    .result(products)
+                    .build();
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            ProductApiResponseDTO response = ProductApiResponseDTO.builder()
+                    .isSuccess(false)
+                    .code(500)
+                    .message("에러: " + e.getMessage())
+                    .build();
+
+            return ResponseEntity.status(500).body(response);
+        }
+    }
+
+    @Operation(summary = "검색 조회(네이버 쇼핑) API")
+    @GetMapping("/search_naver/{keyword}")
+    public ResponseEntity<ProductApiResponseDTO> getSearchProductsFromNaver(
+            @PathVariable String keyword
+    ) {
+        try {
+            List<RecommendProductDTO> products = productService.getProductByKeywordFromNaver(keyword);
+            ProductApiResponseDTO response = ProductApiResponseDTO.builder()
+                    .isSuccess(true)
+                    .code(200)
+                    .message("성공")
+                    .result(products)
+                    .build();
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            ProductApiResponseDTO response = ProductApiResponseDTO.builder()
+                    .isSuccess(false)
+                    .code(500)
+                    .message("에러: " + e.getMessage())
+                    .build();
+
+            return ResponseEntity.status(500).body(response);
+        }
+    }
+
+    @Operation(summary = "좋아요/취소 토글 API")
     @PatchMapping("/like/{product_id}")
-    public ResponseEntity<LikeResponseDTO> addLikeProduct(@PathVariable Long product_id) {
+    public ResponseEntity<LikeResponseDTO> toggleLikeProduct(@PathVariable Long product_id) {
         try {
             likeService.toggleLikeProduct(product_id);
             LikeResponseDTO.Result result = likeService.getLikeInfo(product_id);

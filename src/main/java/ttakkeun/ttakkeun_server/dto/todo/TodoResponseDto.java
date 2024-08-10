@@ -12,4 +12,6 @@ import java.time.LocalDateTime;
 public class TodoResponseDto {
     private Long todoId;
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
 }
