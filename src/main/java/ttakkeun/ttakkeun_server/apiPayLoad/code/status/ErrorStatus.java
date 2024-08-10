@@ -42,6 +42,7 @@ public enum ErrorStatus implements BaseErrorCode {
     //이미지 에러
     IMAGE_EMPTY(HttpStatus.BAD_REQUEST, "IMAGE4000", "이미지가 첨부되지 않았습다.");
 
+    private final HttpStatus httpStatus;
     private final String code;
     private final String message;
 
