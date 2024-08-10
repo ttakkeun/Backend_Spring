@@ -1,20 +1,20 @@
 package ttakkeun.ttakkeun_server.converter;
 
-import ttakkeun.ttakkeun_server.dto.pet.PetProfileRequestDTO;
-import ttakkeun.ttakkeun_server.dto.pet.PetProfileResponseDTO;
+import ttakkeun.ttakkeun_server.dto.pet.PetRequestDTO;
+import ttakkeun.ttakkeun_server.dto.pet.PetResponseDTO;
 import ttakkeun.ttakkeun_server.entity.Pet;
 import ttakkeun.ttakkeun_server.entity.enums.Neutralization;
 import ttakkeun.ttakkeun_server.entity.enums.PetType;
 
-public class PetProfileConverter {
+public class PetConverter {
 
-    public static PetProfileResponseDTO.AddResultDTO toAddResultDTO(Pet pet) {
-        return PetProfileResponseDTO.AddResultDTO.builder()
+    public static PetResponseDTO.AddResultDTO toAddResultDTO(Pet pet) {
+        return PetResponseDTO.AddResultDTO.builder()
                 .petId(pet.getPetId())
                 .build();
     }
 
-    public static Pet toPet(PetProfileRequestDTO.AddDTO request) {
+    public static Pet toPet(PetRequestDTO.AddDTO request) {
 
         PetType petType = null;
         switch (request.getType()) {
@@ -41,6 +41,16 @@ public class PetProfileConverter {
                 .petVariety(request.getVariety())
                 .birth(request.getBirth())
                 .neutralization(neutralization)
+                .build();
+    }
+
+    public static PetResponseDTO.SelectDTO toSelectDTO(Pet pet) {
+        return PetResponseDTO.SelectDTO.builder()
+                .petId(pet.getPetId())
+                .petName(pet.getPetName())
+                .petImageUrl(pet.getPetImageUrl())
+                .petType(pet.getPetType().name())
+                .birth(pet.getBirth())
                 .build();
     }
 }
