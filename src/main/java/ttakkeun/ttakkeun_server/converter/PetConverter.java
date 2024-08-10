@@ -43,4 +43,14 @@ public class PetConverter {
                 .neutralization(neutralization)
                 .build();
     }
+
+    public static PetResponseDTO.SelectDTO toSelectDTO(Pet pet) {
+        return PetResponseDTO.SelectDTO.builder()
+                .petId(pet.getPetId())
+                .petName(pet.getPetName())
+                .petImageUrl(pet.getPetImageUrl())
+                .petType(pet.getPetType().name())
+                .birth(pet.getBirth())
+                .build();
+    }
 }

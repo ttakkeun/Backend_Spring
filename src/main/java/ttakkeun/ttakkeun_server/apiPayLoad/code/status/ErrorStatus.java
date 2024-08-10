@@ -31,6 +31,7 @@ public enum ErrorStatus implements BaseErrorCode {
     //Member 에러
     MEMBER_NOT_FOUND(HttpStatus.BAD_REQUEST, "MEMBER4001", "해당하는 사용자를 찾을 수 없습니다."),
     MEMBER_NOT_REGISTERED(HttpStatus.BAD_REQUEST, "MEMBER4002", "등록된 사용자가 아닙니다."),
+    MEMBER_NOT_HAVE_PET(HttpStatus.BAD_REQUEST, "MEMBER4003", "반려동물이 없는 사용자 입니다."),
 
     // Dignose 에러
     DIAGNOSE_NOT_FOUND(HttpStatus.BAD_REQUEST, "DIAGNOSE4001", "해당하는 진단 결과를 찾을 수 없습니다."),

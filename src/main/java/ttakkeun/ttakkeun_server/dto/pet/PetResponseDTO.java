@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 public class PetResponseDTO {
     @Builder
     @Getter
@@ -25,6 +27,26 @@ public class PetResponseDTO {
         String petVariety;
         String birth;
         Boolean neutralization;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class SelectDTO {
+        Long petId;
+        String petName;
+        String petImageUrl;
+        String petType;
+        String birth;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class SelectResultDTO {
+        List<SelectDTO> result;
     }
 
 }
