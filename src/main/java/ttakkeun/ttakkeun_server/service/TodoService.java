@@ -27,9 +27,7 @@ public class TodoService {
         Todo todo = Todo.builder()
                 .todoName(request.getTodoName())
                 .todoCategory(request.getTodoCategory())
-                .todoStatus(request.getTodoStatus())
                 .petId(pet)
-                .createdAt(request.getCreatedAt())
                 .build();
 
         todoRepository.save(todo);
