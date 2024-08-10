@@ -2,6 +2,7 @@ package ttakkeun.ttakkeun_server.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Formula;
 import ttakkeun.ttakkeun_server.entity.common.BaseEntity;
 import ttakkeun.ttakkeun_server.entity.enums.Category;
 
@@ -10,19 +11,20 @@ import java.util.List;
 
 @Entity
 @Getter
+@Setter
 @Builder
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
 @AllArgsConstructor
 public class Product extends BaseEntity {
 
     @Id
     @Column(name = "product_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    // productId는 네이버 쇼핑의 productId를 사용하므로 @GeneratedValue(strategy = GenerationType.IDENTITY) 제거하였음
     private Long productId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "result_id")
-    private Result result;
+    @Builder.Default
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    private List<ResultProduct> resultProductList = new ArrayList<>();
 
     @Builder.Default
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
@@ -43,4 +45,10 @@ public class Product extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private Category tag;
+
+    //좋아요 수
+    @Formula("(SELECT COUNT(lp.member_id) FROM like_product lp WHERE lp.product_id = product_id)")
+    private int totalLikes;
+
+
 }
