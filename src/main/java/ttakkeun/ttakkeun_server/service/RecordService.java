@@ -1,7 +1,6 @@
 package ttakkeun.ttakkeun_server.service;
 
 import lombok.RequiredArgsConstructor;
-import org.hibernate.validator.internal.constraintvalidators.bv.size.SizeValidatorForArray;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -9,10 +8,13 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ttakkeun.ttakkeun_server.apiPayLoad.ExceptionHandler;
 import ttakkeun.ttakkeun_server.dto.record.RecordListResponseDto;
+import ttakkeun.ttakkeun_server.dto.record.RecordResponseDTO;
+import ttakkeun.ttakkeun_server.entity.ChecklistQuestion;
 import ttakkeun.ttakkeun_server.entity.Member;
 import ttakkeun.ttakkeun_server.entity.Pet;
 import ttakkeun.ttakkeun_server.entity.Record;
 import ttakkeun.ttakkeun_server.entity.enums.Category;
+import ttakkeun.ttakkeun_server.repository.ChecklistQuestionRepository;
 import ttakkeun.ttakkeun_server.repository.PetRepository;
 import ttakkeun.ttakkeun_server.repository.RecordRepository;
 
@@ -28,6 +30,7 @@ public class RecordService {
 
     private final RecordRepository recordRepository;
     private final PetRepository petRepository;
+    private final ChecklistQuestionRepository checklistQuestionRepository;
 
     public List<RecordListResponseDto> getRecordsByCategory(Member member, Long petId, Category category, int page, int size) {
         if (member == null || member.getMemberId() == null) {
@@ -59,4 +62,11 @@ public class RecordService {
                 .collect(Collectors.toList());
     }
 
+    public List<RecordResponseDTO.QuestionDTO> getQuestionsByCategory(Category category) {
+        List<ChecklistQuestion> questions = checklistQuestionRepository.findByQuestionCategory(category);
+
+        return questions.stream()
+                .map(question -> new RecordResponseDTO.QuestionDTO(question.getQuestionId(), question.getQuestionText()))
+                .collect(Collectors.toList());
+    }
 }
