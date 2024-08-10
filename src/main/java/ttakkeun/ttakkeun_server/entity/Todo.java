@@ -2,12 +2,10 @@ package ttakkeun.ttakkeun_server.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.cglib.core.Local;
 import ttakkeun.ttakkeun_server.entity.common.BaseEntity;
 import ttakkeun.ttakkeun_server.entity.enums.Category;
 import ttakkeun.ttakkeun_server.entity.enums.TodoStatus;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +29,8 @@ public class Todo extends BaseEntity {
     private Category todoCategory;
 
     @Enumerated(EnumType.STRING)
-    private TodoStatus todoStatus;
+    @Builder.Default
+    private TodoStatus todoStatus = TodoStatus.ONPROGRESS;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pet_id")
@@ -41,7 +40,9 @@ public class Todo extends BaseEntity {
     @OneToMany(mappedBy = "todoId", cascade = CascadeType.ALL)
     private List<History> HistoryList = new ArrayList<>();
 
-    private LocalDateTime createdAt;
+    @Builder.Default
+    private LocalDateTime createdAt = LocalDateTime.now();
+
     private LocalDateTime updatedAt;
 
     public Todo(String todoName, Category todoCategory, TodoStatus todoStatus, Pet petId) {
