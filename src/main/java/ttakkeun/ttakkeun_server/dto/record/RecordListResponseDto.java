@@ -14,12 +14,12 @@ import static java.time.temporal.TemporalQueries.localDate;
 public class RecordListResponseDto {
 
     private Long recordId;
-    private LocalDate updatedAtDate;
-    private LocalTime updatedAtTime;
+    private LocalDate createdAtDate;
+    private LocalTime createdAtTime;
 
     public RecordListResponseDto(Long recordId, LocalDate localDate, LocalTime localTime) {
         this.recordId = recordId;
-        this.updatedAtDate = localDate;
-        this.updatedAtTime = localTime;
+        this.createdAtDate = localDate;
+        this.createdAtTime = localTime;
     }
 }

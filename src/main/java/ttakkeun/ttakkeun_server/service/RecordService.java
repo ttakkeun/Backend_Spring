@@ -39,22 +39,22 @@ public class RecordService {
         Pet pet = petRepository.findByPetIdAndMemberId(petId, member).orElseThrow(() -> new ExceptionHandler(PET_NOT_FOUND));
 
         // 페이지 요청 생성 (createdAt 기준으로 정렬)
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "updatedAt"));
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         Page<Record> recordPage = recordRepository.findByPetId_PetIdAndCategory(pet.getPetId(), category, pageable);
 
         // DTO로 변환 및 정렬
         return recordPage.stream()
                 .map(record -> new RecordListResponseDto(
                         record.getRecordId(),
-                        record.getUpdatedAt().toLocalDate(),  // LocalDate 추출
-                        record.getUpdatedAt().toLocalTime()   // LocalTime 추출
+                        record.getCreatedAt().toLocalDate(),  // LocalDate 추출
+                        record.getCreatedAt().toLocalTime()   // LocalTime 추출
                 ))
                 .sorted((r1, r2) -> {
-                    int dateComparison = r2.getUpdatedAtDate().compareTo(r1.getUpdatedAtDate());
+                    int dateComparison = r2.getCreatedAtDate().compareTo(r1.getCreatedAtDate());
                     if (dateComparison != 0) {
                         return dateComparison;
                     }
-                    return r2.getUpdatedAtTime().compareTo(r1.getUpdatedAtTime());
+                    return r2.getCreatedAtTime().compareTo(r1.getCreatedAtTime());
                 })
                 .collect(Collectors.toList());
     }
