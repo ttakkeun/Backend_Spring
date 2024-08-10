@@ -47,5 +47,8 @@ public class Pet extends BaseEntity {
     @OneToMany(mappedBy = "petId", cascade = CascadeType.ALL)
     private List<Record> RecordList = new ArrayList<>();
 
+    public void updateImage(String imageUrl) {
+        this.petImageUrl = imageUrl;
+    }
 
 }

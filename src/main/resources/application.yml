@@ -25,10 +25,10 @@ spring:
         redirect-uri: https://lttakkeun.app.com/apple/callback/
         grant-type: authorization_code
         client-id: ttakkeun.app.com
-        key-id: 4FHKZ8T3JS
-        team-id: 8B8B4462NV
+        key-id: ${apple_key_id}
+        team-id: ${apple_team_id}
         audience: https://appleid.apple.com
-        private-key: MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgPQGPRZ9oIGAb6vrac5qBDEedIMdWGC5XoQ2vA9lEv9OgCgYIKoZIzj0DAQehRANCAAS/SY9RpfX94Ok3ZyDGK0FLQbU/eM9k87x3FsD7evBxGLZuF+eyVFSJedGDq7jifLEQiaV0tRkhZdVoF3CzBPNE
+        private-key: ${apple_private}
 jwt:
   secretKey: stressstressstresstresstresstressstressstressstressstressstressstress
 
@@ -38,3 +38,13 @@ server:
 naverApi:
   clientId: ${NAVER_ClientID}
   clientSecret: ${NAVER_ClientSecret}
+
+cloud:
+  aws:
+    credentials:
+      access-key: ${aws_access}
+      secret-key: ${aws_secret}
+    region:
+      static: YOUR_REGION
+    s3:
+      bucket: YOUR_BUCKET_NAME

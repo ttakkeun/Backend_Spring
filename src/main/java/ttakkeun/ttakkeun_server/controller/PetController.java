@@ -3,12 +3,15 @@ package ttakkeun.ttakkeun_server.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import ttakkeun.ttakkeun_server.apiPayLoad.ApiResponse;
 import ttakkeun.ttakkeun_server.apiPayLoad.ExceptionHandler;
 import ttakkeun.ttakkeun_server.converter.PetConverter;
 import ttakkeun.ttakkeun_server.dto.pet.PetRequestDTO;
 import ttakkeun.ttakkeun_server.dto.pet.PetResponseDTO;
+import ttakkeun.ttakkeun_server.entity.Member;
 import ttakkeun.ttakkeun_server.entity.Pet;
 import ttakkeun.ttakkeun_server.service.PetService.PetCommandService;
 import ttakkeun.ttakkeun_server.service.PetService.PetQueryService;
@@ -17,6 +20,7 @@ import ttakkeun.ttakkeun_server.service.PetService.PetService;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static ttakkeun.ttakkeun_server.apiPayLoad.code.status.ErrorStatus.IMAGE_EMPTY;
 import static ttakkeun.ttakkeun_server.apiPayLoad.code.status.ErrorStatus.MEMBER_NOT_HAVE_PET;
 
 @RestController
@@ -74,13 +78,20 @@ public class PetController {
         return ApiResponse.onSuccess(resultDTO);
     }
 
-    //    @Operation(summary = "반려동물 프로필 이미지 수정")
-//    @PatchMapping("/{pet_id}/image")
-//    public ApiResponse<PetResponseDTO.PetImageDTO> editPetImage (
-//            @AuthenticationPrincipal Member member, @RequestPart MultipartFile multipartFile) {
-//        if (multipartFile == null || multipartFile.isEmpty())
-//            throw new ExceptionHandler(IMAGE_EMPTY);
-//        PetResponseDTO.PetImageDTO result = memberService.updateProfileImage(member, multipartFile);
-//        return ApiResponse.onSuccess(result);
-//    }
+    @Operation(summary = "반려동물 프로필 이미지 수정")
+    @PatchMapping("/{pet_id}/image")
+    public ApiResponse<PetResponseDTO.PetImageDTO> editPetImage (
+            @AuthenticationPrincipal Member member,
+            @PathVariable("pet_id") Long petId,
+            @RequestPart MultipartFile multipartFile) {
+        if (multipartFile == null || multipartFile.isEmpty())
+            throw new ExceptionHandler(IMAGE_EMPTY);
+
+        // pet_id로 반려동물을 조회
+        Pet pet = petService.findPetByIdAndMember(petId, member);
+
+        // 반려동물의 프로필 이미지 업데이트
+        PetResponseDTO.PetImageDTO result = petService.updateProfileImage(pet, multipartFile);
+        return ApiResponse.onSuccess(result);
+    }
 }
