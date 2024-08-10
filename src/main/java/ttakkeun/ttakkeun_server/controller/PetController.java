@@ -73,4 +73,14 @@ public class PetController {
 
         return ApiResponse.onSuccess(resultDTO);
     }
+
+    //    @Operation(summary = "반려동물 프로필 이미지 수정")
+//    @PatchMapping("/{pet_id}/image")
+//    public ApiResponse<PetResponseDTO.PetImageDTO> editPetImage (
+//            @AuthenticationPrincipal Member member, @RequestPart MultipartFile multipartFile) {
+//        if (multipartFile == null || multipartFile.isEmpty())
+//            throw new ExceptionHandler(IMAGE_EMPTY);
+//        PetResponseDTO.PetImageDTO result = memberService.updateProfileImage(member, multipartFile);
+//        return ApiResponse.onSuccess(result);
+//    }
 }

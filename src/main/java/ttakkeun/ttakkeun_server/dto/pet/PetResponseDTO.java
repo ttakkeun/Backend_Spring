@@ -49,4 +49,11 @@ public class PetResponseDTO {
         List<SelectDTO> result;
     }
 
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class PetImageDTO {
+        String petImageUrl;
+    }
 }
