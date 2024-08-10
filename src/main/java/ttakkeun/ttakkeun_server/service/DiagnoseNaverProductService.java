@@ -54,36 +54,31 @@ public class DiagnoseNaverProductService {
         Optional<Result> resultOpt = resultRepository.findByResultId(diagnoseId);
 
         try {
-            if (resultOpt.isPresent()) {
-                Result result = resultOpt.get(); // result 가져옴
-                Category resultCategory = result.getResultCategory(); // 태그값은 추후 제품 정보를 저장할 때도 필요하므로
-                List<NaverProductDTO> products = updateProductsRequestDTO.products().stream()
-                        .map(productTitle -> {
-                            System.out.println("product is : " + productTitle);
-                            NaverProductDTO naverShopSearch = naverShopSearch(productTitle, resultCategory);
-
-                            return naverShopSearch;
-//                            Optional<Product> productOpt = productRepository.findByProductTitle(productTitle);
-//                            // productOpt 값이 비어있는걸로 나옴!!!! 해당 부분 수정 중
-//                            System.out.println("productOpt is : " + productOpt);
-//                            if (productOpt.isPresent()) { // ResultProduct 테이블에 다대다 매핑 추가
-//                                ResultProduct resultProduct = new ResultProduct();
-//                                Product product = productOpt.get();
-//                                resultProduct.setProduct(product);
-//                                resultProduct.setResult(result);
-//                                resultProductRepository.save(resultProduct);
-//                                return naverShopSearch;
-//                            } else {
-//                                throw new NoSuchElementException("제품을 찾을 수 없습니다. 다시 시도해주세요");
-//                            }
-                        })
-                        .collect(Collectors.toList());
-
-                return new UpdateProductsResponseDTO(products);
-            } else {
+            if (!resultOpt.isPresent()) {
                 // Optional 객체에서 값이 비어있는 경우 예외 발생
                 throw new NoSuchElementException("진단 결과를 찾을 수 없습니다. 다시 시도해주세요");
             }
+
+            Result result = resultOpt.get(); // result 가져옴
+            Category resultCategory = result.getResultCategory(); // 태그값은 추후 제품 정보를 저장할 때도 필요하므로
+
+            List<NaverProductDTO> products = updateProductsRequestDTO.products().stream()
+                    .map(productTitle -> {
+                        System.out.println("product is : " + productTitle);
+                        NaverProductDTO naverShopSearch = naverShopSearch(productTitle, resultCategory);
+                        Product product = saveProduct(naverShopSearch);
+
+                        // ResultProduct 테이블에 다대다 매핑 추가
+                        ResultProduct resultProduct = new ResultProduct();
+                        resultProduct.setProduct(product);
+                        resultProduct.setResult(result);
+                        resultProductRepository.save(resultProduct);
+
+                        return naverShopSearch;
+                    })
+                    .collect(Collectors.toList());
+
+            return new UpdateProductsResponseDTO(products);
         } catch (NoSuchElementException e) {
             log.error("DB에서 값을 찾을 수 없습니다.", e);
             throw new NoSuchElementException("DB에서 값을 찾을 수 없습니다. 서버 관리자에게 문의해주세요"  + e.getMessage());
@@ -165,21 +160,6 @@ public class DiagnoseNaverProductService {
                         .tag(resultCategory)
                         .build();
 
-                // 만약 productId가 db에 존재하지 않을 경우 saveProduct
-                if (!productRepository.existsByproductId(productId)) {
-                    saveProduct(naverProductDTO);
-                } else {
-                    productRepository.findById(productId).ifPresent(product -> {
-                        if (product.getTag() == null) {
-                            // product값은 db에 존재하나 해당 product값에 tag값이 존재하지 않을 경우
-                            // 검색 결과를 통해 저장한 제품은 자체적으로 분류한 태그값이 들어가있지 않기 때문에 태그값을 저장해줘야 함
-                            product.setTag(resultCategory);  // tag값 설정
-                            productRepository.save(product);  // tag값만 설정한 뒤 저장함
-                        }
-                    }); // Optional 객체를 사용하고 있으므로 map과 ifPresent를 사용하도록 수정하였음
-                // 이외의 경우 이전에 진단을 받은 제품이거나 자체적으로 삽입한 제품값들이기 때문에 별도의 저장 과정을 거치지 않아도 됨
-                }
-
             return naverProductDTO;
         } catch (JSONException e) {
             log.error("JSON 파싱 중 오류가 발생했습니다.", e);
@@ -195,19 +175,38 @@ public class DiagnoseNaverProductService {
 
     @Transactional
     public Product saveProduct(NaverProductDTO naverProductDTO) {
-        // product db에 값을 저장함
-        Product product = new Product();
-        product.setProductId(naverProductDTO.productId());
-        product.setProductTitle(naverProductDTO.title());
-        product.setProductLink(naverProductDTO.link());
-        product.setProductImage(naverProductDTO.image());
-        product.setLprice(naverProductDTO.lprice());
-        product.setBrand(naverProductDTO.brand());
-        product.setCategory1(naverProductDTO.category1());
-        product.setCategory2(naverProductDTO.category2());
-        product.setCategory3(naverProductDTO.category3());
-        product.setCategory4(naverProductDTO.category4());
-        product.setTag(naverProductDTO.tag());
-        return productRepository.save(product);
+
+        Long productId = naverProductDTO.productId(); // DTO에서 productID를 가져온 뒤
+
+        Optional<Product> productOpt = productRepository.findById(productId);
+
+        Product product;
+
+        if (!productOpt.isPresent()) {
+            // DB에 존재하지 않는 제품이라면 모든 값 새로 설정 후 DB에 저장
+            product = new Product();
+            product.setProductId(productId);
+            product.setProductTitle(naverProductDTO.title());
+            product.setProductLink(naverProductDTO.link());
+            product.setProductImage(naverProductDTO.image());
+            product.setLprice(naverProductDTO.lprice());
+            product.setBrand(naverProductDTO.brand());
+            product.setCategory1(naverProductDTO.category1());
+            product.setCategory2(naverProductDTO.category2());
+            product.setCategory3(naverProductDTO.category3());
+            product.setCategory4(naverProductDTO.category4());
+            product.setTag(naverProductDTO.tag());
+            productRepository.save(product);
+        } else { // DB에 존재하는 제품이라면
+            product = productOpt.get();
+            if (product.getTag() == null) {
+                    // product값은 db에 존재하나 해당 product값에 tag값이 존재하지 않을 경우
+                    // 검색 결과를 통해 저장한 제품은 자체적으로 분류한 태그값이 들어가있지 않기 때문에 태그값을 저장해줘야 함
+                    product.setTag(naverProductDTO.tag());  // tag값 설정 후 DB에 저장
+                    productRepository.save(product);
+            }
+            // 이외의 경우 이전에 진단을 받은 제품이거나 자체적으로 삽입한 제품값들이기 때문에 별도의 저장 과정을 거치지 않아도 됨
+        }
+        return product;
     }
 }
