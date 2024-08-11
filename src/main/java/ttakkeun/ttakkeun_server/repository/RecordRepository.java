@@ -12,5 +12,5 @@ import java.util.List;
 
 @Repository
 public interface RecordRepository extends JpaRepository<Record, Long> {
-    Page<Record> findByPetId_PetIdAndCategory(Long petId, Category category, Pageable pageable);
+    Page<Record> findByPet_PetIdAndCategory(Long petId, Category category, Pageable pageable);
 }

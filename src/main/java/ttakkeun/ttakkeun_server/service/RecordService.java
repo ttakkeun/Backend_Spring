@@ -36,11 +36,11 @@ public class RecordService {
         System.out.println("Member ID: " + member.getMemberId());
 
         //memberId로 petId를 확인
-        Pet pet = petRepository.findByPetIdAndMemberId(petId, member).orElseThrow(() -> new ExceptionHandler(PET_NOT_FOUND));
+        Pet pet = petRepository.findByPetIdAndMember(petId, member).orElseThrow(() -> new ExceptionHandler(PET_NOT_FOUND));
 
         // 페이지 요청 생성 (createdAt 기준으로 정렬)
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-        Page<Record> recordPage = recordRepository.findByPetId_PetIdAndCategory(pet.getPetId(), category, pageable);
+        Page<Record> recordPage = recordRepository.findByPet_PetIdAndCategory(pet.getPetId(), category, pageable);
 
         // DTO로 변환 및 정렬
         return recordPage.stream()

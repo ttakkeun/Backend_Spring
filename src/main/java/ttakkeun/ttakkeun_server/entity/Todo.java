@@ -34,10 +34,10 @@ public class Todo extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pet_id")
-    private Pet petId;
+    private Pet pet;
 
     @Builder.Default
-    @OneToMany(mappedBy = "todoId", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "todo", cascade = CascadeType.ALL)
     private List<History> HistoryList = new ArrayList<>();
 
     @Builder.Default
@@ -45,10 +45,10 @@ public class Todo extends BaseEntity {
 
     private LocalDateTime updatedAt;
 
-    public Todo(String todoName, Category todoCategory, TodoStatus todoStatus, Pet petId) {
+    public Todo(String todoName, Category todoCategory, TodoStatus todoStatus, Pet pet) {
         this.todoName = todoName;
         this.todoCategory = todoCategory;
         this.todoStatus = todoStatus;
-        this.petId = petId;
+        this.pet = pet;
     }
 }

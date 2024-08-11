@@ -25,6 +25,6 @@ public class History extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "todo_id")
-    private Todo todoId;
+    private Todo todo;
 
 }

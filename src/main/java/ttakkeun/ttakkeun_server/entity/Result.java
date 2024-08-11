@@ -26,7 +26,7 @@ public class Result extends BaseEntity {
     private List<ResultProduct> ProductList = new ArrayList<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = "resultId", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "result", cascade = CascadeType.ALL)
     private List<Record> RecordList = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
