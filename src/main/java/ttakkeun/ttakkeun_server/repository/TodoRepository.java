@@ -15,6 +15,6 @@ public interface TodoRepository extends JpaRepository<Todo, Long> {
     List<Todo> findByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
 
 
-    long countByTodoCategoryAndPetId(Category todoCategory, Pet pet);
-    long countByTodoCategoryAndPetIdAndTodoStatus(Category todoCategory, Pet pet, TodoStatus todoStatus);
+    long countByTodoCategoryAndPet(Category todoCategory, Pet pet);
+    long countByTodoCategoryAndPetAndTodoStatus(Category todoCategory, Pet pet, TodoStatus todoStatus);
 }
