@@ -24,14 +24,14 @@ public class ChecklistAnswer extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question_id")
-    private ChecklistQuestion questionId;
+    private ChecklistQuestion question;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "record_id")
-    private Record recordId;
+    private Record record;
 
     @Builder.Default
-    @OneToMany(mappedBy = "answerId", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "answer", cascade = CascadeType.ALL)
     private List<Image> imageList = new ArrayList<>();
 
 }

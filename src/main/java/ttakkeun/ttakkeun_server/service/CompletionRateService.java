@@ -25,17 +25,17 @@ public class CompletionRateService {
         Pet pet = petRepository.findById(petId)
                 .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 Pet Id 입니다"));
 
-        int earTotal = (int) todoRepository.countByTodoCategoryAndPetId(Category.EAR, pet);
-        int hairTotal = (int) todoRepository.countByTodoCategoryAndPetId(Category.HAIR, pet);
-        int clawTotal = (int) todoRepository.countByTodoCategoryAndPetId(Category.CLAW, pet);
-        int eyeTotal = (int) todoRepository.countByTodoCategoryAndPetId(Category.EYE, pet);
-        int teethTotal = (int) todoRepository.countByTodoCategoryAndPetId(Category.TEETH, pet);
+        int earTotal = (int) todoRepository.countByTodoCategoryAndPet(Category.EAR, pet);
+        int hairTotal = (int) todoRepository.countByTodoCategoryAndPet(Category.HAIR, pet);
+        int clawTotal = (int) todoRepository.countByTodoCategoryAndPet(Category.CLAW, pet);
+        int eyeTotal = (int) todoRepository.countByTodoCategoryAndPet(Category.EYE, pet);
+        int teethTotal = (int) todoRepository.countByTodoCategoryAndPet(Category.TEETH, pet);
 
-        int earCompleted = (int) todoRepository.countByTodoCategoryAndPetIdAndTodoStatus(Category.EAR, pet, TodoStatus.DONE);
-        int hairCompleted = (int) todoRepository.countByTodoCategoryAndPetIdAndTodoStatus(Category.HAIR, pet, TodoStatus.DONE);
-        int clawCompleted = (int) todoRepository.countByTodoCategoryAndPetIdAndTodoStatus(Category.CLAW, pet, TodoStatus.DONE);
-        int eyeCompleted = (int) todoRepository.countByTodoCategoryAndPetIdAndTodoStatus(Category.EYE, pet, TodoStatus.DONE);
-        int teethCompleted = (int) todoRepository.countByTodoCategoryAndPetIdAndTodoStatus(Category.TEETH, pet, TodoStatus.DONE);
+        int earCompleted = (int) todoRepository.countByTodoCategoryAndPetAndTodoStatus(Category.EAR, pet, TodoStatus.DONE);
+        int hairCompleted = (int) todoRepository.countByTodoCategoryAndPetAndTodoStatus(Category.HAIR, pet, TodoStatus.DONE);
+        int clawCompleted = (int) todoRepository.countByTodoCategoryAndPetAndTodoStatus(Category.CLAW, pet, TodoStatus.DONE);
+        int eyeCompleted = (int) todoRepository.countByTodoCategoryAndPetAndTodoStatus(Category.EYE, pet, TodoStatus.DONE);
+        int teethCompleted = (int) todoRepository.countByTodoCategoryAndPetAndTodoStatus(Category.TEETH, pet, TodoStatus.DONE);
 
         return new CompletionRateDto(
                 earTotal, earCompleted,

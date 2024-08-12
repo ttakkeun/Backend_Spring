@@ -42,7 +42,14 @@ public enum ErrorStatus implements BaseErrorCode {
 
     //이미지 에러
     IMAGE_EMPTY(HttpStatus.BAD_REQUEST, "IMAGE4000", "이미지가 첨부되지 않았습다."),
-    IMAGE_NOT_SAVE(HttpStatus.BAD_REQUEST, "IMAGE4001", "이미지 저장에 실패했습니다." );
+    IMAGE_NOT_SAVE(HttpStatus.BAD_REQUEST, "IMAGE4001", "이미지 저장에 실패했습니다." ),
+
+    //Question 에러
+    QUESTION_NOT_FOUND(HttpStatus.BAD_REQUEST, "QUESTION4001", "유효하지 않은 Question ID입니다."),
+  
+    // point 에러
+    MEMBER_HAS_NO_POINT(HttpStatus.NOT_FOUND, "POINT4001", "해당하는 멤버에게 포인트 값이 존재하지 않습니다. DB 관리자에게 문의해주세요");
+
 
     private final HttpStatus httpStatus;
     private final String code;
