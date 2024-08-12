@@ -40,8 +40,8 @@ public class DiagnoseTestController {
             ApiResponse<GetMyPointResponseDTO> response = ApiResponse.of(SuccessStatus._OK, new GetMyPointResponseDTO(point));
             return ResponseEntity.ok(response);
         } catch (NoSuchElementException e) {
-            ApiResponse<GetMyPointResponseDTO> response = ApiResponse.ofFailure(ErrorStatus.MEMBER_NOT_FOUND, null);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            ApiResponse<GetMyPointResponseDTO> response = ApiResponse.ofFailure(ErrorStatus.MEMBER_HAS_NO_POINT, null);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         } catch (UsernameNotFoundException e) {
             ApiResponse<GetMyPointResponseDTO> response = ApiResponse.ofFailure(ErrorStatus._UNAUTHORIZED, null);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
@@ -55,7 +55,7 @@ public class DiagnoseTestController {
     // 진단 결과 목록을 조회하는 API
     // 페이징 처리, 한 페이지당 10개 고정
     // size가 고정이므로 Path Variable로 처리하였음
-    @Operation(summary = "진단 결과 목록 조회 API")
+    @Operation(summary = "진단 결과 목록 조회 API 테스트")
     @GetMapping("/{pet_id}/{category}/{page}")
     public ResponseEntity<ApiResponse<GetMyDiagnoseListResponseDTO>> getDiagnoseListByPet(@PathVariable(name = "pet_id") Long petId,
                                                                                           @PathVariable(name = "category") Category category,
@@ -90,8 +90,8 @@ public class DiagnoseTestController {
             ApiResponse<UpdateMyPointResponseDTO> response = ApiResponse.of(SuccessStatus._OK, new UpdateMyPointResponseDTO(point));
             return ResponseEntity.ok(response);
         } catch (NoSuchElementException e) {
-            ApiResponse<UpdateMyPointResponseDTO> response = ApiResponse.ofFailure(ErrorStatus.MEMBER_NOT_FOUND, null);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            ApiResponse<UpdateMyPointResponseDTO> response = ApiResponse.ofFailure(ErrorStatus.MEMBER_HAS_NO_POINT, null);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         } catch (UsernameNotFoundException e) {
             ApiResponse<UpdateMyPointResponseDTO> response = ApiResponse.ofFailure(ErrorStatus._UNAUTHORIZED, null);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
