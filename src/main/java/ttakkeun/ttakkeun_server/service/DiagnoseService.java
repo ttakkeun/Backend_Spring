@@ -55,7 +55,7 @@ public class DiagnoseService {
         if (!pointOpt.isPresent()) {
             // Optional 객체에서 값이 비어있는 경우 예외를 던짐
             // 0 반환에서 오류 발생하도록 수정함
-            throw new NoSuchElementException("Member with ID " + memberId + " not found");
+            throw new NoSuchElementException("Member with ID " + memberId + " has no point");
         }
 
         Point point = pointOpt.get(); // Optinal 객체에서 point를 가져옴
@@ -112,7 +112,7 @@ public class DiagnoseService {
 
         if (!pointOpt.isPresent()) {
             // Optional 객체에서 값이 비어있는 경우 예외를 던짐
-            throw new NoSuchElementException("Member with ID " + memberId + " not found");
+            throw new NoSuchElementException("Member with ID " + memberId + " has no point");
         }
 
         Point point = pointOpt.get(); // Optinal 객체에서 point를 가져옴
