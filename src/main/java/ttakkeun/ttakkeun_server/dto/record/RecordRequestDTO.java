@@ -26,6 +26,7 @@ public class RecordRequestDTO {
     @AllArgsConstructor
     public static class RecordRegisterDTO {
         private Category category;
+        private String etc;
         private List<AnswerDTO> answers;
     }
 }

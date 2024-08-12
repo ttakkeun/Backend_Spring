@@ -80,6 +80,7 @@ public class RecordService {
         Record record = Record.builder()
                 .pet(pet)
                 .category(request.getCategory())
+                .etc(request.getEtc())
                 .build();
 
         List<ChecklistAnswer> answerList = new ArrayList<>();
