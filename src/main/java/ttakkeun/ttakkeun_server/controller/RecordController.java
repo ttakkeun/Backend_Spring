@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import ttakkeun.ttakkeun_server.apiPayLoad.ApiResponse;
 import ttakkeun.ttakkeun_server.dto.record.RecordListResponse;
 import ttakkeun.ttakkeun_server.dto.record.RecordListResponseDto;
+import ttakkeun.ttakkeun_server.dto.record.RecordRequestDTO;
+import ttakkeun.ttakkeun_server.dto.record.RecordResponseDTO;
 import ttakkeun.ttakkeun_server.entity.Member;
 import ttakkeun.ttakkeun_server.entity.enums.Category;
 import ttakkeun.ttakkeun_server.service.RecordService;
@@ -50,5 +52,27 @@ public class RecordController {
         List<RecordListResponseDto> records = recordService.getRecordsByCategory(testMember, petId, category, page, size);
         RecordListResponse result = new RecordListResponse(category, records);
         return ApiResponse.onSuccess(result);
+    }
+
+
+    @Operation(summary = "일지 질문 조회 API")
+    @GetMapping("/register/{category}")
+    public ApiResponse<RecordResponseDTO.LoadQuestionResultDTO> loadquestion(
+            @PathVariable("category") Category category
+    ) {
+        List<RecordResponseDTO.QuestionDTO> questions = recordService.getQuestionsByCategory(category);
+        RecordResponseDTO.LoadQuestionResultDTO result = new RecordResponseDTO.LoadQuestionResultDTO(category.name(), questions);
+        return ApiResponse.onSuccess(result);
+    }
+
+
+    @Operation(summary = "일지 답변 저장 API (일지 생성)")
+    @PostMapping("/register/{pet_id}")
+    public ApiResponse<RecordResponseDTO.RegisterResultDTO> registerRecord(
+            @PathVariable("pet_id") Long petId,
+            @RequestBody RecordRequestDTO.RecordRegisterDTO requestDTO
+    ) {
+        RecordResponseDTO.RegisterResultDTO responseDTO = recordService.registerRecord(petId, requestDTO);
+        return ApiResponse.onSuccess(responseDTO);
     }
 }
