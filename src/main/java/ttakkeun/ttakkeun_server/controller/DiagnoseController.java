@@ -12,6 +12,7 @@ import ttakkeun.ttakkeun_server.apiPayLoad.code.status.ErrorStatus;
 import ttakkeun.ttakkeun_server.apiPayLoad.code.status.SuccessStatus;
 import ttakkeun.ttakkeun_server.dto.diagnose.*;
 import ttakkeun.ttakkeun_server.entity.Member;
+import ttakkeun.ttakkeun_server.entity.enums.Category;
 import ttakkeun.ttakkeun_server.service.DiagnoseNaverProductService;
 import ttakkeun.ttakkeun_server.service.DiagnoseService;
 //import ttakkeun.ttakkeun_server.dto.UpdateProductsDTO;
@@ -51,6 +52,35 @@ public class DiagnoseController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
+
+    // 진단 결과 목록을 조회하는 API
+    // 페이징 처리, 한 페이지당 10개 고정
+    // size가 고정이므로 Path Variable로 처리하였음
+    @Operation(summary = "진단 결과 목록 조회 API")
+    @GetMapping("/{pet_id}/{category}/{page}")
+    public ResponseEntity<ApiResponse<GetMyDiagnoseListResponseDTO>> getDiagnoseListByPet(@AuthenticationPrincipal Member member, @PathVariable(name = "pet_id") Long petId,
+                                                                                              @PathVariable(name = "category") Category category,
+                                                                                              @PathVariable(name = "page") int page) {
+        try {
+            if (member == null) { // 사용자 정보를 가져오지 못할 경우 UsernameNotFoundException 에러 발생
+                throw new UsernameNotFoundException("인증이 필요합니다. 로그인 정보를 확인해주세요.");
+            }
+            Long memberId = member.getMemberId(); // 인증된 사용자의 memberId를 가져옴
+            GetMyDiagnoseListResponseDTO getMyDiagnoseListResponseDTO = diagnoseService.getDiagnoseListByPet(memberId, petId, category, page);
+            ApiResponse<GetMyDiagnoseListResponseDTO> response = ApiResponse.of(SuccessStatus._OK, getMyDiagnoseListResponseDTO);
+            return ResponseEntity.ok(response);
+        } catch (NoSuchElementException e) {
+            ApiResponse<GetMyDiagnoseListResponseDTO> response = ApiResponse.ofFailure(ErrorStatus.PET_ID_NOT_AVAILABLE, null);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        } catch (UsernameNotFoundException e) {
+            ApiResponse<GetMyDiagnoseListResponseDTO> response = ApiResponse.ofFailure(ErrorStatus._UNAUTHORIZED, null);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        } catch (Exception e) {
+            ApiResponse<GetMyDiagnoseListResponseDTO> response = ApiResponse.ofFailure(ErrorStatus._INTERNAL_SERVER_ERROR, null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
 
 
     // 진단시 사용자 포인트 차감 API

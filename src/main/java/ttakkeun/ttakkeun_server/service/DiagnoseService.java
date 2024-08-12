@@ -5,14 +5,20 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import ttakkeun.ttakkeun_server.dto.diagnose.*;
+import ttakkeun.ttakkeun_server.entity.Pet;
 import ttakkeun.ttakkeun_server.entity.Product;
 import ttakkeun.ttakkeun_server.entity.Result;
 import ttakkeun.ttakkeun_server.entity.enums.Category;
+import ttakkeun.ttakkeun_server.repository.PetRepository;
 import ttakkeun.ttakkeun_server.repository.PointRepository;
 import ttakkeun.ttakkeun_server.entity.Point;
 import ttakkeun.ttakkeun_server.repository.ProductRepository;
@@ -32,12 +38,14 @@ public class DiagnoseService {
     private final PointRepository pointRepository;
     private final ResultRepository resultRepository;
     private final ProductRepository productRepository;
+    private final PetRepository petRepository;
 
     @Autowired
-    public DiagnoseService(PointRepository pointRepository, ResultRepository resultRepository, ProductRepository productRepository) {
+    public DiagnoseService(PointRepository pointRepository, ResultRepository resultRepository, ProductRepository productRepository, PetRepository petRepository) {
         this.pointRepository = pointRepository;
         this.resultRepository = resultRepository;
         this.productRepository = productRepository;
+        this.petRepository = petRepository;
     }
 
     // 사용자 포인트 조회
@@ -71,6 +79,32 @@ public class DiagnoseService {
         LocalDate date = dateTime.toLocalDate(); // 오늘 날짜와 비교하기 위해 받아온 dateTime을 date 형식으로 변환
         return today.equals(date);
         // 입력받은 값이 오늘 날짜와 같다면 true 반환, 오늘 날짜와 다르다면 false 반환
+    }
+
+    public GetMyDiagnoseListResponseDTO getDiagnoseListByPet(Long memberId, Long petId, Category category, int page) {
+
+        Optional<Pet> petOpt= petRepository.findByPetIdAndMember_MemberId(petId, memberId);
+
+        if (petOpt.isPresent()) {
+            // 최신순으로 페이징, 1페이지당 10개 반환
+            int pageSize = 10;
+            Pageable pageable = PageRequest.of(page, pageSize, Sort.by("createdAt").descending());
+
+            // petId와 category에 따라 진단 결과들을 페이징처리해서 불러옴
+            Page<Result> results = resultRepository.findByPetIdAndCategory(petId, category, pageable);
+            // DiagnoseDTO에 리스트 형식으로 진단 결과들을 담음
+            List<DiagnoseDTO> diagnoseDTO = results.stream()
+                    .map(result -> {
+                        return new DiagnoseDTO(result.getResultId(), result.getCreatedAt(), result.getScore());
+                    })
+                    .collect(Collectors.toList());
+
+            return new GetMyDiagnoseListResponseDTO(diagnoseDTO);
+
+        } else {
+            // Optional 객체에서 값이 비어있는 경우 예외를 던짐
+            throw new NoSuchElementException("Pet with ID " + petId + " not found");
+        }
     }
 
     // 사용자 포인트 차감 (-1)
