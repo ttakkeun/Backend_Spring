@@ -27,7 +27,7 @@ public class TodoService {
         Todo todo = Todo.builder()
                 .todoName(request.getTodoName())
                 .todoCategory(request.getTodoCategory())
-                .petId(pet)
+                .pet(pet)
                 .build();
 
         todoRepository.save(todo);
@@ -82,7 +82,7 @@ public class TodoService {
                 .todoName(originalTodo.getTodoName())
                 .todoCategory(originalTodo.getTodoCategory())
                 .todoStatus(TodoStatus.ONPROGRESS) // 새로운 투두 항목은 완료되지 않은 상태로 생성
-                .petId(originalTodo.getPetId())
+                .pet(originalTodo.getPet())
                 .createdAt(LocalDateTime.now().plusDays(1))
                 .build();
 
@@ -122,7 +122,7 @@ public class TodoService {
                 .todoName(originalTodo.getTodoName())
                 .todoCategory(originalTodo.getTodoCategory())
                 .todoStatus(TodoStatus.ONPROGRESS)
-                .petId(originalTodo.getPetId())
+                .pet(originalTodo.getPet())
                 .createdAt(newDate)
                 .build();
 

@@ -27,14 +27,14 @@ public class Record extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "result_id")
-    private Result resultId;
+    private Result result;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pet_id")
-    private Pet petId;
+    private Pet pet;
 
     @Builder.Default
-    @OneToMany(mappedBy = "recordId", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "record", cascade = CascadeType.ALL)
     private List<ChecklistAnswer> answerList = new ArrayList<>();
 
 }

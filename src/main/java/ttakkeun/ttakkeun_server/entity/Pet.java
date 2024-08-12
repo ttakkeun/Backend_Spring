@@ -37,14 +37,14 @@ public class Pet extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
-    private Member memberId;
+    private Member member;
 
     @Builder.Default
-    @OneToMany(mappedBy = "petId", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "pet", cascade = CascadeType.ALL)
     private List<Todo> TodoList = new ArrayList<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = "petId", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "pet", cascade = CascadeType.ALL)
     private List<Record> RecordList = new ArrayList<>();
 
 
