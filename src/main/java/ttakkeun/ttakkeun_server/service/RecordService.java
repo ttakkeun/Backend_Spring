@@ -66,7 +66,7 @@ public class RecordService {
         List<ChecklistQuestion> questions = checklistQuestionRepository.findByQuestionCategory(category);
 
         return questions.stream()
-                .map(question -> new RecordResponseDTO.QuestionDTO(question.getQuestionId(), question.getQuestionText()))
+                .map(question -> new RecordResponseDTO.QuestionDTO(question.getQuestionId(), question.getQuestionText(), question.getDescriptionText()))
                 .collect(Collectors.toList());
     }
 }

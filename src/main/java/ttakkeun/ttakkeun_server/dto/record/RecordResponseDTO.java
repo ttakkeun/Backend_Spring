@@ -24,5 +24,6 @@ public class RecordResponseDTO {
     public static class QuestionDTO {
         Long questionId;
         String questionText;
+        String descriptionText;
     }
 }
