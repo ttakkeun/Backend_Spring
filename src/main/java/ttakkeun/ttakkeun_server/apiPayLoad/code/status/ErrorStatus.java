@@ -40,8 +40,11 @@ public enum ErrorStatus implements BaseErrorCode {
     PET_ID_NOT_AVAILABLE(HttpStatus.BAD_REQUEST, "PET4001", "유효하지 않은 Pet ID입니다."),
     PET_NOT_FOUND(HttpStatus.BAD_REQUEST, "PET4002", "해당 사용자의 반려동물이 아닙니다."),
 
-    //이미지 에러
-    IMAGE_EMPTY(HttpStatus.BAD_REQUEST, "IMAGE4000", "이미지가 첨부되지 않았습다.");
+    //Image 에러
+    IMAGE_EMPTY(HttpStatus.BAD_REQUEST, "IMAGE4000", "이미지가 첨부되지 않았습니다."),
+
+    //Question 에러
+    QUESTION_NOT_FOUND(HttpStatus.BAD_REQUEST, "QUESTION4001", "유효하지 않은 Question ID입니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
