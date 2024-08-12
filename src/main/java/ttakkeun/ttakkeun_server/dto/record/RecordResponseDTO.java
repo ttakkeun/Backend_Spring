@@ -26,4 +26,12 @@ public class RecordResponseDTO {
         String questionText;
         String descriptionText;
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class RegisterResultDTO {
+        private Long recordId;
+    }
 }
