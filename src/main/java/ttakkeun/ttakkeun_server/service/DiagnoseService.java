@@ -52,24 +52,24 @@ public class DiagnoseService {
     public Integer getPointsByMember(Long memberId) throws Exception {
         Optional<Point> pointOpt = pointRepository.findByMemberId(memberId);
 
-        if (pointOpt.isPresent()) {
-            Point point = pointOpt.get(); // Optinal 객체에서 point를 가져옴
-            Integer points = point.getPoints();
-            LocalDateTime updatedAt = point.getUpdatedAt();
-
-            if (isToday(updatedAt)) { // 최근 포인트 업데이트 날짜가 오늘이라면 그대로 해당 포인트를 반환함
-                return points;
-            } else {
-                // 최근 포인트 업데이트 날짜가 오늘이 아니라면 10점으로 초기화 후 반환함
-                point.setPoints(10);
-                point.setUpdatedAt(LocalDateTime.now());
-                pointRepository.save(point);
-                return 10;
-            }
-        } else {
+        if (!pointOpt.isPresent()) {
             // Optional 객체에서 값이 비어있는 경우 예외를 던짐
             // 0 반환에서 오류 발생하도록 수정함
             throw new NoSuchElementException("Member with ID " + memberId + " not found");
+        }
+
+        Point point = pointOpt.get(); // Optinal 객체에서 point를 가져옴
+        Integer points = point.getPoints();
+        LocalDateTime updatedAt = point.getUpdatedAt();
+
+        if (isToday(updatedAt)) { // 최근 포인트 업데이트 날짜가 오늘이라면 그대로 해당 포인트를 반환함
+            return points;
+        } else {
+            // 최근 포인트 업데이트 날짜가 오늘이 아니라면 10점으로 초기화 후 반환함
+            point.setPoints(10);
+            point.setUpdatedAt(LocalDateTime.now());
+            pointRepository.save(point);
+            return 10;
         }
     }
 
@@ -85,74 +85,73 @@ public class DiagnoseService {
 
         Optional<Pet> petOpt= petRepository.findByPetIdAndMember_MemberId(petId, memberId);
 
-        if (petOpt.isPresent()) {
-            // 최신순으로 페이징, 1페이지당 10개 반환
-            int pageSize = 10;
-            Pageable pageable = PageRequest.of(page, pageSize, Sort.by("createdAt").descending());
-
-            // petId와 category에 따라 진단 결과들을 페이징처리해서 불러옴
-            Page<Result> results = resultRepository.findByPetIdAndCategory(petId, category, pageable);
-            // DiagnoseDTO에 리스트 형식으로 진단 결과들을 담음
-            List<DiagnoseDTO> diagnoseDTO = results.stream()
-                    .map(result -> {
-                        return new DiagnoseDTO(result.getResultId(), result.getCreatedAt(), result.getScore());
-                    })
-                    .collect(Collectors.toList());
-
-            return new GetMyDiagnoseListResponseDTO(diagnoseDTO);
-
-        } else {
+        if (!petOpt.isPresent()) {
             // Optional 객체에서 값이 비어있는 경우 예외를 던짐
             throw new NoSuchElementException("Pet with ID " + petId + " not found");
         }
+
+        // 최신순으로 페이징, 1페이지당 10개 반환
+        int pageSize = 10;
+        Pageable pageable = PageRequest.of(page, pageSize, Sort.by("createdAt").descending());
+
+        // petId와 category에 따라 진단 결과들을 페이징처리해서 불러옴
+        Page<Result> results = resultRepository.findByPetIdAndCategory(petId, category, pageable);
+        // DiagnoseDTO에 리스트 형식으로 진단 결과들을 담음
+        List<DiagnoseDTO> diagnoseDTO = results.stream()
+                .map(result -> {
+                    return new DiagnoseDTO(result.getResultId(), result.getCreatedAt(), result.getScore());
+                })
+                .collect(Collectors.toList());
+
+        return new GetMyDiagnoseListResponseDTO(diagnoseDTO);
     }
 
     // 사용자 포인트 차감 (-1)
     public Integer updatePointsByMember(Long memberId) throws Exception {
         Optional<Point> pointOpt = pointRepository.findByMemberId(memberId);
 
-        if (pointOpt.isPresent()) {
-            Point point = pointOpt.get(); // Optinal 객체에서 point를 가져옴
-            Integer points = point.getPoints();
-
-            // 진단시 포인트가 1점 차감됨
-            point.setPoints(points-1);
-            point.setUpdatedAt(LocalDateTime.now());
-            pointRepository.save(point);
-            return point.getPoints();
-        } else {
+        if (!pointOpt.isPresent()) {
             // Optional 객체에서 값이 비어있는 경우 예외를 던짐
             throw new NoSuchElementException("Member with ID " + memberId + " not found");
         }
+
+        Point point = pointOpt.get(); // Optinal 객체에서 point를 가져옴
+        Integer points = point.getPoints();
+
+        // 진단시 포인트가 1점 차감됨
+        point.setPoints(points-1);
+        point.setUpdatedAt(LocalDateTime.now());
+        pointRepository.save(point);
+        return point.getPoints();
     }
 
     // 진단서 상세 조회
     public GetMyDiagnoseResponseDTO getDiagnose(Long diagnoseId) throws Exception {
         Optional<Result> resultOpt = resultRepository.findByResultId(diagnoseId);
 
-        if (resultOpt.isPresent()) {
-            Result result = resultOpt.get(); // result 가져옴
-
-            // 진단 id값으로 제품 조회
-            List<Product> products = productRepository.findByResultId(diagnoseId);
-
-            // ProductDTO에 리스트 형식으로 추천 제품들 담음
-            List<ProductDTO> productsDTO = products.stream()
-                    .map(product -> {
-                        return new ProductDTO(product.getProductTitle(), product.getProductImage(), product.getLprice(), product.getBrand());
-                    })
-                    .collect(Collectors.toList());
-
-            // GetMyDiagnoseResponseDTO에 전체 조회 결과 담아서 반환
-            return GetMyDiagnoseResponseDTO.builder()
-                    .diagnose_id(result.getResultId())
-                    .score(result.getScore())
-                    .result_detail(result.getResultDetail())
-                    .after_care(result.getResultCare())
-                    .ai_products(productsDTO).build();
-        } else {
+        if (!resultOpt.isPresent()) {
             // Optional 객체에서 값이 비어있는 경우 예외 발생
             throw new NoSuchElementException("Result with ID " + diagnoseId + " not found");
         }
+
+        Result result = resultOpt.get(); // result 가져옴
+
+        // 진단 id값으로 제품 조회
+        List<Product> products = productRepository.findByResultId(diagnoseId);
+
+        // ProductDTO에 리스트 형식으로 추천 제품들 담음
+        List<ProductDTO> productsDTO = products.stream()
+                .map(product -> {
+                    return new ProductDTO(product.getProductTitle(), product.getProductImage(), product.getLprice(), product.getBrand());
+                })
+                .collect(Collectors.toList());
+
+        // GetMyDiagnoseResponseDTO에 전체 조회 결과 담아서 반환
+        return GetMyDiagnoseResponseDTO.builder()
+                .diagnose_id(result.getResultId())
+                .score(result.getScore())
+                .result_detail(result.getResultDetail())
+                .after_care(result.getResultCare())
+                .ai_products(productsDTO).build();
     }
 }
