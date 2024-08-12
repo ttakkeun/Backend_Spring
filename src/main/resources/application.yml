@@ -42,9 +42,11 @@ naverApi:
 cloud:
   aws:
     credentials:
-      access-key: ${aws_access}
-      secret-key: ${aws_secret}
+#      access-key: ${aws_access}
+#      secret-key: ${aws_secret}
+      access-key: default_access_key
+      secret-key: default_secret_key
     region:
-      static: YOUR_REGION
+      static: us-west-1
     s3:
-      bucket: YOUR_BUCKET_NAME
+      bucket: default-bucket

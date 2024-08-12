@@ -3,6 +3,7 @@ package ttakkeun.ttakkeun_server.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -79,13 +80,17 @@ public class PetController {
     }
 
     @Operation(summary = "반려동물 프로필 이미지 수정")
-    @PatchMapping("/{pet_id}/image")
+    @PatchMapping(value = "/{pet_id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiResponse<PetResponseDTO.PetImageDTO> editPetImage (
-            @AuthenticationPrincipal Member member,
+            //@AuthenticationPrincipal Member member,
             @PathVariable("pet_id") Long petId,
-            @RequestPart MultipartFile multipartFile) {
+            @RequestPart("multipartFile") MultipartFile multipartFile) {
         if (multipartFile == null || multipartFile.isEmpty())
             throw new ExceptionHandler(IMAGE_EMPTY);
+
+        Member member = new Member();
+        member.setMemberId(1L); // 임의의 memberId 설정
 
         // pet_id로 반려동물을 조회
         Pet pet = petService.findPetByIdAndMember(petId, member);
