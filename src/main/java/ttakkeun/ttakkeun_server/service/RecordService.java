@@ -78,7 +78,7 @@ public class RecordService {
                 .orElseThrow(() -> new ExceptionHandler(PET_ID_NOT_AVAILABLE));
 
         Record record = Record.builder()
-                .petId(pet)
+                .pet(pet)
                 .category(request.getCategory())
                 .build();
 
@@ -89,8 +89,8 @@ public class RecordService {
 
             ChecklistAnswer answer = ChecklistAnswer.builder()
                     .answerText(answerDTO.getAnswerText())
-                    .questionId(question)
-                    .recordId(record)
+                    .question(question)
+                    .record(record)
                     .build();
 
             answerList.add(answer);
