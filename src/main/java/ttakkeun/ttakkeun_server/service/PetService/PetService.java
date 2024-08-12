@@ -43,7 +43,7 @@ public class PetService {
     //memberId에 해당 petId가 있는지 조회
     public Pet findPetByIdAndMember(Long petId, Member member) {
         // petId와 member를 기준으로 반려동물을 조회
-        return petRepository.findByPetIdAndMemberId(petId, member)
+        return petRepository.findByPetIdAndMember(petId, member)
                 .orElseThrow(() -> new ExceptionHandler(PET_NOT_FOUND));
     }
 

@@ -47,6 +47,7 @@ cloud:
       access-key: default_access_key
       secret-key: default_secret_key
     region:
-      static: us-west-1
+      static: ap-northeast-2
+      # 리전 서울로 설정
     s3:
       bucket: default-bucket
