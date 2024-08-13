@@ -116,6 +116,8 @@ public class RecordService {
 
         RecordResponseDTO.DetailResultDTO.DetailResultDTOBuilder dtoBuilder = RecordResponseDTO.DetailResultDTO.builder();
 
+        dtoBuilder.category(record.getCategory().name());
+
         if(!answers.isEmpty()) {
             dtoBuilder.question1(answers.get(0).getQuestion().getQuestionText())
                     .answer1(answers.get(0).getAnswerText())

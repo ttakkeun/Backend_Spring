@@ -40,6 +40,7 @@ public class RecordResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class DetailResultDTO {
+        String category;
         String question1;
         String answer1;
         List<String> image1;
