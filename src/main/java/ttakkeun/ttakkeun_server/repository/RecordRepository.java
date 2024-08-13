@@ -8,9 +8,11 @@ import ttakkeun.ttakkeun_server.entity.Record;
 import ttakkeun.ttakkeun_server.entity.enums.Category;
 
 
-import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface RecordRepository extends JpaRepository<Record, Long> {
     Page<Record> findByPet_PetIdAndCategory(Long petId, Category category, Pageable pageable);
+
+    Optional<Record> findByPet_PetIdAndRecordId(Long petId, Long recordId);
 }

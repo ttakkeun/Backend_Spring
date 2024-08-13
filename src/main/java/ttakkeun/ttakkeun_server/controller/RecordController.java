@@ -75,4 +75,15 @@ public class RecordController {
         RecordResponseDTO.RegisterResultDTO responseDTO = recordService.registerRecord(petId, requestDTO);
         return ApiResponse.onSuccess(responseDTO);
     }
+
+
+    @Operation(summary = "일지 상세 내용 조회 API")
+    @GetMapping("/detail/{pet_id}/{record_id}")
+    public ApiResponse<RecordResponseDTO.DetailResultDTO> getRecordDetails(
+            @PathVariable("pet_id") Long petId,
+            @PathVariable("record_id") Long recordId
+    ) {
+        RecordResponseDTO.DetailResultDTO recordDetails = recordService.getRecordDetails(petId, recordId);
+        return ApiResponse.onSuccess(recordDetails);
+    }
 }

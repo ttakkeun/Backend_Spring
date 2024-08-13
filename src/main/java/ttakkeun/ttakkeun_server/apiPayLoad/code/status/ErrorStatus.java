@@ -44,7 +44,10 @@ public enum ErrorStatus implements BaseErrorCode {
     IMAGE_EMPTY(HttpStatus.BAD_REQUEST, "IMAGE4000", "이미지가 첨부되지 않았습니다."),
 
     //Question 에러
-    QUESTION_NOT_FOUND(HttpStatus.BAD_REQUEST, "QUESTION4001", "유효하지 않은 Question ID입니다.");
+    QUESTION_NOT_FOUND(HttpStatus.BAD_REQUEST, "QUESTION4001", "유효하지 않은 Question ID입니다."),
+
+    //Record 에러
+    RECORD_NOT_FOUND(HttpStatus.BAD_REQUEST, "RECORD4001", "유효하지 않은 Record ID입니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
