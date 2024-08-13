@@ -86,4 +86,14 @@ public class RecordController {
         RecordResponseDTO.DetailResultDTO recordDetails = recordService.getRecordDetails(petId, recordId);
         return ApiResponse.onSuccess(recordDetails);
     }
+
+
+    @Operation(summary = "일지 삭제 API")
+    @DeleteMapping("/{record_id}")
+    public ApiResponse<RecordResponseDTO.DeleteResultDTO> deleteRecord(
+            @PathVariable("record_id") Long record_id
+    ) {
+        RecordResponseDTO.DeleteResultDTO deleteResultDTO = recordService.deleteRecord(record_id);
+        return ApiResponse.onSuccess(deleteResultDTO);
+    }
 }

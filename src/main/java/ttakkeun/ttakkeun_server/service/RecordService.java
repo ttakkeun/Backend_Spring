@@ -21,6 +21,7 @@ import ttakkeun.ttakkeun_server.repository.RecordRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static ttakkeun.ttakkeun_server.apiPayLoad.code.status.ErrorStatus.*;
@@ -145,5 +146,17 @@ public class RecordService {
         dtoBuilder.etc(record.getEtc());
 
         return dtoBuilder.build();
+    }
+
+    public RecordResponseDTO.DeleteResultDTO deleteRecord(Long recordId) {
+        Optional<Record> record = recordRepository.findById(recordId);
+        if (record.isPresent()) {
+            recordRepository.deleteById(recordId);
+            return RecordResponseDTO.DeleteResultDTO.builder()
+                    .message("일지 삭제에 성공하였습니다.")
+                    .build();
+        } else {
+            throw new ExceptionHandler(RECORD_NOT_FOUND);
+        }
     }
 }

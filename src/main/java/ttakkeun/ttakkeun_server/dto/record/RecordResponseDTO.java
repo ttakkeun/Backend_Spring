@@ -52,4 +52,12 @@ public class RecordResponseDTO {
         List<String> image3;
         String etc;
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class DeleteResultDTO {
+        String message;
+    }
 }
