@@ -11,6 +11,7 @@ import ttakkeun.ttakkeun_server.dto.auth.apple.AppleAuthClient;
 import ttakkeun.ttakkeun_server.dto.auth.apple.AppleLoginRequestDto;
 import ttakkeun.ttakkeun_server.dto.auth.apple.AppleSignUpRequestDto;
 import ttakkeun.ttakkeun_server.entity.Member;
+import ttakkeun.ttakkeun_server.entity.enums.LoginType;
 import ttakkeun.ttakkeun_server.repository.MemberRepository;
 import ttakkeun.ttakkeun_server.service.JwtService;
 import ttakkeun.ttakkeun_server.utils.ApplePublicKeyGenerator;
@@ -131,6 +132,7 @@ public class OAuthService {
                             //.nickname(appleSignUpRequestDto.getName()) // appleLoginRequestDto에서 닉네임 가져오기
                             //.provider(MemberProvider.APPLE) // 필요에 따라 설정
                             .appleSub(sub)
+                            .loginType(LoginType.APPLE)
                             .refreshToken("") // 초기 빈 값 설정
                             .refreshTokenExpiresAt(LocalDateTime.now()) // 초기 시간 설정
                             .build()

@@ -143,6 +143,7 @@ public class RecordService {
 
         // 변경 사항 저장
         checklistAnswerRepository.save(answer);
+    }
 
     public RecordResponseDTO.DetailResultDTO getRecordDetails(Long petId, Long recordId) {
         Record record = recordRepository.findByPet_PetIdAndRecordId(petId, recordId)
@@ -157,7 +158,7 @@ public class RecordService {
         if(!answers.isEmpty()) {
             dtoBuilder.question1(answers.get(0).getQuestion().getQuestionText())
                     .answer1(answers.get(0).getAnswerText())
-                    .image1(answers.get(0).getImageList().stream()
+                    .image1(answers.get(0).getImages().stream()
                             .map(image -> image.getImageUrl())
                             .collect(Collectors.toList()));
         }
@@ -165,7 +166,7 @@ public class RecordService {
         if (answers.size() > 1) {
             dtoBuilder.question2(answers.get(1).getQuestion().getQuestionText())
                     .answer2(answers.get(1).getAnswerText())
-                    .image2(answers.get(1).getImageList().stream()
+                    .image2(answers.get(1).getImages().stream()
                             .map(image -> image.getImageUrl())
                             .collect(Collectors.toList()));
         }
@@ -173,7 +174,7 @@ public class RecordService {
         if (answers.size() > 2) {
             dtoBuilder.question3(answers.get(2).getQuestion().getQuestionText())
                     .answer3(answers.get(2).getAnswerText())
-                    .image3(answers.get(2).getImageList().stream()
+                    .image3(answers.get(2).getImages().stream()
                             .map(image -> image.getImageUrl())
                             .collect(Collectors.toList()));
         }
