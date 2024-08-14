@@ -2,9 +2,9 @@ spring:
   main:
     allow-bean-definition-overriding: true
   datasource:
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: jdbc:mysql://database-1.c5m8ouw0q3rr.ap-northeast-2.rds.amazonaws.com:3306/ttakkeun
+    username: ttakkeun
+    password: ttakkeun4321
     driver-class-name: com.mysql.cj.jdbc.Driver
   sql:
     init:
@@ -36,8 +36,8 @@ server:
   port: 8080
 
 naverApi:
-  clientId: ${NAVER_ClientID}
-  clientSecret: ${NAVER_ClientSecret}
+  clientId: WTpQ_yIaseKfasrJydv6
+  clientSecret: pAL1Vj4sxO
 
 cloud:
   aws:
