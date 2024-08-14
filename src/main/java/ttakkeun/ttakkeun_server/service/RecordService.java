@@ -19,8 +19,12 @@ import ttakkeun.ttakkeun_server.repository.ChecklistQuestionRepository;
 import ttakkeun.ttakkeun_server.repository.PetRepository;
 import ttakkeun.ttakkeun_server.repository.RecordRepository;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static ttakkeun.ttakkeun_server.apiPayLoad.code.status.ErrorStatus.*;
@@ -104,5 +108,97 @@ public class RecordService {
         return RecordResponseDTO.RegisterResultDTO.builder()
                 .recordId(record.getRecordId())
                 .build();
+    }
+
+
+    @Transactional
+    public RecordResponseDTO.DetailResultDTO getRecordDetails(Long petId, Long recordId) {
+        Record record = recordRepository.findByPet_PetIdAndRecordId(petId, recordId)
+                .orElseThrow(() -> new ExceptionHandler(RECORD_NOT_FOUND));
+
+        List<ChecklistAnswer> answers = record.getAnswerList();
+
+        RecordResponseDTO.DetailResultDTO.DetailResultDTOBuilder dtoBuilder = RecordResponseDTO.DetailResultDTO.builder();
+
+        dtoBuilder.category(record.getCategory().name());
+
+        if(!answers.isEmpty()) {
+            dtoBuilder.question1(answers.get(0).getQuestion().getQuestionText())
+                    .answer1(answers.get(0).getAnswerText())
+                    .image1(answers.get(0).getImageList().stream()
+                            .map(image -> image.getImageUrl())
+                            .collect(Collectors.toList()));
+        }
+
+        if (answers.size() > 1) {
+            dtoBuilder.question2(answers.get(1).getQuestion().getQuestionText())
+                    .answer2(answers.get(1).getAnswerText())
+                    .image2(answers.get(1).getImageList().stream()
+                            .map(image -> image.getImageUrl())
+                            .collect(Collectors.toList()));
+        }
+
+        if (answers.size() > 2) {
+            dtoBuilder.question3(answers.get(2).getQuestion().getQuestionText())
+                    .answer3(answers.get(2).getAnswerText())
+                    .image3(answers.get(2).getImageList().stream()
+                            .map(image -> image.getImageUrl())
+                            .collect(Collectors.toList()));
+        }
+
+        dtoBuilder.etc(record.getEtc());
+
+        return dtoBuilder.build();
+    }
+
+    public RecordResponseDTO.DeleteResultDTO deleteRecord(Long recordId) {
+        Optional<Record> record = recordRepository.findById(recordId);
+        if (record.isPresent()) {
+            recordRepository.deleteById(recordId);
+            return RecordResponseDTO.DeleteResultDTO.builder()
+                    .message("일지 삭제에 성공하였습니다.")
+                    .build();
+        } else {
+            throw new ExceptionHandler(RECORD_NOT_FOUND);
+        }
+    }
+
+    public List<RecordListResponseDto> getRecordsAtDate(Member member, Long petId, Category category, int page, int size, String date) {
+        if (member == null || member.getMemberId() == null) {
+            throw new ExceptionHandler(MEMBER_NOT_FOUND);
+        }
+        System.out.println("Member ID: " + member.getMemberId());
+
+        //memberId로 petId를 확인
+        Pet pet = petRepository.findByPetIdAndMember(petId, member).orElseThrow(() -> new ExceptionHandler(PET_NOT_FOUND));
+
+        // 입력된 날짜를 LocalDate로 변환
+        LocalDate targetDate = LocalDate.parse(date);
+
+        // 날짜의 시작과 끝을 계산
+        LocalDateTime startOfDay = targetDate.atStartOfDay();
+        LocalDateTime endOfDay = targetDate.atTime(LocalTime.MAX);
+
+        // 페이지 요청 생성 (createdAt 기준으로 정렬)
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+
+        // Repository에서 해당 날짜의 기록 조회
+        Page<Record> recordPage = recordRepository.findByPet_PetIdAndCategoryAndCreatedAtBetween(pet.getPetId(), category, startOfDay, endOfDay, pageable);
+
+        // DTO로 변환 및 정렬
+        return recordPage.stream()
+                .map(record -> new RecordListResponseDto(
+                        record.getRecordId(),
+                        record.getCreatedAt().toLocalDate(),  // LocalDate 추출
+                        record.getCreatedAt().toLocalTime()   // LocalTime 추출
+                ))
+                .sorted((r1, r2) -> {
+                    int dateComparison = r2.getCreatedAtDate().compareTo(r1.getCreatedAtDate());
+                    if (dateComparison != 0) {
+                        return dateComparison;
+                    }
+                    return r2.getCreatedAtTime().compareTo(r1.getCreatedAtTime());
+                })
+                .collect(Collectors.toList());
     }
 }
