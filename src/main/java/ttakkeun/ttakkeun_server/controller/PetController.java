@@ -21,12 +21,13 @@ import ttakkeun.ttakkeun_server.service.PetService.PetService;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.bouncycastle.asn1.x500.style.RFC4519Style.member;
 import static ttakkeun.ttakkeun_server.apiPayLoad.code.status.ErrorStatus.IMAGE_EMPTY;
 import static ttakkeun.ttakkeun_server.apiPayLoad.code.status.ErrorStatus.MEMBER_NOT_HAVE_PET;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/pet-profile")
+@RequestMapping("/api/auth/pet-profile")
 public class PetController {
 
     private final PetCommandService petCommandService;
@@ -60,9 +61,10 @@ public class PetController {
     @Operation(summary = "로그인한 사용자의 모든 반려동물 조회 API")
     @GetMapping("/select")
     public ApiResponse<PetResponseDTO.SelectResultDTO> select(
-            @RequestParam("memberId") Long memberId
+            @AuthenticationPrincipal Member member
+            //@RequestParam("memberId") Long memberId
     ) {
-        List<Pet> pets = petService.getPetsByMemberId(memberId);
+        List<Pet> pets = petService.getPetsByMemberId(member.getMemberId());
 
         if(pets.isEmpty())
             throw new ExceptionHandler(MEMBER_NOT_HAVE_PET);
