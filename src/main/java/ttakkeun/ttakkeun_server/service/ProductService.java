@@ -69,22 +69,43 @@ public class ProductService {
 
         return products.stream().map(productConverter::toDTO).collect(Collectors.toList());
     }
+
     //검색 기능 - 네이버 쇼핑에서 불러오기
     public List<RecommendProductDTO> getProductByKeywordFromNaver(String keyword) {
-        //물품을 반려 동물 카테고리로 좁히기 위한 키워드 설정
-        String petKeyword = "반려 동물" + keyword;
 
-        String naverString = naverShopSearch.search(petKeyword);
-        JSONObject jsonObject = new JSONObject(naverString);
-        JSONArray jsonArray = jsonObject.getJSONArray("items");
         List<RecommendProductDTO> productDTOs = new ArrayList<>();
 
-        for (int i = 0; i < jsonArray.length(); i++) {
-            JSONObject JSONProduct = (JSONObject) jsonArray.get(i);
-            RecommendProductDTO productDTO = productConverter.JSONToDTO(JSONProduct);
-            productDTOs.add(productDTO);
+        //검색 키워드 앞에 반려동물을 붙여서 검색 ex)샴푸 -> 반려동물 샴푸
+        for(int page = 0; productDTOs.size() < 10 && page < 10; page++) {
+            String naverString = naverShopSearch.search("반려동물 " + keyword, page);
+            JSONObject jsonObject = new JSONObject(naverString);
+            JSONArray jsonArray = jsonObject.getJSONArray("items");
+
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject JSONProduct = (JSONObject) jsonArray.get(i);
+                RecommendProductDTO productDTO = productConverter.JSONToDTO(JSONProduct);
+
+                if (productDTOs.size() < 10 && productConverter.categoryFilter(productDTO)) {
+                    productDTOs.add(productDTO);
+                }
+            }
         }
 
+        //키워드 그대로 검색
+        for(int page = 0; productDTOs.size() < 10 && page < 10; page++) {
+            String naverString = naverShopSearch.search(keyword, page);
+            JSONObject jsonObject = new JSONObject(naverString);
+            JSONArray jsonArray = jsonObject.getJSONArray("items");
+
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject JSONProduct = (JSONObject) jsonArray.get(i);
+                RecommendProductDTO productDTO = productConverter.JSONToDTO(JSONProduct);
+
+                if (productDTOs.size() < 10 && productConverter.categoryFilter(productDTO)) {
+                    productDTOs.add(productDTO);
+                }
+            }
+        }
         return productDTOs;
     }
 }
