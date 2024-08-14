@@ -8,6 +8,10 @@ import ttakkeun.ttakkeun_server.entity.Product;
 import ttakkeun.ttakkeun_server.repository.ProductRepository;
 import ttakkeun.ttakkeun_server.service.LikeService;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 @Component
 @RequiredArgsConstructor
 public class ProductConverter {
@@ -78,4 +82,20 @@ public class ProductConverter {
                 .isLike(isLike)
                 .build();
     }
+
+    public boolean categoryFilter(RecommendProductDTO productDTO) {
+        List<String> validCategory3 = Arrays.asList(
+                "미용/목욕", "강아지 건강/관리용품", "고양이 건강/관리용품"
+        );
+        List<String> validCategory4 = Arrays.asList(
+                "브러시/빗", "에센스/향수/밤", "샴푸/린스/비누", "이발기", "발톱/발 관리",
+                "드라이기/드라이룸", "미용가위", "타월/가운", "물티슈/크리너",
+                "눈/귀 관리용품", "구강청결제", "칫솔", "치약", "구강티슈", "구강관리용품"
+        );
+
+        return validCategory3.contains(productDTO.getCategory3()) &&
+                validCategory4.contains(productDTO.getCategory4());
+    }
 }
+
+
