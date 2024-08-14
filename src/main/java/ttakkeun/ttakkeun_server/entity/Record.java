@@ -27,10 +27,6 @@ public class Record extends BaseEntity {
     private String etc; //기타 사항 입력
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "result_id")
-    private Result result;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pet_id")
     private Pet pet;
 
@@ -38,4 +34,6 @@ public class Record extends BaseEntity {
     @OneToMany(mappedBy = "record", cascade = CascadeType.ALL)
     private List<ChecklistAnswer> answerList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "record")
+    private List<Result> results = new ArrayList<>();
 }

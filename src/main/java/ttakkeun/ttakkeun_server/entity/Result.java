@@ -25,9 +25,9 @@ public class Result extends BaseEntity {
     @OneToMany(mappedBy = "result", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<ResultProduct> ProductList = new ArrayList<>();
 
-    @Builder.Default
-    @OneToMany(mappedBy = "result", cascade = CascadeType.ALL)
-    private List<Record> RecordList = new ArrayList<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "record_id")
+    private Record record;
 
     @Enumerated(EnumType.STRING)
     private Category resultCategory;
