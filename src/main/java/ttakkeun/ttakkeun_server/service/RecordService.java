@@ -2,11 +2,13 @@ package ttakkeun.ttakkeun_server.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import ttakkeun.ttakkeun_server.apiPayLoad.ExceptionHandler;
 import ttakkeun.ttakkeun_server.dto.record.RecordListResponseDto;
 import ttakkeun.ttakkeun_server.dto.record.RecordRequestDTO;
@@ -19,6 +21,7 @@ import ttakkeun.ttakkeun_server.repository.ChecklistQuestionRepository;
 import ttakkeun.ttakkeun_server.repository.PetRepository;
 import ttakkeun.ttakkeun_server.repository.RecordRepository;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -29,6 +32,7 @@ import java.util.stream.Collectors;
 
 import static ttakkeun.ttakkeun_server.apiPayLoad.code.status.ErrorStatus.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class RecordService {
@@ -37,6 +41,7 @@ public class RecordService {
     private final PetRepository petRepository;
     private final ChecklistQuestionRepository checklistQuestionRepository;
     private final ChecklistAnswerRepository checklistAnswerRepository;
+    private final S3ImageService s3ImageService;
 
     public List<RecordListResponseDto> getRecordsByCategory(Member member, Long petId, Category category, int page, int size) {
         if (member == null || member.getMemberId() == null) {
@@ -112,6 +117,33 @@ public class RecordService {
 
 
     @Transactional
+    public void uploadImages(Long recordId, Long questionId, List<MultipartFile> files) {
+
+        Record record = recordRepository.findById(recordId).orElseThrow(()-> new ExceptionHandler(RECORD_NOT_FOUND));
+
+        // ChecklistAnswer 조회 (recordId와 questionId로 조회)
+        log.info("여기기기기기");
+        ChecklistAnswer answer = checklistAnswerRepository.findByRecord_recordIdAndQuestion_questionId(recordId, questionId)
+                .orElseThrow(() -> new ExceptionHandler(ANSWER_NOT_FOUND));
+
+        log.info("Number of images in RecordImageDTO: {}", files.size());
+
+        // MultipartFile 리스트를 Image 엔티티로 변환하여 저장
+        List<Image> imageEntities = files.stream()
+                .map(file -> {
+                    log.info("Uploading image {}", file);
+                    String imageUrl = s3ImageService.upload(file); // 파일 저장 로직
+                    return Image.builder().imageUrl(imageUrl).build();
+                })
+                .collect(Collectors.toList());
+
+        // ChecklistAnswer에 이미지 추가
+        log.info("Upload image {}", imageEntities);
+        answer.addImages(imageEntities);
+
+        // 변경 사항 저장
+        checklistAnswerRepository.save(answer);
+
     public RecordResponseDTO.DetailResultDTO getRecordDetails(Long petId, Long recordId) {
         Record record = recordRepository.findByPet_PetIdAndRecordId(petId, recordId)
                 .orElseThrow(() -> new ExceptionHandler(RECORD_NOT_FOUND));
