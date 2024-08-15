@@ -27,12 +27,12 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
-    - name : make application.yml
-      run: |
-        cd ./src/main/resources
-        touch ./application.yml
-        echo "${{ secrets.APPLICATION }}" > ./application.yml
-      shell: bash
+   # - name : make application.yml
+    #  run: |
+     #   cd ./src/main/resources
+      #  touch ./application.yml
+       # echo "${{ secrets.APPLICATION }}" > ./application.yml
+    #  shell: bash
         
 
     # Configure Gradle for optimal use in GitHub Actions, including caching of downloaded dependencies.
@@ -64,8 +64,8 @@ jobs:
           echo "${{ secrets.ENV_VARS }}" | sudo tee .env > /dev/null
           
           ## docker-compose.yml 파일 생성
-          sudo touch docker-compose.yml
-          echo "${{ secrets.DOCKER_COMPOSE }}" | sudo tee docker-compose.yml > /dev/null
+         #sudo touch docker-compose.yml
+          #echo "${{ secrets.DOCKER_COMPOSE }}" | sudo tee docker-compose.yml > /dev/null
           
           ## Docker 작업
           sudo chmod 666 /var/run/docker.sock
