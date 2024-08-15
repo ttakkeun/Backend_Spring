@@ -14,10 +14,7 @@ import ttakkeun.ttakkeun_server.dto.record.RecordResponseDTO;
 import ttakkeun.ttakkeun_server.entity.*;
 import ttakkeun.ttakkeun_server.entity.Record;
 import ttakkeun.ttakkeun_server.entity.enums.Category;
-import ttakkeun.ttakkeun_server.repository.ChecklistAnswerRepository;
-import ttakkeun.ttakkeun_server.repository.ChecklistQuestionRepository;
-import ttakkeun.ttakkeun_server.repository.PetRepository;
-import ttakkeun.ttakkeun_server.repository.RecordRepository;
+import ttakkeun.ttakkeun_server.repository.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +30,7 @@ public class RecordService {
     private final PetRepository petRepository;
     private final ChecklistQuestionRepository checklistQuestionRepository;
     private final ChecklistAnswerRepository checklistAnswerRepository;
+    private final UserAnswerRepository userAnswerRepository;
 
     public List<RecordListResponseDto> getRecordsByCategory(Member member, Long petId, Category category, int page, int size) {
         if (member == null || member.getMemberId() == null) {
@@ -95,7 +93,7 @@ public class RecordService {
                     .build();
 
             answerList.add(answer);
-            checklistAnswerRepository.save(answer);
+            userAnswerRepository.save(answer);
         }
 
         record.getAnswerList().addAll(answerList);
