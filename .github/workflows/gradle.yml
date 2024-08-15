@@ -29,7 +29,6 @@ jobs:
 
     - name : make application.yml
       run: |
-        mkdir ./src/main/resources
         cd ./src/main/resources
         touch ./application.yml
         echo "${{ secrets.APPLICATION }}" > ./application.yml
@@ -52,25 +51,25 @@ jobs:
         docker push ${{ secrets.DOCKER_USERNAME }}/ttakkeun
 
     - name: Execute remote SSH commands
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.HOST }} # EC2 퍼블릭 IPv4 DNS
-          username: ubuntu
-          key: ${{ secrets.KEY }}
-          script: |
-            cd /home/ubuntu/
-            
-            ## .env 파일 생성
-            sudo touch .env
-            echo "${{ secrets.ENV_VARS }}" | sudo tee .env > /dev/null
-            
-            ## docker-compose.yml 파일 생성
-            sudo touch docker-compose.yml
-            echo "${{ secrets.DOCKER_COMPOSE }}" | sudo tee docker-compose.yml > /dev/null
-            
-            ## Docker 작업
-            sudo docker stop $(docker ps -a -q) 
-            sudo docker rm -f $(docker ps -qa)
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/ttakkeun
-            sudo docker run -d -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/ttakkeun
-            sudo docker image prune -f
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.HOST }} # EC2 퍼블릭 IPv4 DNS
+        username: ubuntu
+        key: ${{ secrets.KEY }}
+        script: |
+          cd /home/ubuntu/
+          
+          ## .env 파일 생성
+          sudo touch .env
+          echo "${{ secrets.ENV_VARS }}" | sudo tee .env > /dev/null
+          
+          ## docker-compose.yml 파일 생성
+          sudo touch docker-compose.yml
+          echo "${{ secrets.DOCKER_COMPOSE }}" | sudo tee docker-compose.yml > /dev/null
+          
+          ## Docker 작업
+          sudo docker stop $(docker ps -a -q) 
+          sudo docker rm -f $(docker ps -qa)
+          sudo docker pull ${{ secrets.DOCKER_USERNAME }}/ttakkeun
+          sudo docker run -d -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/ttakkeun
+          sudo docker image prune -f
