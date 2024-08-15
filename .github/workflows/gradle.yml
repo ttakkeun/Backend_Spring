@@ -61,6 +61,8 @@ jobs:
           export apple_key_id=${{ secrets.apple_key_id }}
           export apple_team_id=${{ secrets.apple_team_id }}
           export JWT_Secret=${{ secrets.JWT_Secret }}
+          export aws_access=${{ secrets.aws_access }}
+          export aws_secret=${{ secrets.aws_secret }}
 
          
           ## Docker 작업
@@ -72,5 +74,6 @@ jobs:
                            -e NAVER_ClientID=${NAVER_ClientID} -e NAVER_ClientSecret=${NAVER_ClientSecret} \
                            -e APPLE_Secret=${APPLE_Secret} -e apple_key_id=${apple_key_id} \
                            -e apple_team_id=${apple_team_id} -e JWT_Secret=${JWT_Secret} \
+                           -e aws_access=${aws_access} -e aws_secret=${aws_secret} \
                            -d -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/ttakkeun
           sudo docker image prune -f
