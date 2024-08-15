@@ -2,11 +2,7 @@ package ttakkeun.ttakkeun_server.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.Check;
 import ttakkeun.ttakkeun_server.entity.common.BaseEntity;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
@@ -16,29 +12,14 @@ import java.util.List;
 public class ChecklistAnswer extends BaseEntity {
 
     @Id
-    @Column(name = "anwser_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long answerId;
+    @Column(name = "checklist_answer_id")
+    private Long checklistAnswerId;
 
-    private String answerText;
+    private String checklistAnswerText;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question_id")
-    private ChecklistQuestion question;
+    private ChecklistQuestion checklistQuestion;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "record_id")
-    private Record record;
-
-    @Builder.Default
-    @OneToMany(mappedBy = "answer", cascade = CascadeType.ALL)
-    private List<Image> images = new ArrayList<>();
-
-    public void addImages(List<Image> images) {
-        for (Image image : images) {
-            image.setAnswer(this);
-            this.images.add(image);
-        }
-    }
 
 }

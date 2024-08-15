@@ -29,6 +29,6 @@ public class ChecklistQuestion extends BaseEntity {
 
     @Builder.Default
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
-    private List<ChecklistAnswer> answerList = new ArrayList<>();
+    private List<UserAnswer> answerList = new ArrayList<>();
 
 }

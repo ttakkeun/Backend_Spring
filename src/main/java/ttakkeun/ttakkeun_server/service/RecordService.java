@@ -16,10 +16,7 @@ import ttakkeun.ttakkeun_server.dto.record.RecordResponseDTO;
 import ttakkeun.ttakkeun_server.entity.*;
 import ttakkeun.ttakkeun_server.entity.Record;
 import ttakkeun.ttakkeun_server.entity.enums.Category;
-import ttakkeun.ttakkeun_server.repository.ChecklistAnswerRepository;
-import ttakkeun.ttakkeun_server.repository.ChecklistQuestionRepository;
-import ttakkeun.ttakkeun_server.repository.PetRepository;
-import ttakkeun.ttakkeun_server.repository.RecordRepository;
+import ttakkeun.ttakkeun_server.repository.*;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -41,6 +38,7 @@ public class RecordService {
     private final PetRepository petRepository;
     private final ChecklistQuestionRepository checklistQuestionRepository;
     private final ChecklistAnswerRepository checklistAnswerRepository;
+    private final UserAnswerRepository userAnswerRepository;
     private final S3ImageService s3ImageService;
 
     public List<RecordListResponseDto> getRecordsByCategory(Member member, Long petId, Category category, int page, int size) {
@@ -92,19 +90,19 @@ public class RecordService {
                 .etc(request.getEtc())
                 .build();
 
-        List<ChecklistAnswer> answerList = new ArrayList<>();
+        List<UserAnswer> answerList = new ArrayList<>();
         for (RecordRequestDTO.AnswerDTO answerDTO : request.getAnswers()) {
             ChecklistQuestion question = checklistQuestionRepository.findById(answerDTO.getQuestionId())
                     .orElseThrow(() -> new ExceptionHandler(QUESTION_NOT_FOUND));
 
-            ChecklistAnswer answer = ChecklistAnswer.builder()
-                    .answerText(answerDTO.getAnswerText())
+            UserAnswer answer = UserAnswer.builder()
+                    .userAnswerText(answerDTO.getAnswerText())
                     .question(question)
                     .record(record)
                     .build();
 
             answerList.add(answer);
-            checklistAnswerRepository.save(answer);
+            userAnswerRepository.save(answer);
         }
 
         record.getAnswerList().addAll(answerList);
