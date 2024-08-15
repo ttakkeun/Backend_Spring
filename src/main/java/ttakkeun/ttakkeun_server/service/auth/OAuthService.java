@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ttakkeun.ttakkeun_server.apiPayLoad.ExceptionHandler;
 import ttakkeun.ttakkeun_server.dto.auth.LoginResponseDto;
@@ -28,6 +29,7 @@ import static ttakkeun.ttakkeun_server.apiPayLoad.code.status.ErrorStatus.*;
 @RequiredArgsConstructor
 public class OAuthService {
 
+    @Autowired
     private final AppleAuthClient appleAuthClient;
     private final ApplePublicKeyGenerator applePublicKeyGenerator;
     private final JwtService jwtService;

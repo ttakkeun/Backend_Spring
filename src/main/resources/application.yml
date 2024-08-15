@@ -22,7 +22,7 @@ spring:
   social-login:
     provider:
       apple:
-        redirect-uri: https://lttakkeun.app.com/apple/callback/
+        redirect-uri: https://ttakkeun.app.com/apple/callback/
         grant-type: authorization_code
         client-id: ttakkeun.app.com
         key-id: ${apple_key_id}
