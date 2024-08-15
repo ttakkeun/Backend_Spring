@@ -52,7 +52,7 @@ jobs:
         docker push ${{ secrets.DOCKER_USERNAME }}/ttakkeun
 
     - name: Execute remote SSH commands
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.HOST }} # EC2 퍼블릭 IPv4 DNS
           username: ubuntu
