@@ -68,6 +68,7 @@ jobs:
           echo "${{ secrets.DOCKER_COMPOSE }}" | sudo tee docker-compose.yml > /dev/null
           
           ## Docker 작업
+          sudo chmod 666 /var/run/docker.sock
           sudo docker stop $(docker ps -a -q) 
           sudo docker rm -f $(docker ps -qa)
           sudo docker pull ${{ secrets.DOCKER_USERNAME }}/ttakkeun
