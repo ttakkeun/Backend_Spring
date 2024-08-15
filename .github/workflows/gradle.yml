@@ -68,5 +68,9 @@ jobs:
           sudo docker stop $(docker ps -a -q) 
           sudo docker rm -f $(docker ps -qa)
           sudo docker pull ${{ secrets.DOCKER_USERNAME }}/ttakkeun
-          sudo docker run --platform linux/amd64 -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/ttakkeun
+          sudo docker run -e DB_URL=${DB_URL} -e DB_USERNAME=${DB_USERNAME} -e DB_PASSWORD=${DB_PASSWORD} \
+                           -e NAVER_ClientID=${NAVER_ClientID} -e NAVER_ClientSecret=${NAVER_ClientSecret} \
+                           -e APPLE_Secret=${APPLE_Secret} -e apple_key_id=${apple_key_id} \
+                           -e apple_team_id=${apple_team_id} -e JWT_Secret=${JWT_Secret} \
+                           -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/ttakkeun
           sudo docker image prune -f
