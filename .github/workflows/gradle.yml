@@ -51,10 +51,17 @@ jobs:
         script: |
           cd /home/ubuntu/
           
-          ## .env 파일 생성
-          sudo touch .env
-          echo "${{ secrets.ENV_VARS }}" | sudo tee .env > /dev/null
-          
+          ## 환경 변수 설정
+          export DB_URL=${{ secrets.DB_URL }}
+          export DB_USERNAME=${{ secrets.DB_USERNAME }}
+          export DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+          export NAVER_ClientID=${{ secrets.NAVER_ClientID }}
+          export NAVER_ClientSecret=${{ secrets.NAVER_ClientSecret }}
+          export APPLE_Secret=${{ secrets.APPLE_Secret }}
+          export apple_key_id=${{ secrets.apple_key_id }}
+          export apple_team_id=${{ secrets.apple_team_id }}
+          export JWT_Secret=${{ secrets.JWT_Secret }}
+
          
           ## Docker 작업
           sudo chmod 666 /var/run/docker.sock
