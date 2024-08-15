@@ -7,5 +7,5 @@ import ttakkeun.ttakkeun_server.entity.UserAnswer;
 import java.util.Optional;
 
 public interface ChecklistAnswerRepository extends JpaRepository<ChecklistAnswer, Long> {
-    Optional<ChecklistAnswer> findByRecord_recordIdAndQuestion_questionId(Long recordId, Long questionId);
+    // Optional<ChecklistAnswer> findByRecord_recordIdAndQuestion_questionId(Long recordId, Long questionId);
 }

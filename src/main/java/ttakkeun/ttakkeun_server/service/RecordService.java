@@ -121,7 +121,7 @@ public class RecordService {
 
         // ChecklistAnswer 조회 (recordId와 questionId로 조회)
         log.info("여기기기기기");
-        ChecklistAnswer answer = checklistAnswerRepository.findByRecord_recordIdAndQuestion_questionId(recordId, questionId)
+        UserAnswer answer = userAnswerRepository.findByRecord_recordIdAndQuestion_questionId(recordId, questionId)
                 .orElseThrow(() -> new ExceptionHandler(ANSWER_NOT_FOUND));
 
         log.info("Number of images in RecordImageDTO: {}", files.size());
@@ -140,14 +140,14 @@ public class RecordService {
         answer.addImages(imageEntities);
 
         // 변경 사항 저장
-        checklistAnswerRepository.save(answer);
+        userAnswerRepository.save(answer);
     }
 
     public RecordResponseDTO.DetailResultDTO getRecordDetails(Long petId, Long recordId) {
         Record record = recordRepository.findByPet_PetIdAndRecordId(petId, recordId)
                 .orElseThrow(() -> new ExceptionHandler(RECORD_NOT_FOUND));
 
-        List<ChecklistAnswer> answers = record.getAnswerList();
+        List<UserAnswer> answers = record.getAnswerList();
 
         RecordResponseDTO.DetailResultDTO.DetailResultDTOBuilder dtoBuilder = RecordResponseDTO.DetailResultDTO.builder();
 
@@ -155,7 +155,7 @@ public class RecordService {
 
         if(!answers.isEmpty()) {
             dtoBuilder.question1(answers.get(0).getQuestion().getQuestionText())
-                    .answer1(answers.get(0).getAnswerText())
+                    .answer1(answers.get(0).getUserAnswerText())
                     .image1(answers.get(0).getImages().stream()
                             .map(image -> image.getImageUrl())
                             .collect(Collectors.toList()));
@@ -163,7 +163,7 @@ public class RecordService {
 
         if (answers.size() > 1) {
             dtoBuilder.question2(answers.get(1).getQuestion().getQuestionText())
-                    .answer2(answers.get(1).getAnswerText())
+                    .answer2(answers.get(1).getUserAnswerText())
                     .image2(answers.get(1).getImages().stream()
                             .map(image -> image.getImageUrl())
                             .collect(Collectors.toList()));
@@ -171,7 +171,7 @@ public class RecordService {
 
         if (answers.size() > 2) {
             dtoBuilder.question3(answers.get(2).getQuestion().getQuestionText())
-                    .answer3(answers.get(2).getAnswerText())
+                    .answer3(answers.get(2).getUserAnswerText())
                     .image3(answers.get(2).getImages().stream()
                             .map(image -> image.getImageUrl())
                             .collect(Collectors.toList()));
