@@ -58,3 +58,4 @@ openai:
     model: "https://api.openai.com/v1/models/gpt-4"
     model-list: "https://api.openai.com/v1/models/"
     prompt: "https://api.openai.com/v1/chat/completions/gpt-4"
+
