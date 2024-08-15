@@ -20,6 +20,6 @@ public class Image {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "answer_id")
-    private ChecklistAnswer answer;
+    private UserAnswer answer;
 
 }

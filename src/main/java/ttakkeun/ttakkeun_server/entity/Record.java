@@ -32,7 +32,7 @@ public class Record extends BaseEntity {
 
     @Builder.Default
     @OneToMany(mappedBy = "record", cascade = CascadeType.ALL)
-    private List<ChecklistAnswer> answerList = new ArrayList<>();
+    private List<UserAnswer> answerList = new ArrayList<>();
 
     @OneToMany(mappedBy = "record")
     private List<Result> results = new ArrayList<>();

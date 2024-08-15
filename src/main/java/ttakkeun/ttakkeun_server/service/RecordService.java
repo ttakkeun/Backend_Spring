@@ -83,13 +83,13 @@ public class RecordService {
                 .etc(request.getEtc())
                 .build();
 
-        List<ChecklistAnswer> answerList = new ArrayList<>();
+        List<UserAnswer> answerList = new ArrayList<>();
         for (RecordRequestDTO.AnswerDTO answerDTO : request.getAnswers()) {
             ChecklistQuestion question = checklistQuestionRepository.findById(answerDTO.getQuestionId())
                     .orElseThrow(() -> new ExceptionHandler(QUESTION_NOT_FOUND));
 
-            ChecklistAnswer answer = ChecklistAnswer.builder()
-                    .answerText(answerDTO.getAnswerText())
+            UserAnswer answer = UserAnswer.builder()
+                    .userAnswerText(answerDTO.getAnswerText())
                     .question(question)
                     .record(record)
                     .build();
