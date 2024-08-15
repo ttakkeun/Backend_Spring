@@ -42,15 +42,13 @@ naverApi:
 cloud:
   aws:
     credentials:
-#      access-key: ${aws_access}
-#      secret-key: ${aws_secret}
-      access-key: default_access_key
-      secret-key: default_secret_key
+      access-key: ${aws_access}
+      secret-key: ${aws_secret}
     region:
       static: ap-northeast-2
       # 리전 서울로 설정
     s3:
-      bucket: default-bucket
+      bucket: ttakkeun-bucket
 
 openai:
   secret-key: ${OPENAI_KEY}

@@ -85,14 +85,11 @@ public class PetController {
     @PatchMapping(value = "/{pet_id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiResponse<PetResponseDTO.PetImageDTO> editPetImage (
-            //@AuthenticationPrincipal Member member,
+            @AuthenticationPrincipal Member member,
             @PathVariable("pet_id") Long petId,
             @RequestPart("multipartFile") MultipartFile multipartFile) {
         if (multipartFile == null || multipartFile.isEmpty())
             throw new ExceptionHandler(IMAGE_EMPTY);
-
-        Member member = new Member();
-        member.setMemberId(1L); // 임의의 memberId 설정
 
         // pet_id로 반려동물을 조회
         Pet pet = petService.findPetByIdAndMember(petId, member);
