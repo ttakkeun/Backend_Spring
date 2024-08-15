@@ -33,6 +33,10 @@ public enum ErrorStatus implements BaseErrorCode {
     MEMBER_NOT_REGISTERED(HttpStatus.BAD_REQUEST, "MEMBER4002", "등록된 사용자가 아닙니다."),
     MEMBER_NOT_HAVE_PET(HttpStatus.BAD_REQUEST, "MEMBER4003", "반려동물이 없는 사용자 입니다."),
 
+    //Record 에러
+    RECORD_NOT_FOUND(HttpStatus.BAD_REQUEST, "RECORD4000", "해당하는 일지를 찾을 수 없습니다."),
+    ANSWER_NOT_FOUND(HttpStatus.BAD_REQUEST, "RECORD4001", "해당하는 답변을 찾을 수 없습니다."),
+
     // Dignose 에러
     DIAGNOSE_NOT_FOUND(HttpStatus.BAD_REQUEST, "DIAGNOSE4001", "해당하는 진단 결과를 찾을 수 없습니다."),
 
@@ -43,6 +47,11 @@ public enum ErrorStatus implements BaseErrorCode {
     //이미지 에러
     IMAGE_EMPTY(HttpStatus.BAD_REQUEST, "IMAGE4000", "이미지가 첨부되지 않았습니다."),
     IMAGE_NOT_SAVE(HttpStatus.BAD_REQUEST, "IMAGE4001", "이미지 저장에 실패했습니다." ),
+
+    //S3 에러
+    S3_UPLOAD_FAIL(HttpStatus.BAD_REQUEST, "S34000", "이미지 업로드에 실패하였습니다."),
+    NO_FILE_EXTENTION(HttpStatus.BAD_REQUEST, "S34001", "해당되는 파일 확장자가 없습니다."),
+    INVALID_FILE_EXTENTION(HttpStatus.BAD_REQUEST, "S34002", "유효하지 않은 파일 확장자입니다."),
 
     //Question 에러
     QUESTION_NOT_FOUND(HttpStatus.BAD_REQUEST, "QUESTION4001", "유효하지 않은 Question ID입니다."),

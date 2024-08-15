@@ -11,12 +11,12 @@ public class LoginResponseDto {
 
     private String accessToken;
     private String refreshToken;
-    //private String email;
+    private String email;
 
     @Builder
-    public LoginResponseDto(String accessToken, String refreshToken) {
+    public LoginResponseDto(String accessToken, String refreshToken, String email) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
-        //this.email = email;
+        this.email = email;
     }
 }

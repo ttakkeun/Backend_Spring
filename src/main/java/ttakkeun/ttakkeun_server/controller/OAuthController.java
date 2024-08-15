@@ -26,10 +26,10 @@ public class OAuthController {
 
     private final OAuthService oAuthService;
 
-    @PostMapping("/refresh")
+    @PostMapping("/refreshtoken")
     public ApiResponse<LoginResponseDto> regenerateAccessToken(HttpServletRequest request) {
         //String accessToken = request.getHeader("Authorization");
-        String refreshToken = request.getHeader("Authorization");
+        String refreshToken = request.getHeader("RefreshToken");
 
         //System.out.println("Access Token: " + accessToken.substring(7));
         System.out.println("Refresh Token: " + refreshToken.substring(7));

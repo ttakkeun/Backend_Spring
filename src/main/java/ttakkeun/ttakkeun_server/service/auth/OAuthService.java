@@ -11,6 +11,7 @@ import ttakkeun.ttakkeun_server.dto.auth.apple.AppleAuthClient;
 import ttakkeun.ttakkeun_server.dto.auth.apple.AppleLoginRequestDto;
 import ttakkeun.ttakkeun_server.dto.auth.apple.AppleSignUpRequestDto;
 import ttakkeun.ttakkeun_server.entity.Member;
+import ttakkeun.ttakkeun_server.entity.enums.LoginType;
 import ttakkeun.ttakkeun_server.repository.MemberRepository;
 import ttakkeun.ttakkeun_server.service.JwtService;
 import ttakkeun.ttakkeun_server.utils.ApplePublicKeyGenerator;
@@ -47,7 +48,7 @@ public class OAuthService {
 
         System.out.println("member nickname : " + member.getUsername());
 
-        return new LoginResponseDto(newAccessToken, newRefreshToken);
+        return new LoginResponseDto(newAccessToken, newRefreshToken, member.getEmail());
     }
 
     // refreshToken으로 accessToken 발급하기
@@ -78,7 +79,7 @@ public class OAuthService {
 
         System.out.println("member nickname : " + member.getUsername());
 
-        return new LoginResponseDto(newAccessToken, newRefreshToken);
+        return new LoginResponseDto(newAccessToken, newRefreshToken, member.getEmail());
     }
 
     @Transactional
@@ -127,10 +128,11 @@ public class OAuthService {
             // 등록된 유저가 아닌 경우 회원가입 로직
             member = memberRepository.save(
                     Member.builder()
-                            //.email(claims.get("email", String.class)) // 애플 JWT에 이메일 클레임이 포함된 경우 사용
+                            .email(claims.get("email", String.class)) // 애플 JWT에 이메일 클레임이 포함된 경우 사용
                             //.nickname(appleSignUpRequestDto.getName()) // appleLoginRequestDto에서 닉네임 가져오기
                             //.provider(MemberProvider.APPLE) // 필요에 따라 설정
                             .appleSub(sub)
+                            .loginType(LoginType.APPLE)
                             .refreshToken("") // 초기 빈 값 설정
                             .refreshTokenExpiresAt(LocalDateTime.now()) // 초기 시간 설정
                             .build()

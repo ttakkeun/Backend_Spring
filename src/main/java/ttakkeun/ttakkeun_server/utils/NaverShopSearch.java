@@ -1,5 +1,6 @@
 package ttakkeun.ttakkeun_server.utils;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -11,14 +12,23 @@ import java.nio.charset.StandardCharsets;
 
 @Component
 public class NaverShopSearch {
-    public String search(String keyword) {
+
+    @Value("${naverApi.clientId}")
+    private String clientId;
+
+    @Value("${naverApi.clientSecret}")
+    private String clientSecret;
+
+    public String search(String keyword, int page) {
+        int start = page*10 + 1;
         RestTemplate rest = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
-        headers.add("X-Naver-Client-Id", "2k1Nw65mLqVXlJNKkaE4");
-        headers.add("X-Naver-Client-Secret", "p36CPPTMyN");
+        headers.add("X-Naver-Client-Id", clientId);
+        headers.add("X-Naver-Client-Secret", clientSecret);
 
         String url = "https://openapi.naver.com/v1/search/shop.json?"
-                + "query=" + keyword;
+                + "query=" + keyword
+                + "&start=" + start;
 
         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 

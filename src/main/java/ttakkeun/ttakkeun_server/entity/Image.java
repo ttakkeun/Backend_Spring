@@ -18,6 +18,7 @@ public class Image {
     @Column(nullable = false)
     private String imageUrl;
 
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "answer_id")
     private UserAnswer answer;

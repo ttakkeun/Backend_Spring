@@ -28,9 +28,9 @@ spring:
         key-id: ${apple_key_id}
         team-id: ${apple_team_id}
         audience: https://appleid.apple.com
-        private-key: ${apple_private}
+        private-key: ${APPLE_Secret}
 jwt:
-  secretKey: stressstressstresstresstresstressstressstressstressstressstressstress
+  secretKey: ${JWT_Secret}
 
 server:
   port: 8080
@@ -51,3 +51,10 @@ cloud:
       # 리전 서울로 설정
     s3:
       bucket: default-bucket
+
+openai:
+  secret-key: ${OPENAI_KEY}
+  url:
+    model: "https://api.openai.com/v1/models/gpt-4"
+    model-list: "https://api.openai.com/v1/models/"
+    prompt: "https://api.openai.com/v1/chat/completions/gpt-4"

@@ -24,10 +24,10 @@ import java.util.NoSuchElementException;
 @RequestMapping("/api/diagnose")
 public class DiagnoseController {
     @Autowired
-    private DiagnoseService diagnoseService;
+    private final DiagnoseService diagnoseService;
 
     @Autowired
-    private DiagnoseNaverProductService diagnoseNaverProductService;
+    private final DiagnoseNaverProductService diagnoseNaverProductService;
 
     // 진단 버튼 클릭시 사용자의 포인트를 조회하는 API
     @Operation(summary = "사용자 포인트 조회 API")

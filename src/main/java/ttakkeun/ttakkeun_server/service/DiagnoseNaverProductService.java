@@ -40,8 +40,8 @@ public class DiagnoseNaverProductService {
 
     @Autowired
     public DiagnoseNaverProductService(ResultRepository resultRepository, ProductRepository productRepository, ResultProductRepository resultProductRepository,
-                           @Value("${NAVER_ClientID}") String naverClientId,
-                           @Value("${NAVER_ClientSecret}") String naverClientSecret) {
+                           @Value("${naverApi.clientId}") String naverClientId,
+                           @Value("${naverApi.clientSecret}") String naverClientSecret) {
         this.resultRepository = resultRepository;
         this.productRepository = productRepository;
         this.resultProductRepository = resultProductRepository;

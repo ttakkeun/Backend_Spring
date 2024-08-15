@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 import ttakkeun.ttakkeun_server.entity.enums.Category;
 
 import java.util.List;
@@ -28,5 +29,14 @@ public class RecordRequestDTO {
         private Category category;
         private String etc;
         private List<AnswerDTO> answers;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class RecordImageDTO {
+        private Long questionId;
+        private List<MultipartFile> images;
     }
 }
