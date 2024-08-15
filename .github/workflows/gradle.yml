@@ -72,5 +72,5 @@ jobs:
           sudo docker stop $(docker ps -a -q) 
           sudo docker rm -f $(docker ps -qa)
           sudo docker pull ${{ secrets.DOCKER_USERNAME }}/ttakkeun
-          sudo docker run -d -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/ttakkeun
+          sudo docker run -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/ttakkeun
           sudo docker image prune -f
