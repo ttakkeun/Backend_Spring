@@ -1,0 +1,60 @@
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  sql:
+    init:
+      mode:never
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        show_sql: true
+        format_sql: true
+        use_sql_comments: true
+        hbm2ddl:
+          auto: update
+        default_batch_fetch_size: 1000
+  social-login:
+    provider:
+      apple:
+        redirect-uri: https://lttakkeun.app.com/apple/callback/
+        grant-type: authorization_code
+        client-id: ttakkeun.app.com
+        key-id: ${apple_key_id}
+        team-id: ${apple_team_id}
+        audience: https://appleid.apple.com
+        private-key: ${apple_private}
+jwt:
+  secretKey: stressstressstresstresstresstressstressstressstressstressstressstress
+
+server:
+  port: 8080
+
+naverApi:
+  clientId: ${NAVER_ClientID}
+  clientSecret: ${NAVER_ClientSecret}
+
+cloud:
+  aws:
+    credentials:
+      #      access-key: ${aws_access}
+      #      secret-key: ${aws_secret}
+      access-key: default_access_key
+      secret-key: default_secret_key
+    region:
+      static: ap-northeast-2
+      # 리전 서울로 설정
+    s3:
+      bucket: default-bucket
+
+openai:
+  secret-key: ${OPENAI_KEY}
+  url:
+    model: "https://api.openai.com/v1/models/gpt-4"
+    model-list: "https://api.openai.com/v1/models/"
+    prompt: "https://api.openai.com/v1/chat/completions/gpt-4"
