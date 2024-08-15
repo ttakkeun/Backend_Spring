@@ -1,5 +1,6 @@
 package ttakkeun.ttakkeun_server.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.util.StringUtils;
@@ -26,6 +27,7 @@ public class OAuthController {
 
     private final OAuthService oAuthService;
 
+    @Operation(summary = "토큰 재발급 API")
     @PostMapping("/refresh")
     public ApiResponse<LoginResponseDto> regenerateAccessToken(HttpServletRequest request) {
         //String accessToken = request.getHeader("Authorization");
@@ -41,6 +43,7 @@ public class OAuthController {
             throw new ExceptionHandler(TOKEN_EMPTY);
     }
 
+    @Operation(summary = "애플 로그인 API")
     @PostMapping("/apple/login")
     public ApiResponse<LoginResponseDto> appleLogin(@RequestBody @Validated AppleLoginRequestDto appleReqDto) throws Exception {
         if (appleReqDto.getIdentityToken() == null)
@@ -48,6 +51,7 @@ public class OAuthController {
         return ApiResponse.onSuccess(oAuthService.appleLogin(appleReqDto));
     }
 
+    @Operation(summary = "애플 회원가입 API")
     @PostMapping("/apple/signup")
     public ApiResponse<LoginResponseDto> appleSignUp(@RequestBody @Validated AppleSignUpRequestDto appleSignUpReqDto) throws Exception{
         if (appleSignUpReqDto.getIdentityToken() == null)
