@@ -27,7 +27,7 @@ import static ttakkeun.ttakkeun_server.apiPayLoad.code.status.ErrorStatus.MEMBER
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/auth/pet-profile")
+@RequestMapping("/api/pet-profile")
 public class PetController {
 
     private final PetCommandService petCommandService;

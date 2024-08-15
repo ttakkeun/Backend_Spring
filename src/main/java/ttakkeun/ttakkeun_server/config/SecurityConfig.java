@@ -36,9 +36,7 @@ public class SecurityConfig {
     public WebSecurityCustomizer webSecurityCustomizer(){
         return web -> web.ignoring()
                 .requestMatchers("/swagger-ui/**", "/swagger/**", "/swagger-resources/**", "/swagger-ui.html", "/test",
-                        "/configuration/ui",  "/v3/api-docs/**", "/api/auth/refresh", "/api/record/**", "/api/auth/apple/**",
-                        "/api/pet-profile/**", "/api/todos/**", "/api/diagnose/**", "/api/calendar/**",
-                        "/api/product/**", "/test/diagnose/**");
+                        "/configuration/ui",  "/v3/api-docs/**", "/api/auth/refresh", "/api/auth/apple/**");
 
     }
 
@@ -56,7 +54,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authorizeRequests) ->
                         authorizeRequests
                                 .requestMatchers(
-                                        AntPathRequestMatcher.antMatcher("/api/auth/**")
+                                        AntPathRequestMatcher.antMatcher("/api/**")
                                 ).authenticated()
                                 .anyRequest().authenticated()
                 )
