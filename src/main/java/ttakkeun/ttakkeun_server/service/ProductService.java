@@ -30,27 +30,33 @@ public class ProductService {
     private final NaverShopSearch naverShopSearch;
 
     //진단의 ai추천제품
-    public List<RecommendProductDTO> getResultProducts() {
+    public List<RecommendProductDTO> getResultProducts(Long memberId) {
         Long latestResultId = resultRepository.findLatestResultId();
         List<Product> products = productRepository.findByResultId(latestResultId);
 
-        return products.stream().map(productConverter::toDTO).collect(Collectors.toList());
+        return products.stream()
+                .map(product -> productConverter.toDTO(product, memberId))
+                .collect(Collectors.toList());
     }
 
     //랭킹별 추천제품(한 페이지당 20개)
-    public List<RecommendProductDTO> getRankedProducts(int page) {
+    public List<RecommendProductDTO> getRankedProducts(int page, Long memberId) {
         Pageable pageable = PageRequest.of(page, 20);
         List<Product> products = productRepository.sortedByLikesWithPaging(pageable).getContent();
 
-        return products.stream().map(productConverter::toDTO).collect(Collectors.toList());
+        return products.stream()
+                .map(product -> productConverter.toDTO(product, memberId))
+                .collect(Collectors.toList());
     }
 
     //부위 별 랭킹(한 페이지당 20개)
-    public List<RecommendProductDTO> getTagRankingProducts(Category tag, int page) {
+    public List<RecommendProductDTO> getTagRankingProducts(Category tag, int page, Long memberId) {
         Pageable pageable = PageRequest.of(page, 20);
         List<Product> products = productRepository.findByTag(tag, pageable).getContent();
 
-        return products.stream().map(productConverter::toDTO).collect(Collectors.toList());
+        return products.stream()
+                .map(product -> productConverter.toDTO(product, memberId))
+                .collect(Collectors.toList());
     }
 
     //좋아요를 누른 새로운 제품을 저장
@@ -63,15 +69,17 @@ public class ProductService {
     }
 
     //검색 기능 - 따끈 DB에서 불러오기
-    public List<RecommendProductDTO> getProductByKeywordFromDB(String keyword, int page) {
+    public List<RecommendProductDTO> getProductByKeywordFromDB(String keyword, int page, Long memberId) {
         Pageable pageable = PageRequest.of(page, 10);
         List<Product> products = productRepository.findByProductTitle(keyword, pageable).getContent();
 
-        return products.stream().map(productConverter::toDTO).collect(Collectors.toList());
+        return products.stream()
+                .map(product -> productConverter.toDTO(product, memberId))
+                .collect(Collectors.toList());
     }
 
     //검색 기능 - 네이버 쇼핑에서 불러오기
-    public List<RecommendProductDTO> getProductByKeywordFromNaver(String keyword) {
+    public List<RecommendProductDTO> getProductByKeywordFromNaver(String keyword, Long memberId) {
 
         List<RecommendProductDTO> productDTOs = new ArrayList<>();
 
@@ -83,7 +91,7 @@ public class ProductService {
 
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject JSONProduct = (JSONObject) jsonArray.get(i);
-                RecommendProductDTO productDTO = productConverter.JSONToDTO(JSONProduct);
+                RecommendProductDTO productDTO = productConverter.JSONToDTO(JSONProduct, memberId);
 
                 if (productDTOs.size() < 10 && productConverter.categoryFilter(productDTO)) {
                     productDTOs.add(productDTO);
@@ -99,7 +107,7 @@ public class ProductService {
 
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject JSONProduct = (JSONObject) jsonArray.get(i);
-                RecommendProductDTO productDTO = productConverter.JSONToDTO(JSONProduct);
+                RecommendProductDTO productDTO = productConverter.JSONToDTO(JSONProduct, memberId);
 
                 if (productDTOs.size() < 10 && productConverter.categoryFilter(productDTO)) {
                     productDTOs.add(productDTO);

@@ -19,9 +19,9 @@ public class ProductConverter {
     private final ProductRepository productRepository;
 
     //Product를 ProductDTO로 convert
-    public RecommendProductDTO toDTO(Product product) {
+    public RecommendProductDTO toDTO(Product product, Long memberId) {
         Long productId = product.getProductId();
-        boolean isLike = likeService.getLikeStatus(productId);
+        boolean isLike = likeService.getLikeStatus(productId, memberId);
 
         return RecommendProductDTO.builder()
                 .product_id(product.getProductId())
@@ -55,7 +55,7 @@ public class ProductConverter {
     }
 
     //네이버 api로 얻은 JSONObject를 ProductDTO로 변경
-    public RecommendProductDTO JSONToDTO(JSONObject jsonObject) {
+    public RecommendProductDTO JSONToDTO(JSONObject jsonObject, Long memberId) {
         Long productId = Long.valueOf(jsonObject.getString("productId"));
         Product product = productRepository.findById(productId).orElse(null);
 
@@ -65,7 +65,7 @@ public class ProductConverter {
         } else {
             totalLikes = product.getTotalLikes();
         }
-        boolean isLike = likeService.getLikeStatus(productId);
+        boolean isLike = likeService.getLikeStatus(productId, memberId);
 
         return RecommendProductDTO.builder()
                 .product_id(productId)
