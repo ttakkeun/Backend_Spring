@@ -21,7 +21,6 @@ import ttakkeun.ttakkeun_server.service.PetService.PetService;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.bouncycastle.asn1.x500.style.RFC4519Style.member;
 import static ttakkeun.ttakkeun_server.apiPayLoad.code.status.ErrorStatus.IMAGE_EMPTY;
 import static ttakkeun.ttakkeun_server.apiPayLoad.code.status.ErrorStatus.MEMBER_NOT_HAVE_PET;
 
@@ -37,10 +36,10 @@ public class PetController {
     @Operation(summary = "반려동물 프로필 추가 API")
     @PostMapping("/add")
     public ApiResponse<PetResponseDTO.AddResultDTO> add(
-//            @RequestHeader("Authorization") String accessToken,
+            @AuthenticationPrincipal Member member,
             @RequestBody @Valid PetRequestDTO.AddDTO request
     ) {
-        Pet newPet = petCommandService.add(request);
+        Pet newPet = petCommandService.add(request, member);
         PetResponseDTO.AddResultDTO resultDTO = PetConverter.toAddResultDTO(newPet);
 
         return ApiResponse.onSuccess(resultDTO);
