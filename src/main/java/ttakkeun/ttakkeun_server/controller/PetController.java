@@ -49,9 +49,10 @@ public class PetController {
     @Operation(summary = "특정 반려동물 프로필 조회 API")
     @GetMapping("/{pet_id}")
     public ApiResponse<PetResponseDTO.LoadResultDTO> load(
+            @AuthenticationPrincipal Member member,
             @PathVariable("pet_id") Long petId
     ) {
-        PetResponseDTO.LoadResultDTO resultDTO = petQueryService.load(petId);
+        PetResponseDTO.LoadResultDTO resultDTO = petQueryService.load(petId, member);
         return ApiResponse.onSuccess(resultDTO);
     }
 
