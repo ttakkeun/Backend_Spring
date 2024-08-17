@@ -56,4 +56,16 @@ public class PetResponseDTO {
     public static class PetImageDTO {
         String petImageUrl;
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class EditResultDTO {
+        String petName;
+        String petType;
+        String petVariety;
+        String birth;
+        Boolean neutralization;
+    }
 }
