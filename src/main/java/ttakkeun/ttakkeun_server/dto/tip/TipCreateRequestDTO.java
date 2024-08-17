@@ -9,13 +9,11 @@ import ttakkeun.ttakkeun_server.entity.enums.Category;
 @Setter
 @NoArgsConstructor
 public class TipCreateRequestDTO {
-    private Long memberId;
     private String title;
     private String content;
     private Category tipCategory;
 
-    public TipCreateRequestDTO(Long memberId, String title, String content, Category tipCategory) {
-        this.memberId = memberId;
+    public TipCreateRequestDTO(String title, String content, Category tipCategory) {
         this.title = title;
         this.content = content;
         this.tipCategory = tipCategory;

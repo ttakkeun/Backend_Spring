@@ -1,6 +1,10 @@
 package ttakkeun.ttakkeun_server.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -12,9 +16,9 @@ import ttakkeun.ttakkeun_server.entity.Tip;
 
 import ttakkeun.ttakkeun_server.entity.TipImage;
 import ttakkeun.ttakkeun_server.entity.enums.Category;
+import ttakkeun.ttakkeun_server.repository.MemberRepository;
 import ttakkeun.ttakkeun_server.repository.TipRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,6 +30,7 @@ public class TipService {
     private final TipRepository tipRepository;
     private final MemberService memberService;
     private final S3ImageService s3ImageService;
+    private final MemberRepository memberRepository;
 
     @Transactional
     public TipResponseDTO createTip(TipCreateRequestDTO request, Long memberId, List<MultipartFile> imageFiles) {
@@ -39,16 +44,6 @@ public class TipService {
                 .member(member)
                 .build();
 
-        if (imageFiles != null && !imageFiles.isEmpty()) {
-            for (MultipartFile file : imageFiles) {
-                String imageUrl = s3ImageService.upload(file);
-                TipImage tipImage = TipImage.builder()
-                        .tipImageUrl(imageUrl)
-                        .tip(tip)
-                        .build();
-                tip.addImage(tipImage);
-            }
-        }
 
         tipRepository.save(tip);
 
@@ -67,26 +62,46 @@ public class TipService {
         );
     }
 
-    @Transactional(readOnly = true)
-    public List<TipResponseDTO> getTipsByCategory(Category category) {
-        List<Tip> tips = tipRepository.findByTipCategory(category);
+    @Transactional
+    public String uploadTipImage(Long tipId, Long memberId, MultipartFile multipartFile) {
+        Tip tip = tipRepository.findById(tipId)
+                .orElseThrow(() -> new IllegalArgumentException("Tip을 찾을 수 없습니다: " + tipId));
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("Member를 찾을 수 없습니다: " + memberId));
 
-        List<TipResponseDTO> tipResponseDTOS = new ArrayList<>();
-        for (Tip tip : tips) {
-            TipResponseDTO dto = new TipResponseDTO(
-                    tip.getTipId(),
-                    tip.getTipCategory(),
-                    tip.getTitle(),
-                    tip.getContent(),
-                    tip.getRecommendCount(),
-                    tip.getCreatedAt(),
-                    tip.getImages().stream().map(image -> image.getTipImageUrl()).collect(Collectors.toList()),
-                    tip.getMember().getUsername(),
-                    tip.getIsPopular()
-            );
-            tipResponseDTOS.add(dto);
+        if (!tip.getMember().getMemberId().equals(memberId)) {
+            throw new IllegalStateException("권한이 없습니다.");
         }
-        return tipResponseDTOS;
+
+        String imageUrl = s3ImageService.upload(multipartFile);
+
+        TipImage tipImage = TipImage.builder()
+                .tipImageUrl(imageUrl)
+                .tip(tip)
+                .build();
+        tip.addImage(tipImage);
+        tipRepository.save(tip);
+
+        return imageUrl;
     }
 
-}
+    @Transactional(readOnly = true)
+    public List<TipResponseDTO> getTipsByCategory(Category category, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<Tip> tipsPage = tipRepository.findByTipCategory(category, pageable);
+
+        return tipsPage.stream()
+                .map(tip -> new TipResponseDTO(
+                        tip.getTipId(),
+                        tip.getTipCategory(),
+                        tip.getTitle(),
+                        tip.getContent(),
+                        tip.getRecommendCount(),
+                        tip.getCreatedAt(),
+                        tip.getImages().stream().map(TipImage::getTipImageUrl).collect(Collectors.toList()),
+                        tip.getMember().getUsername(),
+                        tip.getIsPopular()
+                ))
+                .collect(Collectors.toList());
+    }
+    }
