@@ -25,6 +25,16 @@ public class RecordResponseDTO {
         Long questionId;
         String questionText;
         String descriptionText;
+        Boolean isDupe;
+        List<AnswersDTO> answers;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class AnswersDTO {
+        String answerText;
     }
 
     @Builder

@@ -59,13 +59,16 @@ public class RecordController {
     }
 
 
-    @Operation(summary = "일지 질문 조회 API")
+    @Operation(summary = "일지 질문 및 답변 조회 API")
     @GetMapping("/register/{category}")
     public ApiResponse<RecordResponseDTO.LoadQuestionResultDTO> loadquestion(
             @PathVariable("category") Category category
     ) {
         List<RecordResponseDTO.QuestionDTO> questions = recordService.getQuestionsByCategory(category);
-        RecordResponseDTO.LoadQuestionResultDTO result = new RecordResponseDTO.LoadQuestionResultDTO(category.name(), questions);
+        RecordResponseDTO.LoadQuestionResultDTO result = RecordResponseDTO.LoadQuestionResultDTO.builder()
+                .category(category.name())
+                .questions(questions)
+                .build();
         return ApiResponse.onSuccess(result);
     }
 

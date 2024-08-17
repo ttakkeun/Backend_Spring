@@ -75,7 +75,17 @@ public class RecordService {
         List<ChecklistQuestion> questions = checklistQuestionRepository.findByQuestionCategory(category);
 
         return questions.stream()
-                .map(question -> new RecordResponseDTO.QuestionDTO(question.getQuestionId(), question.getQuestionText(), question.getDescriptionText()))
+                .map(question -> RecordResponseDTO.QuestionDTO.builder()
+                        .questionId(question.getQuestionId())
+                        .questionText(question.getQuestionText())
+                        .descriptionText(question.getDescriptionText())
+                        .answers(question.getChecklistAnswers().stream()
+                                .map(answer -> RecordResponseDTO.AnswersDTO.builder()
+                                        .answerText(answer.getChecklistAnswerText())
+                                        .build())
+                                .collect(Collectors.toList()))
+                        .isDupe(question.getIsDupe())
+                        .build())
                 .collect(Collectors.toList());
     }
 
