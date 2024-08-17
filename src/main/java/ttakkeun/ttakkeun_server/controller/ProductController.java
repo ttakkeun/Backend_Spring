@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import ttakkeun.ttakkeun_server.apiPayLoad.ApiResponse;
 import ttakkeun.ttakkeun_server.dto.LikeResponseDTO;
 import ttakkeun.ttakkeun_server.dto.product.ProductApiResponseDTO;
 import ttakkeun.ttakkeun_server.dto.RecommendProductDTO;
@@ -27,171 +28,76 @@ public class ProductController {
     //ai 추천 제품
     @Operation(summary = "가장 최근 진단 기준 최대 5개의 추천 제품 조회 API")
     @GetMapping("/ai")
-    public ResponseEntity<ProductApiResponseDTO> getAiProducts(
+    public ApiResponse<List<RecommendProductDTO>> getAiProducts(
             @AuthenticationPrincipal Member member
     ) {
-        try {
-            Long memberId = member.getMemberId();
-            List<RecommendProductDTO> products = productService.getResultProducts(memberId);
-            ProductApiResponseDTO response = ProductApiResponseDTO.builder()
-                    .isSuccess(true)
-                    .code(200)
-                    .message("성공")
-                    .result(products)
-                    .build();
+        Long memberId = member.getMemberId();
+        List<RecommendProductDTO> products = productService.getResultProducts(memberId);
 
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            ProductApiResponseDTO response = ProductApiResponseDTO.builder()
-                    .isSuccess(false)
-                    .code(500)
-                    .message("에러: " + e.getMessage())
-                    .build();
-
-            return ResponseEntity.status(500).body(response);
-        }
+        return ApiResponse.onSuccess(products);
     }
 
     //랭킹별 추천제품
     @Operation(summary = "랭킹별 추천 제품(전체) 조회 API")
     @GetMapping("/rank/{page}")
-    public ResponseEntity<ProductApiResponseDTO> getRankedProducts(
+    public ApiResponse<List<RecommendProductDTO>> getRankedProducts(
             @PathVariable int page,
             @AuthenticationPrincipal Member member
     ) {
-        try {
-            Long memberId = member.getMemberId();
-            List<RecommendProductDTO> products = productService.getRankedProducts(page, memberId);
-            ProductApiResponseDTO response = ProductApiResponseDTO.builder()
-                    .isSuccess(true)
-                    .code(200)
-                    .message("성공")
-                    .result(products)
-                    .build();
+        Long memberId = member.getMemberId();
+        List<RecommendProductDTO> products = productService.getRankedProducts(page, memberId);
 
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            ProductApiResponseDTO response = ProductApiResponseDTO.builder()
-                    .isSuccess(false)
-                    .code(500)
-                    .message("에러: " + e.getMessage())
-                    .build();
-
-            return ResponseEntity.status(500).body(response);
-        }
+        return ApiResponse.onSuccess(products);
     }
 
     //부위 별 랭킹 제품
     @Operation(summary = "랭킹별 추천 제품(태그) 조회 API")
     @GetMapping("/tag/{tag}/{page}")
-    public ResponseEntity<ProductApiResponseDTO> getTagRankingProducts(
+    public ApiResponse<List<RecommendProductDTO>> getTagRankingProducts(
             @PathVariable Category tag, @PathVariable int page,
             @AuthenticationPrincipal Member member
     ) {
-        try {
-            Long memberId = member.getMemberId();
-            List<RecommendProductDTO> products = productService.getTagRankingProducts(tag, page, memberId);
-            ProductApiResponseDTO response = ProductApiResponseDTO.builder()
-                    .isSuccess(true)
-                    .code(200)
-                    .message("성공")
-                    .result(products)
-                    .build();
+        Long memberId = member.getMemberId();
+        List<RecommendProductDTO> products = productService.getTagRankingProducts(tag, page, memberId);
 
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            ProductApiResponseDTO response = ProductApiResponseDTO.builder()
-                    .isSuccess(false)
-                    .code(500)
-                    .message("에러: " + e.getMessage())
-                    .build();
-
-            return ResponseEntity.status(500).body(response);
-        }
+        return ApiResponse.onSuccess(products);
     }
 
     @Operation(summary = "검색 조회(따끈 DB) API")
     @GetMapping("/search_db/{keyword}/{page}")
-    public ResponseEntity<ProductApiResponseDTO> getSearchProductsFromDB(
+    public ApiResponse<List<RecommendProductDTO>> getSearchProductsFromDB(
             @PathVariable String keyword, @PathVariable int page,
             @AuthenticationPrincipal Member member
     ) {
-        try {
-            Long memberId = member.getMemberId();
-            List<RecommendProductDTO> products = productService.getProductByKeywordFromDB(keyword, page, memberId);
-            ProductApiResponseDTO response = ProductApiResponseDTO.builder()
-                    .isSuccess(true)
-                    .code(200)
-                    .message("성공")
-                    .result(products)
-                    .build();
+        Long memberId = member.getMemberId();
+        List<RecommendProductDTO> products = productService.getProductByKeywordFromDB(keyword, page, memberId);
 
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            ProductApiResponseDTO response = ProductApiResponseDTO.builder()
-                    .isSuccess(false)
-                    .code(500)
-                    .message("에러: " + e.getMessage())
-                    .build();
-
-            return ResponseEntity.status(500).body(response);
-        }
+        return ApiResponse.onSuccess(products);
     }
 
     @Operation(summary = "검색 조회(네이버 쇼핑) API")
     @GetMapping("/search_naver/{keyword}")
-    public ResponseEntity<ProductApiResponseDTO> getSearchProductsFromNaver(
+    public ApiResponse<List<RecommendProductDTO>> getSearchProductsFromNaver(
             @PathVariable String keyword,
             @AuthenticationPrincipal Member member
     ) {
-        try {
-            Long memberId = member.getMemberId();
-            List<RecommendProductDTO> products = productService.getProductByKeywordFromNaver(keyword, memberId);
-            ProductApiResponseDTO response = ProductApiResponseDTO.builder()
-                    .isSuccess(true)
-                    .code(200)
-                    .message("성공")
-                    .result(products)
-                    .build();
+        Long memberId = member.getMemberId();
+        List<RecommendProductDTO> products = productService.getProductByKeywordFromNaver(keyword, memberId);
 
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            ProductApiResponseDTO response = ProductApiResponseDTO.builder()
-                    .isSuccess(false)
-                    .code(500)
-                    .message("에러: " + e.getMessage())
-                    .build();
-
-            return ResponseEntity.status(500).body(response);
-        }
+        return ApiResponse.onSuccess(products);
     }
 
     @Operation(summary = "좋아요/취소 토글 API")
     @PatchMapping("/like/{product_id}")
-    public ResponseEntity<LikeResponseDTO> toggleLikeProduct(
+    public ApiResponse<LikeResponseDTO.Result> toggleLikeProduct(
             @PathVariable Long product_id,
             @AuthenticationPrincipal Member member
     ) {
-        try {
-            Long memberId = member.getMemberId();
-            likeService.toggleLikeProduct(product_id, memberId);
-            LikeResponseDTO.Result result = likeService.getLikeInfo(product_id, memberId);
+        Long memberId = member.getMemberId();
+        likeService.toggleLikeProduct(product_id, memberId);
 
+        LikeResponseDTO.Result result = likeService.getLikeInfo(product_id, memberId);
 
-            LikeResponseDTO response = LikeResponseDTO.builder()
-                    .isSuccess(true)
-                    .code(200)
-                    .message("성공")
-                    .result(result).build();
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            LikeResponseDTO response = LikeResponseDTO.builder()
-                    .isSuccess(false)
-                    .code(500)
-                    .message("에러: " + e.getMessage())
-                    .build();
-
-            return ResponseEntity.status(500).body(response);
-        }
+        return ApiResponse.onSuccess(result);
     }
 }
