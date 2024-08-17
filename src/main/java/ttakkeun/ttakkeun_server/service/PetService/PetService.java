@@ -10,17 +10,22 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ttakkeun.ttakkeun_server.apiPayLoad.ExceptionHandler;
+import ttakkeun.ttakkeun_server.dto.pet.PetRequestDTO;
 import ttakkeun.ttakkeun_server.dto.pet.PetResponseDTO;
 import ttakkeun.ttakkeun_server.entity.Member;
 import ttakkeun.ttakkeun_server.entity.Pet;
+import ttakkeun.ttakkeun_server.entity.enums.Neutralization;
+import ttakkeun.ttakkeun_server.entity.enums.PetType;
 import ttakkeun.ttakkeun_server.repository.MemberRepository;
 import ttakkeun.ttakkeun_server.repository.PetRepository;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static ttakkeun.ttakkeun_server.apiPayLoad.code.status.ErrorStatus.*;
+import static ttakkeun.ttakkeun_server.entity.enums.Neutralization.NEUTRALIZATION;
 
 @Service
 @RequiredArgsConstructor
@@ -80,5 +85,42 @@ public class PetService {
         petRepository.save(pet);
 
         return new PetResponseDTO.PetImageDTO(pet.getPetImageUrl());
+    }
+
+    public Optional<Pet> findById(Long petId) {
+        return petRepository.findById(petId);
+    }
+
+    public PetResponseDTO.EditResultDTO updateProfile(Pet pet, PetRequestDTO.AddDTO request) {
+        if (request.getName() != null && !request.getName().equals("string")) {
+            pet.setPetName(request.getName());
+        }
+        if (request.getVariety() != null && !request.getVariety().equals("string")) {
+            pet.setPetVariety(request.getVariety());
+        }
+        if (request.getBirth() != null && !request.getBirth().equals("string")) {
+            pet.setBirth(request.getBirth());
+        }
+        if (request.getNeutralization() != null) {
+            pet.setNeutralization(request.getNeutralization() ?
+                    NEUTRALIZATION : Neutralization.UNNEUTRALIZATION);
+        }
+        if (request.getType() != null && !request.getType().equals("string")) {
+            pet.setPetType(switch (request.getType()) {
+                case "CAT" -> PetType.CAT;
+                case "DOG" -> PetType.DOG;
+                default -> null;
+            });
+        }
+
+        petRepository.save(pet);
+
+        return PetResponseDTO.EditResultDTO.builder()
+                .petName(pet.getPetName())
+                .petVariety(pet.getPetVariety())
+                .birth(pet.getBirth())
+                .neutralization(pet.getNeutralization().equals(NEUTRALIZATION))
+                .petType(pet.getPetType().equals(PetType.DOG) ? "DOG" : "CAT")
+                .build();
     }
 }

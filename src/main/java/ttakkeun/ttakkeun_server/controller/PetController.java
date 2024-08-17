@@ -21,8 +21,7 @@ import ttakkeun.ttakkeun_server.service.PetService.PetService;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static ttakkeun.ttakkeun_server.apiPayLoad.code.status.ErrorStatus.IMAGE_EMPTY;
-import static ttakkeun.ttakkeun_server.apiPayLoad.code.status.ErrorStatus.MEMBER_NOT_HAVE_PET;
+import static ttakkeun.ttakkeun_server.apiPayLoad.code.status.ErrorStatus.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -95,5 +94,23 @@ public class PetController {
         // 반려동물의 프로필 이미지 업데이트
         PetResponseDTO.PetImageDTO result = petService.updateProfileImage(pet, multipartFile);
         return ApiResponse.onSuccess(result);
+    }
+
+    @Operation(summary = "반려동물 프로필 수정")
+    @PatchMapping(value = "/edit/{pet_id}")
+    public ApiResponse<PetResponseDTO.EditResultDTO> editPetprofile(
+            @AuthenticationPrincipal Member member,
+            @PathVariable("pet_id") Long petId,
+            @RequestBody @Valid PetRequestDTO.AddDTO request
+    ) {
+        Pet pet = petService.findById(petId)
+                .orElseThrow(() -> new ExceptionHandler(PET_ID_NOT_AVAILABLE));
+
+        if(!pet.getMember().getMemberId().equals(member.getMemberId()))
+            throw new ExceptionHandler(PET_NOT_FOUND);
+
+        PetResponseDTO.EditResultDTO resultDTO = petService.updateProfile(pet, request);
+
+        return ApiResponse.onSuccess(resultDTO);
     }
 }

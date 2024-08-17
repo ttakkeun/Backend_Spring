@@ -18,9 +18,7 @@ public class PetCommandServiceImpl implements PetCommandService {
     @Override
     @Transactional
     public Pet add(PetRequestDTO.AddDTO request, Member member) {
-
         Pet newPet = PetConverter.toPet(request, member);
-
         return petRepository.save(newPet);
     }
 }
