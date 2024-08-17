@@ -61,7 +61,6 @@ public class PetController {
     @GetMapping("/select")
     public ApiResponse<PetResponseDTO.SelectResultDTO> select(
             @AuthenticationPrincipal Member member
-            //@RequestParam("memberId") Long memberId
     ) {
         List<Pet> pets = petService.getPetsByMemberId(member.getMemberId());
 
