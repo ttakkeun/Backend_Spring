@@ -33,6 +33,9 @@ public class S3ImageService {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
+    @Value("${spring.servlet.multipart.max-file-size}")
+    private String maxSizeString;
+
     public String upload(MultipartFile image) {
         //입력받은 이미지 파일이 빈 파일인지 검증
         if(image.isEmpty() || Objects.isNull(image.getOriginalFilename())){
@@ -69,23 +72,24 @@ public class S3ImageService {
     //S3에 파일 업로드
     private String uploadImageToS3(MultipartFile image) throws IOException {
         String originalFilename = image.getOriginalFilename(); //원본 파일 명
-        String extention = originalFilename.substring(originalFilename.lastIndexOf(".")); //확장자 명
+        //String extention = originalFilename.substring(originalFilename.lastIndexOf(".")); //확장자 명
 
-        String s3FileName = UUID.randomUUID().toString().substring(0, 10) + originalFilename; //변경된 파일 명
+        String s3FileName = UUID.randomUUID() + originalFilename; //변경된 파일 명
 
         InputStream is = image.getInputStream();
         byte[] bytes = IOUtils.toByteArray(is); //image를 byte[]로 변환
 
         ObjectMetadata metadata = new ObjectMetadata(); //metadata 생성
-        metadata.setContentType("image/" + extention);
+        //metadata.setContentType("image/" + extention);
         metadata.setContentLength(bytes.length);
+        metadata.setContentType(image.getContentType());
 
         //S3에 요청할 때 사용할 byteInputStream 생성
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
 
         //S3로 putObject 할 때 사용할 요청 객체
         //생성자 : bucket 이름, 파일 명, byteInputStream, metadata
-        PutObjectRequest putObjectRequest = new PutObjectRequest(bucket, s3FileName, byteArrayInputStream, metadata);
+        PutObjectRequest putObjectRequest = new PutObjectRequest(bucket, "images/" + s3FileName, byteArrayInputStream, metadata);
 
         //실제로 S3에 이미지 데이터를 넣는 부분이다.
         amazonS3.putObject(putObjectRequest); // put image to S3
@@ -93,6 +97,6 @@ public class S3ImageService {
         byteArrayInputStream.close();
         is.close();
 
-        return amazonS3.getUrl(bucket, s3FileName).toString();
+        return amazonS3.getUrl(bucket, "images/" + s3FileName).toString();
     }
 }

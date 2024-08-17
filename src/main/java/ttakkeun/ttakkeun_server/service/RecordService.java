@@ -37,7 +37,6 @@ public class RecordService {
     private final RecordRepository recordRepository;
     private final PetRepository petRepository;
     private final ChecklistQuestionRepository checklistQuestionRepository;
-    private final ChecklistAnswerRepository checklistAnswerRepository;
     private final UserAnswerRepository userAnswerRepository;
     private final S3ImageService s3ImageService;
 
@@ -115,13 +114,14 @@ public class RecordService {
 
 
     @Transactional
-    public void uploadImages(Long recordId, Long questionId, List<MultipartFile> files) {
+    public List<RecordRequestDTO.RecordImageDTO> uploadImages(Long recordId, Long questionId, List<MultipartFile> files) {
 
         Record record = recordRepository.findById(recordId).orElseThrow(()-> new ExceptionHandler(RECORD_NOT_FOUND));
 
+        System.out.println("uploadImages");
         // ChecklistAnswer 조회 (recordId와 questionId로 조회)
         log.info("여기기기기기");
-        UserAnswer answer = userAnswerRepository.findByRecord_recordIdAndQuestion_questionId(recordId, questionId)
+        UserAnswer answer = userAnswerRepository.findByRecord_recordIdAndQuestion_questionId(record.getRecordId(), questionId)
                 .orElseThrow(() -> new ExceptionHandler(ANSWER_NOT_FOUND));
 
         log.info("Number of images in RecordImageDTO: {}", files.size());
@@ -141,6 +141,13 @@ public class RecordService {
 
         // 변경 사항 저장
         userAnswerRepository.save(answer);
+
+        return imageEntities.stream()
+                .map(image -> RecordRequestDTO.RecordImageDTO.builder()
+                        .imageId(image.getImageId()) // imageId를 설정합니다.
+                        .imageUrl(image.getImageUrl())
+                        .build())
+                .collect(Collectors.toList());
     }
 
     public RecordResponseDTO.DetailResultDTO getRecordDetails(Long petId, Long recordId) {

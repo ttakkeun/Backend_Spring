@@ -36,8 +36,7 @@ public class SecurityConfig {
     public WebSecurityCustomizer webSecurityCustomizer(){
         return web -> web.ignoring()
                 .requestMatchers("/swagger-ui/**", "/swagger/**", "/swagger-resources/**", "/swagger-ui.html", "/test",
-                        "/configuration/ui",  "/v3/api-docs/**", "/api/auth/refresh", "/api/auth/apple/**", "/api/record/register/**");
-
+                        "/configuration/ui",  "/v3/api-docs/**", "/api/auth/refresh", "/api/auth/apple/**", "/api/record/register/**", "/api/record/detail/**");
     }
 
     @Bean AuthenticationManager authenticationManager(AuthenticationConfiguration authConfiguration) throws Exception
@@ -54,7 +53,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authorizeRequests) ->
                         authorizeRequests
                                 .requestMatchers(
-                                        AntPathRequestMatcher.antMatcher("/api/**")
+                                        AntPathRequestMatcher.antMatcher("/api/auth/**")
                                 ).authenticated()
                                 .anyRequest().authenticated()
                 )

@@ -29,6 +29,11 @@ spring:
         team-id: ${apple_team_id}
         audience: https://appleid.apple.com
         private-key: ${APPLE_Secret}
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+      resolve-lazily: true
 jwt:
   secretKey: ${JWT_Secret}
 

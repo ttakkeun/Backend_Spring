@@ -69,7 +69,6 @@ public class PetService {
             amazonS3Client.putObject(bucket, "profile/" + newFileName, multipartFile.getInputStream(), metadata);
             newUrl = amazonS3Client.getUrl(bucket, "profile/" + newFileName).toString();
         } catch (IOException | AmazonServiceException e) {
-            e.printStackTrace();
             throw new ExceptionHandler(IMAGE_NOT_SAVE);
         }
 
