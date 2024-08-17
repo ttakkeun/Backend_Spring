@@ -13,6 +13,7 @@ public class ChecklistAnswer extends BaseEntity {
 
     @Id
     @Column(name = "checklist_answer_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long checklistAnswerId;
 
     private String checklistAnswerText;

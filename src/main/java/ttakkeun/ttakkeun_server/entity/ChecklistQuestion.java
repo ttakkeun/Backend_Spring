@@ -27,8 +27,13 @@ public class ChecklistQuestion extends BaseEntity {
 
     private String descriptionText;
 
+    private Boolean isDupe;
+
     @Builder.Default
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
     private List<UserAnswer> answerList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "checklistQuestion", cascade = CascadeType.ALL)
+    private List<ChecklistAnswer> checklistAnswers = new ArrayList<>();
 
 }
