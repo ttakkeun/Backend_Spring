@@ -9,10 +9,12 @@ import org.springframework.web.multipart.MultipartFile;
 import ttakkeun.ttakkeun_server.apiPayLoad.ApiResponse;
 import ttakkeun.ttakkeun_server.dto.tip.*;
 import ttakkeun.ttakkeun_server.entity.Member;
+import ttakkeun.ttakkeun_server.entity.TipImage;
 import ttakkeun.ttakkeun_server.entity.enums.Category;
 import ttakkeun.ttakkeun_server.service.TipService;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -35,18 +37,23 @@ public class TipController {
     }
 
     @Operation(summary = "팁 이미지 업로드 API")
-    @PatchMapping(value = "/{tip_id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ApiResponse<String> uploadTipImage(
+    @PatchMapping(value = "/{tip_id}/images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ApiResponse<List<String>> uploadTipImages(
             @AuthenticationPrincipal Member member,
             @PathVariable("tip_id") Long tipId,
-            @RequestPart("image") MultipartFile multipartFile) {
+            @RequestParam("images") List<MultipartFile> images) {
 
-        if (multipartFile.isEmpty()) {
+        if (images == null || images.isEmpty()) {
             throw new IllegalArgumentException("이미지가 없습니다.");
         }
 
-        String imageUrl = tipService.uploadTipImage(tipId, member.getMemberId(), multipartFile);
-        return ApiResponse.onSuccess(imageUrl);
+        List<TipImage> tipImages = tipService.uploadTipImages(tipId, member.getMemberId(), images);
+        List<String> imageUrls = tipImages.stream()
+                .map(TipImage::getTipImageUrl)
+                .collect(Collectors.toList());
+
+        return ApiResponse.onSuccess(imageUrls);
     }
 
     @Operation(summary = "팁 조회 API")

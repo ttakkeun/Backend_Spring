@@ -47,6 +47,7 @@ public class TipService {
 
         tipRepository.save(tip);
 
+
         return new TipResponseDTO(
                 tip.getTipId(),
                 tip.getTipCategory(),
@@ -63,7 +64,7 @@ public class TipService {
     }
 
     @Transactional
-    public String uploadTipImage(Long tipId, Long memberId, MultipartFile multipartFile) {
+    public List<TipImage> uploadTipImages(Long tipId, Long memberId, List<MultipartFile> images) {
         Tip tip = tipRepository.findById(tipId)
                 .orElseThrow(() -> new IllegalArgumentException("Tip을 찾을 수 없습니다: " + tipId));
         Member member = memberRepository.findById(memberId)
@@ -73,17 +74,22 @@ public class TipService {
             throw new IllegalStateException("권한이 없습니다.");
         }
 
-        String imageUrl = s3ImageService.upload(multipartFile);
+        List<TipImage> tipImages = images.stream()
+                .map(image -> {
+                    String imageUrl = s3ImageService.upload(image);
+                    TipImage tipImage = TipImage.builder()
+                            .tipImageUrl(imageUrl)
+                            .tip(tip)
+                            .build();
+                    tip.addImage(tipImage);
+                    return tipImage;
+                })
+                .collect(Collectors.toList());
 
-        TipImage tipImage = TipImage.builder()
-                .tipImageUrl(imageUrl)
-                .tip(tip)
-                .build();
-        tip.addImage(tipImage);
         tipRepository.save(tip);
-
-        return imageUrl;
+        return tipImages;
     }
+
 
     @Transactional(readOnly = true)
     public List<TipResponseDTO> getTipsByCategory(Category category, int page, int size) {
