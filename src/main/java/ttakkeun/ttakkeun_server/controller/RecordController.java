@@ -11,6 +11,7 @@ import ttakkeun.ttakkeun_server.dto.record.RecordListResponse;
 import ttakkeun.ttakkeun_server.dto.record.RecordListResponseDto;
 import ttakkeun.ttakkeun_server.dto.record.RecordRequestDTO;
 import ttakkeun.ttakkeun_server.dto.record.RecordResponseDTO;
+import ttakkeun.ttakkeun_server.entity.Image;
 import ttakkeun.ttakkeun_server.entity.Member;
 import ttakkeun.ttakkeun_server.entity.enums.Category;
 import ttakkeun.ttakkeun_server.service.RecordService;
@@ -40,25 +41,6 @@ public class RecordController {
         return ApiResponse.onSuccess(result);
     }
 
-    // 테스트용 메서드
-    @Operation(summary = "일지 목록 조회 API 테스트")
-    @GetMapping("/test/{pet_id}/{category}")
-    public ApiResponse<RecordListResponse> getRecordListForTest(
-            @PathVariable(name = "pet_id") Long petId, @PathVariable(name = "category") Category category,
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "21") int size
-    ){
-        // 임의의 Member 객체 생성
-        Member testMember = new Member();
-        testMember.setMemberId(1L); // 임의의 memberId 설정
-        System.out.println("Member ID: " + testMember.getMemberId());
-
-        List<RecordListResponseDto> records = recordService.getRecordsByCategory(testMember, petId, category, page, size);
-        RecordListResponse result = new RecordListResponse(category, records);
-        return ApiResponse.onSuccess(result);
-    }
-
-
     @Operation(summary = "일지 질문 조회 API")
     @GetMapping("/register/{category}")
     public ApiResponse<RecordResponseDTO.LoadQuestionResultDTO> loadquestion(
@@ -68,7 +50,6 @@ public class RecordController {
         RecordResponseDTO.LoadQuestionResultDTO result = new RecordResponseDTO.LoadQuestionResultDTO(category.name(), questions);
         return ApiResponse.onSuccess(result);
     }
-
 
     @Operation(summary = "일지 답변 저장 API (일지 생성)")
     @PostMapping("/register/{pet_id}")
@@ -82,17 +63,18 @@ public class RecordController {
 
   
     @Operation(summary = "일지 사진 저장 API")
-    @PostMapping(value = "/register/{recordId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+    @PostMapping(value = "/register/image/{recordId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ApiResponse uploadImages(
+    public ApiResponse<List<RecordRequestDTO.RecordImageDTO>> uploadImages(
             @PathVariable(name = "recordId") Long recordId,
-            @RequestPart("question_id") Long questionId,
-            @RequestPart("images") List<MultipartFile> images
-//            @RequestPart List<RecordRequestDTO.RecordImageDTO> recordImageDTO
+            @RequestParam("question_id") Long questionId,
+            @RequestParam("images") List<MultipartFile> images
+            //@RequestPart RecordRequestDTO.RecordImageDTO recordImageDTO
     )
     {
-        recordService.uploadImages(recordId,questionId, images);
-        return ApiResponse.onSuccess(IMAGE_SUCCESS);
+        System.out.println("일지 목록 조회 API Controller");
+        List<RecordRequestDTO.RecordImageDTO> result = recordService.uploadImages(recordId,questionId,images);
+        return ApiResponse.of(IMAGE_SUCCESS,result);
     }
 
 

@@ -1,5 +1,6 @@
 package ttakkeun.ttakkeun_server.dto.record;
 
+import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -36,7 +37,7 @@ public class RecordRequestDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class RecordImageDTO {
-        private Long questionId;
-        private List<MultipartFile> images;
+        private Long imageId;
+        private String imageUrl;
     }
 }
