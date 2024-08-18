@@ -21,6 +21,7 @@ import ttakkeun.ttakkeun_server.repository.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -188,11 +189,20 @@ public class RecordService {
                 })
                 .collect(Collectors.toList());
 
+        // createdAt에서 date와 time 추출
+        LocalDateTime createdAt = record.getCreatedAt();
+        String date = createdAt != null ? createdAt.toLocalDate().toString() : "N/A";
+        String time = createdAt != null
+                ? createdAt.toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm"))
+                : "N/A"; // 시간 포맷팅
+
         // DetailResultDTO 빌드
         return RecordResponseDTO.DetailResultDTO.builder()
                 .category(record.getCategory().name())      // 카테고리 추가
                 .questions(questionAnswerList)              // 질문-답변-이미지 리스트 추가
                 .etc(record.getEtc())                       // 기타 사항 추가
+                .date(date)
+                .time(time)
                 .build();
     }
 

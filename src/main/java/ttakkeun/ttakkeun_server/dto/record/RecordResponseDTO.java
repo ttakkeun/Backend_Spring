@@ -51,6 +51,8 @@ public class RecordResponseDTO {
     @AllArgsConstructor
     public static class DetailResultDTO {
         String category;
+        String date;
+        String time;
         List<QuestionAnswerDTO> questions;
         String etc;
     }
