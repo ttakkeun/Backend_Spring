@@ -2,6 +2,7 @@ package ttakkeun.ttakkeun_server.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import ttakkeun.ttakkeun_server.converter.StringListConverter;
 import ttakkeun.ttakkeun_server.entity.common.BaseEntity;
 
 import java.util.ArrayList;
@@ -19,7 +20,8 @@ public class UserAnswer extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userAnswerId;
 
-    private String userAnswerText;
+    @Convert(converter = StringListConverter.class)
+    private List<String> userAnswerText;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question_id")
