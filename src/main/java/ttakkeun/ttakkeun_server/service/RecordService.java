@@ -104,15 +104,14 @@ public class RecordService {
             ChecklistQuestion question = checklistQuestionRepository.findById(answerDTO.getQuestionId())
                     .orElseThrow(() -> new ExceptionHandler(QUESTION_NOT_FOUND));
 
-            for (String answerText : answerDTO.getAnswerText()) {
-                UserAnswer answer = UserAnswer.builder()
-                        .question(question)
-                        .record(record)
-                        .userAnswerText(answerText)
-                        .build();
+            // UserAnswer를 여러 개 생성하지 않고, 하나의 UserAnswer에 모든 답변을 리스트로 저장
+            UserAnswer answer = UserAnswer.builder()
+                    .question(question)
+                    .record(record)
+                    .userAnswerText(answerDTO.getAnswerText()) // 리스트를 직접 저장
+                    .build();
 
-                answerList.add(answer);
-            }
+            answerList.add(answer);
         }
 
         record.getAnswerList().addAll(answerList);
@@ -175,8 +174,8 @@ public class RecordService {
                 .map(entry -> {
                     ChecklistQuestion question = entry.getValue().get(0).getQuestion(); // 동일한 질문 가져오기
                     List<String> answers = entry.getValue().stream()
-                            .map(UserAnswer::getUserAnswerText)
-                            .collect(Collectors.toList()); // 답변 리스트
+                            .flatMap(userAnswer -> userAnswer.getUserAnswerText().stream()) // 모든 답변을 리스트로
+                            .collect(Collectors.toList());
                     List<String> images = entry.getValue().stream()
                             .flatMap(userAnswer -> userAnswer.getImages().stream()) // 이미지 URL 리스트
                             .map(Image::getImageUrl)
