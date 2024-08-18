@@ -18,12 +18,12 @@ import ttakkeun.ttakkeun_server.entity.Record;
 import ttakkeun.ttakkeun_server.entity.enums.Category;
 import ttakkeun.ttakkeun_server.repository.*;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -153,42 +153,40 @@ public class RecordService {
     }
 
     public RecordResponseDTO.DetailResultDTO getRecordDetails(Long petId, Long recordId) {
+        // Record 조회
         Record record = recordRepository.findByPet_PetIdAndRecordId(petId, recordId)
                 .orElseThrow(() -> new ExceptionHandler(RECORD_NOT_FOUND));
 
-        List<UserAnswer> answers = record.getAnswerList();
+        // UserAnswer 리스트를 question_id 기준으로 그룹화
+        Map<Long, List<UserAnswer>> groupedAnswers = record.getAnswerList().stream()
+                .collect(Collectors.groupingBy(answer -> answer.getQuestion().getQuestionId()));
 
-        RecordResponseDTO.DetailResultDTO.DetailResultDTOBuilder dtoBuilder = RecordResponseDTO.DetailResultDTO.builder();
 
-        dtoBuilder.category(record.getCategory().name());
+        // 그룹화된 데이터를 QuestionAnswerDTO 리스트로 변환
+        List<RecordResponseDTO.QuestionAnswerDTO> questionAnswerList = groupedAnswers.entrySet().stream()
+                .map(entry -> {
+                    ChecklistQuestion question = entry.getValue().get(0).getQuestion(); // 동일한 질문 가져오기
+                    List<String> answers = entry.getValue().stream()
+                            .map(UserAnswer::getUserAnswerText)
+                            .collect(Collectors.toList()); // 답변 리스트
+                    List<String> images = entry.getValue().stream()
+                            .flatMap(userAnswer -> userAnswer.getImages().stream()) // 이미지 URL 리스트
+                            .map(Image::getImageUrl)
+                            .collect(Collectors.toList());
+                    return RecordResponseDTO.QuestionAnswerDTO.builder()
+                            .question(question.getQuestionText())
+                            .answer(answers)
+                            .images(images)
+                            .build();
+                })
+                .collect(Collectors.toList());
 
-        if(!answers.isEmpty()) {
-            dtoBuilder.question1(answers.get(0).getQuestion().getQuestionText())
-                    .answer1(answers.get(0).getUserAnswerText())
-                    .image1(answers.get(0).getImages().stream()
-                            .map(image -> image.getImageUrl())
-                            .collect(Collectors.toList()));
-        }
-
-        if (answers.size() > 1) {
-            dtoBuilder.question2(answers.get(1).getQuestion().getQuestionText())
-                    .answer2(answers.get(1).getUserAnswerText())
-                    .image2(answers.get(1).getImages().stream()
-                            .map(image -> image.getImageUrl())
-                            .collect(Collectors.toList()));
-        }
-
-        if (answers.size() > 2) {
-            dtoBuilder.question3(answers.get(2).getQuestion().getQuestionText())
-                    .answer3(answers.get(2).getUserAnswerText())
-                    .image3(answers.get(2).getImages().stream()
-                            .map(image -> image.getImageUrl())
-                            .collect(Collectors.toList()));
-        }
-
-        dtoBuilder.etc(record.getEtc());
-
-        return dtoBuilder.build();
+        // DetailResultDTO 빌드
+        return RecordResponseDTO.DetailResultDTO.builder()
+                .category(record.getCategory().name())      // 카테고리 추가
+                .questions(questionAnswerList)              // 질문-답변-이미지 리스트 추가
+                .etc(record.getEtc())                       // 기타 사항 추가
+                .build();
     }
 
     public RecordResponseDTO.DeleteResultDTO deleteRecord(Long recordId) {
