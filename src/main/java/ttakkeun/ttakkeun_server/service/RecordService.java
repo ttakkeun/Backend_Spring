@@ -37,7 +37,6 @@ public class RecordService {
     private final RecordRepository recordRepository;
     private final PetRepository petRepository;
     private final ChecklistQuestionRepository checklistQuestionRepository;
-    private final ChecklistAnswerRepository checklistAnswerRepository;
     private final UserAnswerRepository userAnswerRepository;
     private final S3ImageService s3ImageService;
 
@@ -105,22 +104,22 @@ public class RecordService {
             ChecklistQuestion question = checklistQuestionRepository.findById(answerDTO.getQuestionId())
                     .orElseThrow(() -> new ExceptionHandler(QUESTION_NOT_FOUND));
 
-            UserAnswer answer = UserAnswer.builder()
-                    .userAnswerText(answerDTO.getAnswerText())
-                    .question(question)
-                    .record(record)
-                    .build();
+            for (String answerText : answerDTO.getAnswerText()) {
+                UserAnswer answer = UserAnswer.builder()
+                        .question(question)
+                        .record(record)
+                        .userAnswerText(answerText)
+                        .build();
 
-            answerList.add(answer);
-            userAnswerRepository.save(answer);
+                answerList.add(answer);
+            }
         }
 
         record.getAnswerList().addAll(answerList);
         recordRepository.save(record);
+        userAnswerRepository.saveAll(answerList);
 
-        return RecordResponseDTO.RegisterResultDTO.builder()
-                .recordId(record.getRecordId())
-                .build();
+        return new RecordResponseDTO.RegisterResultDTO(record.getRecordId());
     }
 
 

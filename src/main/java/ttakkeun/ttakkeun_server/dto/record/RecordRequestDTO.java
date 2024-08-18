@@ -18,7 +18,7 @@ public class RecordRequestDTO {
     @AllArgsConstructor
     public static class AnswerDTO {
         private Long questionId;
-        private String answerText;
+        private List<String> answerText;
     }
 
     @Getter
@@ -27,8 +27,8 @@ public class RecordRequestDTO {
     @AllArgsConstructor
     public static class RecordRegisterDTO {
         private Category category;
-        private String etc;
         private List<AnswerDTO> answers;
+        private String etc;
     }
 
     @Getter
