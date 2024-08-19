@@ -63,7 +63,7 @@ public class TipController {
     public ApiResponse<List<TipResponseDTO>> getTips(
             @RequestParam("category") Category category,
             @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size) {
+            @RequestParam(name = "size", defaultValue = "21") int size) {
 
         List<TipResponseDTO> result = tipService.getTipsByCategory(category, page, size);
         return ApiResponse.onSuccess(result);
@@ -74,7 +74,7 @@ public class TipController {
     @GetMapping("/all")
     public ApiResponse<List<TipResponseDTO>> getAllTips(
             @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size) {
+            @RequestParam(name = "size", defaultValue = "21") int size) {
 
         List<TipResponseDTO> result = tipService.getAllTips(page, size);
         return ApiResponse.onSuccess(result);
@@ -84,7 +84,7 @@ public class TipController {
     @GetMapping("/best")
     public ApiResponse<List<TipResponseDTO>> getBestTips(
             @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size) {
+            @RequestParam(name = "size", defaultValue = "21") int size) {
 
         List<TipResponseDTO> result = tipService.getBestTips(page, size);
         return ApiResponse.onSuccess(result);

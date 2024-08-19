@@ -28,6 +28,7 @@ public class Tip extends BaseEntity {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Category category;
 
