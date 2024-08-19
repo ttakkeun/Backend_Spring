@@ -107,18 +107,14 @@ public class RecordController {
     @Operation(summary = "일지 기록 검색 API")
     @GetMapping("/search/{pet_id}/{category}")
     public ApiResponse<RecordListResponse> getRecordListAtDate(
+            @AuthenticationPrincipal Member member,
             @PathVariable(name = "pet_id") Long petId,
             @PathVariable(name = "category") Category category,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "21") int size,
             @RequestParam(name = "date") String date
     ){
-        // 임의의 Member 객체 생성
-        Member testMember = new Member();
-        testMember.setMemberId(1L); // 임의의 memberId 설정
-        System.out.println("Member ID: " + testMember.getMemberId());
-
-        List<RecordListResponseDto> records = recordService.getRecordsAtDate(testMember, petId, category, page, size, date);
+        List<RecordListResponseDto> records = recordService.getRecordsAtDate(member, petId, category, page, size, date);
         RecordListResponse result = new RecordListResponse(category, records);
         return ApiResponse.onSuccess(result);
     }
