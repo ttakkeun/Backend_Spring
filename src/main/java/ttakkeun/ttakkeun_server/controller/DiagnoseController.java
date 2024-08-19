@@ -173,7 +173,7 @@ public class DiagnoseController {
 
     // 네이버 쇼핑 API로 진단 결과 DB 정보 업데이트 API
     @Operation(summary = "추천 제품 네이버 쇼핑 정보로 업데이트 API")
-    @PatchMapping("/{diagnose_id}")
+    @PatchMapping("/result/{diagnose_id}")
     // 등록되지 않은 제품일 경우 새로운 정보를 등록하지만, 네이버 검색 API로 등록된 제품들은 기존 제품 정보에서 태그값만 업데이트하게 되므로 PATCH 사용하였음
     public ResponseEntity<ApiResponse<UpdateProductsResponseDTO>> updateDiagnoseProducts(@PathVariable("diagnose_id") Long resultId, @RequestBody UpdateProductsRequestDTO products) {
         try {
@@ -192,7 +192,7 @@ public class DiagnoseController {
 
     // 진단서 상세 내용 조회 API
     @Operation(summary = "진단서 상세 내용 조회 API")
-    @GetMapping("/{diagnose_id}")
+    @GetMapping("/result/{diagnose_id}")
     public ResponseEntity<ApiResponse<GetMyDiagnoseResponseDTO>> getDiagnose(@PathVariable("diagnose_id") Long resultId) {
         try {
             GetMyDiagnoseResponseDTO diagnose = diagnoseService.getDiagnose(resultId);
