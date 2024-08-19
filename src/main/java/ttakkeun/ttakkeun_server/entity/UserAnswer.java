@@ -22,6 +22,7 @@ public class UserAnswer extends BaseEntity {
 
     @Convert(converter = StringListConverter.class)
     private List<String> userAnswerText;
+    //private String userAnswerText;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question_id")

@@ -22,5 +22,7 @@ public interface RecordRepository extends JpaRepository<Record, Long> {
 
     Page<Record> findByPet_PetIdAndCategoryAndCreatedAtBetween(Long petId, Category category, LocalDateTime startOfDay, LocalDateTime endOfDay, Pageable pageable);
 
+    Optional<Record> findByRecordId(Long recordId);
+
     List<Record> findByPet_PetId(Long petId);
 }
