@@ -31,7 +31,7 @@ public class RecordController {
     @GetMapping("/{pet_id}/{category}")
     public ApiResponse<RecordListResponse> getRecordList(
             @AuthenticationPrincipal Member member,
-            @PathVariable(name = "pet_id") Long petId, @PathVariable(name = "category") Category category,
+            @PathVariable(name = "pet_id") Long petId, @PathVariable(name = "category") Category category
     ){
         System.out.println("일지 목록 조회 API Controller");
         int page = 0;
