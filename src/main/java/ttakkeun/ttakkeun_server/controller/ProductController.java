@@ -9,6 +9,7 @@ import ttakkeun.ttakkeun_server.apiPayLoad.ApiResponse;
 import ttakkeun.ttakkeun_server.dto.LikeResponseDTO;
 import ttakkeun.ttakkeun_server.dto.product.ProductApiResponseDTO;
 import ttakkeun.ttakkeun_server.dto.RecommendProductDTO;
+import ttakkeun.ttakkeun_server.dto.product.ProductRequestDTO;
 import ttakkeun.ttakkeun_server.entity.Member;
 import ttakkeun.ttakkeun_server.entity.enums.Category;
 import ttakkeun.ttakkeun_server.repository.MemberRepository;
@@ -27,12 +28,13 @@ public class ProductController {
 
     //ai 추천 제품
     @Operation(summary = "가장 최근 진단 기준 최대 5개의 추천 제품 조회 API")
-    @GetMapping("/ai")
+    @GetMapping("/ai/{pet_id}")
     public ApiResponse<List<RecommendProductDTO>> getAiProducts(
+            @PathVariable Long pet_id,
             @AuthenticationPrincipal Member member
     ) {
         Long memberId = member.getMemberId();
-        List<RecommendProductDTO> products = productService.getResultProducts(memberId);
+        List<RecommendProductDTO> products = productService.getResultProducts(pet_id, memberId);
 
         return ApiResponse.onSuccess(products);
     }
@@ -91,9 +93,11 @@ public class ProductController {
     @PatchMapping("/like/{product_id}")
     public ApiResponse<LikeResponseDTO.Result> toggleLikeProduct(
             @PathVariable Long product_id,
-            @AuthenticationPrincipal Member member
+            @AuthenticationPrincipal Member member,
+            @RequestBody ProductRequestDTO requestBody
     ) {
         Long memberId = member.getMemberId();
+        productService.addNewProduct(product_id, requestBody);
         likeService.toggleLikeProduct(product_id, memberId);
 
         LikeResponseDTO.Result result = likeService.getLikeInfo(product_id, memberId);

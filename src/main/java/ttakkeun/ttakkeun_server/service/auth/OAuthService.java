@@ -50,7 +50,7 @@ public class OAuthService {
 
         System.out.println("member nickname : " + member.getUsername());
 
-        return new LoginResponseDto(newAccessToken, newRefreshToken, member.getEmail());
+        return new LoginResponseDto(newAccessToken, newRefreshToken);
     }
 
     // refreshToken으로 accessToken 발급하기
@@ -81,11 +81,12 @@ public class OAuthService {
 
         System.out.println("member nickname : " + member.getUsername());
 
-        return new LoginResponseDto(newAccessToken, newRefreshToken, member.getEmail());
+        return new LoginResponseDto(newAccessToken, newRefreshToken);
     }
 
     @Transactional
     public LoginResponseDto appleLogin(AppleLoginRequestDto appleLoginRequestDto) throws Exception {
+        log.info("Current time is {}", LocalDateTime.now());
         // 1. 애플 공개 키 가져오기
         Map<String, String> headers = jwtService.parseHeader(appleLoginRequestDto.getIdentityToken());
         PublicKey publicKey = applePublicKeyGenerator.generatePublicKey(headers, appleAuthClient.getAppleAuthPublicKey());
@@ -94,6 +95,7 @@ public class OAuthService {
         Claims claims = jwtService.getTokenClaims(appleLoginRequestDto.getIdentityToken(), publicKey);
 
         // 3. 클레임에서 subject 추출
+        String email = claims.get("email", String.class);
         String sub = claims.getSubject();
 
         // 4. 유저가 등록되어 있는지 확인
@@ -130,8 +132,8 @@ public class OAuthService {
             // 등록된 유저가 아닌 경우 회원가입 로직
             member = memberRepository.save(
                     Member.builder()
-                            .email(claims.get("email", String.class)) // 애플 JWT에 이메일 클레임이 포함된 경우 사용
-                            //.nickname(appleSignUpRequestDto.getName()) // appleLoginRequestDto에서 닉네임 가져오기
+                            //.email(claims.get("email", String.class)) // 애플 JWT에 이메일 클레임이 포함된 경우 사용
+                            .userName(appleSignUpRequestDto.getUserName()) // appleLoginRequestDto에서 닉네임 가져오기
                             //.provider(MemberProvider.APPLE) // 필요에 따라 설정
                             .appleSub(sub)
                             .loginType(LoginType.APPLE)
