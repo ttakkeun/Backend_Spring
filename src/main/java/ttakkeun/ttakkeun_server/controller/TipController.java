@@ -83,10 +83,11 @@ public class TipController {
     @Operation(summary = "Best 팁 조회 API")
     @GetMapping("/best")
     public ApiResponse<List<TipResponseDTO>> getBestTips(
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "21") int size) {
+//            @RequestParam(name = "page", defaultValue = "0") int page,
+//            @RequestParam(name = "size", defaultValue = "21") int size
+    ) {
 
-        List<TipResponseDTO> result = tipService.getBestTips(page, size);
+        List<TipResponseDTO> result = tipService.getBestTips();
         return ApiResponse.onSuccess(result);
 
 

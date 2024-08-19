@@ -2,6 +2,7 @@ package ttakkeun.ttakkeun_server.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Formula;
 import ttakkeun.ttakkeun_server.entity.common.BaseEntity;
 import ttakkeun.ttakkeun_server.entity.enums.Category;
 
@@ -32,8 +33,8 @@ public class Tip extends BaseEntity {
     @Column(nullable = false)
     private Category category;
 
-    @Column
-    private Integer recommendCount = 0;
+    @Formula("(SELECT COUNT(lt.member_id) FROM like_tip lt WHERE lt.tip_id = tip_id)")
+    private Integer recommendCount;
 
     @Column
     @Builder.Default
@@ -54,4 +55,5 @@ public class Tip extends BaseEntity {
         image.setTip(this);
         this.images.add(image);
     }
+
 }
