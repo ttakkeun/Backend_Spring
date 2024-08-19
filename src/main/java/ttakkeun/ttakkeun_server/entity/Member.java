@@ -27,8 +27,6 @@ public class Member extends BaseEntity implements UserDetails {
 
     private String userName;
 
-    private String email;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private LoginType loginType;
