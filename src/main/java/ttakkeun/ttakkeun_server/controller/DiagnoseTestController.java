@@ -4,18 +4,22 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import ttakkeun.ttakkeun_server.apiPayLoad.ApiResponse;
 import ttakkeun.ttakkeun_server.apiPayLoad.code.status.ErrorStatus;
 import ttakkeun.ttakkeun_server.apiPayLoad.code.status.SuccessStatus;
 import ttakkeun.ttakkeun_server.dto.diagnose.*;
+import ttakkeun.ttakkeun_server.entity.Member;
 import ttakkeun.ttakkeun_server.entity.enums.Category;
 import ttakkeun.ttakkeun_server.service.DiagnoseService.DiagnoseChatGPTService;
 import ttakkeun.ttakkeun_server.service.DiagnoseService.DiagnoseService;
 //import ttakkeun.ttakkeun_server.dto.UpdateProductsDTO;
 
 import java.util.NoSuchElementException;
+
+import static ttakkeun.ttakkeun_server.apiPayLoad.code.status.ErrorStatus.PET_ID_NOT_AVAILABLE;
 
 @RestController
 @RequiredArgsConstructor
@@ -84,11 +88,14 @@ public class DiagnoseTestController {
             ApiResponse<PostDiagnoseResponseDTO> response = ApiResponse.of(SuccessStatus._OK, postDiagnoseResponseDTO);
             return ResponseEntity.ok(response);
         } catch (NoSuchElementException e) {
-            ApiResponse<PostDiagnoseResponseDTO> response = ApiResponse.ofFailure(ErrorStatus.MEMBER_HAS_NO_POINT, null);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            ApiResponse<PostDiagnoseResponseDTO> response = ApiResponse.ofFailure(PET_ID_NOT_AVAILABLE, null);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         } catch (UsernameNotFoundException e) {
             ApiResponse<PostDiagnoseResponseDTO> response = ApiResponse.ofFailure(ErrorStatus._UNAUTHORIZED, null);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        } catch (NullPointerException e) {
+            ApiResponse<PostDiagnoseResponseDTO> response = ApiResponse.ofFailure(ErrorStatus._INTERNAL_SERVER_ERROR, null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         } catch (Exception e) {
             ApiResponse<PostDiagnoseResponseDTO> response = ApiResponse.ofFailure(ErrorStatus._INTERNAL_SERVER_ERROR, null);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);

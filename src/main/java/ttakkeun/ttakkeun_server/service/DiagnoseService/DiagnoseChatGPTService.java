@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.methods.HttpHead;
+import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -74,11 +75,10 @@ public class DiagnoseChatGPTService {
 
         // GPT에게 질문할 때 사용할 반려동물 정보, 일지 내용을 가져옴
         ChatGPTQuestionDTO questionByDTO = makeQuestionForGPT(pet, postDiagnoseRequestDTO);
-        System.out.println("make question is : " + questionByDTO);
 
         // 질문 문장 구성
         String questionString = makeQuestionString(questionByDTO);
-        System.out.println("question string is : " + questionString);
+        System.out.println("question is : " + questionString);
 
         // ChatGPT 진단 수행
         String chatGPTRequestDTO = diagnoseByChatGPT(questionString);
@@ -165,16 +165,13 @@ public class DiagnoseChatGPTService {
             Record record = recordOpt.get();
             LocalDateTime createdAt = record.getCreatedAt();
             Category category = record.getCategory();
-            System.out.println("엥? -1");
-            List<UserAnswer> answerList = record.getAnswerList(); // 일지에 해당하는 답변
+            List<UserAnswer> answerList = record.getAnswerList(); // 일지에 해당하는 사용자의 답변을 가져옴
             String etc = record.getEtc();
 
-            // 리스트로 바꾼 뒤로 여기서 에러 발생함
             // 일지에 해당하는 질문 내용과 답변 내용, 이미지 url들을 가져옴
             List<ChatGPTQuestionDTO.AnswerDTO> answerDTOList = answerList.stream()
                     .map(this::getAnswerDetail)
                     .collect(Collectors.toList());
-            System.out.println("테스트 -2");
 
             return new ChatGPTQuestionDTO.RecordDetailDTO(createdAt, category, answerDTOList, etc);
         } catch (Exception e) {
@@ -189,7 +186,7 @@ public class DiagnoseChatGPTService {
 
         // answerList 객체에서 가져올 것 : answerText, question 객체, imageList 객체
         // question 객체에서 가져올 것 : questionText, descriptionText
-        String answerText = answer.getUserAnswerText();
+        List<String> answerText = answer.getUserAnswerText();
         ChecklistQuestion question = answer.getQuestion();
         String questionText = question.getQuestionText();
         String descriptionText = question.getDescriptionText();
@@ -201,15 +198,16 @@ public class DiagnoseChatGPTService {
                 .map(Image::getImageUrl)
                 .collect(Collectors.toList());
 
-        // String answerTexts = String.join(",", answerText);
+        // 현재 userAnswerText가 List<String>이므로 String으로 변환해서 처리
+        String answerTexts = String.join(",", answerText);
 
-        return new ChatGPTQuestionDTO.AnswerDTO(questionText, descriptionText, answerText, imageURLs);
-
+        return new ChatGPTQuestionDTO.AnswerDTO(questionText, descriptionText, answerTexts, imageURLs);
     }
 
     // DTO의 내용으로 구체적인 질문 내용을 만듦
     public String makeQuestionString(ChatGPTQuestionDTO chatGPTQuestionDTO) {
 
+        // 여기에 지금 answerDTO 값이 null로 들어옴!!!!
         System.out.println("make Question String에 들어온 chatGptQuestionDTO는 : " + chatGPTQuestionDTO);
 
         String question;
@@ -225,7 +223,6 @@ public class DiagnoseChatGPTService {
             };
 
             String petVariety = Objects.requireNonNull(chatGPTQuestionDTO.petVariety(), "반려동물 정보가 정확히 저장되어 있지 않습니다.");
-            System.out.println("petVariety is : " + petVariety);
 
             // 생년월일은 null 허용
             String birth = Objects.requireNonNull(chatGPTQuestionDTO.birth(), "반려동물 정보가 정확히 저장되어 있지 않습니다.");
@@ -243,8 +240,6 @@ public class DiagnoseChatGPTService {
                     "사용자의 반려동물은 " + petType + "이고, 종은 " + petVariety + "야. 생년월일은 " +
                     birth + "이고 중성화는 " + neutralization + ". 이제 사용자가 기록한 일지의 내용을 알려줄게." +
                     " 일지는 최소 1개부터 최대 5개까지 제시될 거고, 만약 일지가 여러 개라면 여러 개의 일지 내용을 분석해서 진단을 내려줘. \n";
-
-            System.out.println("question is : " + question );
 
 
         } catch(NullPointerException e) {
@@ -269,14 +264,9 @@ public class DiagnoseChatGPTService {
                         category + "에 대한 기록이야. ";
                 // 하나의 일지는 3개의 질문을 기록하므로
                 for (int j = 0; j < 3; j++) {
-                    System.out.println("j is : " + j );
-                    System.out.println(chatGPTQuestionDTO.recordDetailDTO().get(i).answerDTO().get(j).questionText());
-                    System.out.println(chatGPTQuestionDTO.recordDetailDTO().get(i).answerDTO().get(j).descriptionText());
-                    System.out.println(chatGPTQuestionDTO.recordDetailDTO().get(i).answerDTO().get(j).answerText());
                     question += j+1 + "번째 질문은 '" + chatGPTQuestionDTO.recordDetailDTO().get(i).answerDTO().get(j).questionText() + "'이고 " +
                             "추가적인 서비스의 설명은 '" + chatGPTQuestionDTO.recordDetailDTO().get(i).answerDTO().get(j).descriptionText() + "'야. " +
                             "사용자는 이에 대해 '" + chatGPTQuestionDTO.recordDetailDTO().get(i).answerDTO().get(j).answerText() + " '라고 답변했어. ";
-                    System.out.println("j is : " + j );
                 }
                 question += " 마지막으로 사용자는 이 일지에 대해 다음과 같이 추가적으로 기록했어. '" + chatGPTQuestionDTO.recordDetailDTO().get(i).etc() +"' \n";
             }
@@ -291,7 +281,6 @@ public class DiagnoseChatGPTService {
                 "1. [product1=첫 번째 추천 제품] 2. [product2=두 번째 추천 제품] 3. [product3=세 번째 추천 제품] 4. [product4=네 번째 추천 제품] 5. [product5=다섯 번째 추천 제품]'";
 
 
-        System.out.println("question is : " + question);
 
         return question;
     }
@@ -299,32 +288,45 @@ public class DiagnoseChatGPTService {
 
     // ChatGPT 진단 수행
     public String diagnoseByChatGPT(String question) {
-        // gpt 진단하는 클래스
-        Map<String, Object> resultMap = new HashMap<>();
-
-        // 토큰 정보가 포함된 Header를 가져옴
-        HttpHeaders headers = chatGPTConfig.httpHeaders();
-
-        // ChatGPTCompletionDTO 구성
-        // role을 사용자로 지정하고 content에는 question값을 넣어줌
-        ChatGPTCompletionDTO chatGPTCompletionDTO = new ChatGPTCompletionDTO("user", question);
-        System.out.println("chatGPTCompletionDTO is : " + chatGPTCompletionDTO);
-
-        // String으로 받아온 questions를 DTO에 넣어서 DTO 구성
-        ChatGPTRequestDTO chatGPTRequestDTO = new ChatGPTRequestDTO("gpt-4o-mini", List.of(chatGPTCompletionDTO));
-        System.out.println("chatGPTRequestDTO is  : " + chatGPTRequestDTO);
-
-        // 통신을 위한 RestTemplate 구성
-        HttpEntity<ChatGPTRequestDTO> requestEntity = new HttpEntity<>(chatGPTRequestDTO, headers);
-        ResponseEntity<String> response = chatGPTConfig.restTemplate()
-                .exchange(promptUrl, HttpMethod.POST, requestEntity, String.class);
-
-        String content = null;
-
         try {
+
+            // gpt 진단하는 클래스
+            Map<String, Object> resultMap = new HashMap<>();
+
+            // 토큰 정보가 포함된 Header를 가져옴
+            HttpHeaders headers = chatGPTConfig.httpHeaders();
+
+            // ChatGPTCompletionDTO 구성
+            // role을 사용자로 지정하고 content에는 question값을 넣어줌
+            ChatGPTCompletionDTO chatGPTCompletionDTO = new ChatGPTCompletionDTO("user", question);
+
+            // String으로 받아온 questions를 DTO에 넣어서 DTO 구성
+            ChatGPTRequestDTO chatGPTRequestDTO = new ChatGPTRequestDTO("gpt-4o-mini", List.of(chatGPTCompletionDTO));
+            System.out.println("chatGPTRequestDTO is  : " + chatGPTRequestDTO);
+
+            // ObjectMapper를 사용하여 DTO를 JSON 문자열로 변환
+            // ChatGPT api를 사용하려면 JSON 형태로 통신해야 함
+            ObjectMapper objectMapper = new ObjectMapper();
+            String jsonPayload = objectMapper.writeValueAsString(chatGPTRequestDTO);
+
+            // 통신을 위한 RestTemplate 구성
+            HttpEntity<String> requestEntity = new HttpEntity<>(jsonPayload, headers);
+            System.out.println("Request URL: " + promptUrl);
+            System.out.println("Request Headers: " + headers);
+            System.out.println("Request Body: " + jsonPayload);
+
+            // 여기에서 오류 발생
+            ResponseEntity<String> response = chatGPTConfig.restTemplate()
+                    .exchange(promptUrl, HttpMethod.POST, requestEntity, String.class);
+
+            System.out.println("Response Status: " + response.getStatusCode());
+            System.out.println("Response Body: " + response.getBody());
+
+
             // String -> HashMap 역직렬화
-            ObjectMapper om = new ObjectMapper();
-            resultMap = om.readValue(response.getBody(), new TypeReference<>() {});
+            resultMap = objectMapper.readValue(response.getBody(), new TypeReference<>() {});
+
+            String content = null;
 
             // 통신 결과에서 GPT의 응답 내용만 추출해냄
             List<Map<String, Object>> choices = (List<Map<String, Object>>) resultMap.get("choices");
@@ -334,13 +336,22 @@ public class DiagnoseChatGPTService {
                 content = message.get("content");
                 log.debug("Extracted content: " + content);  // 로그로 content 출력
             }
-        } catch (JsonProcessingException e) {
-            log.debug("JsonMappingException :: " + e.getMessage());
-        } catch (RuntimeException e) {
-            // try문 내의 if문 실행되지 않을 경우 content값이 null이므로 에러 발생
-            log.debug("RuntimeException :: " + e.getMessage());
-        }
 
-        return content;
+            return content;
+
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            log.debug("JsonMappingException :: " + e.getMessage(), e);
+            throw new RuntimeException("오류가 발생했습니다. 서버 관리자에게 문의해주세요" + e.getMessage());
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            // try문 내의 if문 실행되지 않을 경우 content값이 null이므로 에러 발생
+            log.debug("RuntimeException :: " + e.getMessage(), e);
+            throw new RuntimeException("오류가 발생했습니다. 서버 관리자에게 문의해주세요" + e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("알 수 없는 오류가 발생했습니다." + e.getMessage(), e);
+            throw new RuntimeException("알 수 없는 오류가 발생했습니다. 서버 관리자에게 문의해주세요" + e.getMessage());
+        }
     }
 }

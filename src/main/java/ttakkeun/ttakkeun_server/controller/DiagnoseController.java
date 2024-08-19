@@ -39,8 +39,7 @@ public class DiagnoseController {
 
     @Autowired
     private DiagnoseChatGPTService diagnoseChatGPTService;
-    @Autowired
-    private UseChatGPTService useChatGPTService;
+
 
     // 진단 버튼 클릭시 사용자의 포인트를 조회하는 API
     @Operation(summary = "사용자 포인트 조회 API")
@@ -122,6 +121,30 @@ public class DiagnoseController {
     }
 
 
+    @Operation(summary = "AI 진단하기 API GPT 통신 테스트용")
+    @PostMapping("/loadingTest")
+    public ResponseEntity<ApiResponse<String>> postDiagnoseByRecord(@RequestBody String question) {
+        try {
+            // memberId가 1인 유저로 테스트함
+            String responseContent = diagnoseChatGPTService.diagnoseByChatGPT(question);
+            ApiResponse<String> response = ApiResponse.of(SuccessStatus._OK, responseContent);
+            return ResponseEntity.ok(response);
+        } catch (NoSuchElementException e) {
+            ApiResponse<String> response = ApiResponse.ofFailure(PET_ID_NOT_AVAILABLE, null);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        } catch (UsernameNotFoundException e) {
+            ApiResponse<String> response = ApiResponse.ofFailure(ErrorStatus._UNAUTHORIZED, null);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        } catch (NullPointerException e) {
+            ApiResponse<String> response = ApiResponse.ofFailure(ErrorStatus._INTERNAL_SERVER_ERROR, null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        } catch (Exception e) {
+            ApiResponse<String> response = ApiResponse.ofFailure(ErrorStatus._INTERNAL_SERVER_ERROR, null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+
 
     // 진단시 사용자 포인트 차감 API
     @Operation(summary = "사용자 포인트 차감 API")
@@ -183,28 +206,4 @@ public class DiagnoseController {
         }
     }
 
-    // 사용 가능한 ChatGPT 모델 확인
-    @Operation(summary = "사용 가능한 ChatGPT 모델 확인")
-    @GetMapping("/modelList")
-    public ResponseEntity<List<Map<String, Object>>> selectModelList() {
-        List<Map<String, Object>> result = useChatGPTService.modelList();
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
-    // 사용하려는 ChatGPT 모델이 유효한 모델인지 확인
-    @Operation(summary = "유효한 ChatGPT 모델인지 확인")
-    @GetMapping("/model")
-    public ResponseEntity<Map<String, Object>> isValidModel(@RequestParam(name = "modelName") String modelName) {
-        Map<String, Object> result = useChatGPTService.isValidModel(modelName);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
-    // GPT 명령어 직접 수행, 테스트용
-    @Operation(summary = "ChatGPT 통신 테스트용")
-    @PostMapping("/prompt")
-    public ResponseEntity<Map<String, Object>> selectPrompt(@RequestBody ChatGPTRequestDTO chatGPTRequestDTO) {
-        log.debug("param :: " + chatGPTRequestDTO.toString());
-        Map<String, Object> result = useChatGPTService.prompt(chatGPTRequestDTO);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
 }
