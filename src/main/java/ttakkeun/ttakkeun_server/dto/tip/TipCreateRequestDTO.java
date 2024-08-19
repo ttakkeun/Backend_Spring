@@ -13,7 +13,7 @@ public class TipCreateRequestDTO {
     private String content;
     private Category category;
 
-    public TipCreateRequestDTO(String title, String content, Category tipCategory) {
+    public TipCreateRequestDTO(String title, String content, Category category) {
         this.title = title;
         this.content = content;
         this.category = category;
