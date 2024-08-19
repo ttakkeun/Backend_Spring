@@ -11,11 +11,11 @@ import ttakkeun.ttakkeun_server.entity.enums.Category;
 public class TipCreateRequestDTO {
     private String title;
     private String content;
-    private Category tipCategory;
+    private Category category;
 
     public TipCreateRequestDTO(String title, String content, Category tipCategory) {
         this.title = title;
         this.content = content;
-        this.tipCategory = tipCategory;
+        this.category = category;
     }
 }

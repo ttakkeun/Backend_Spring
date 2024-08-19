@@ -7,11 +7,13 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ttakkeun.ttakkeun_server.apiPayLoad.ApiResponse;
-import ttakkeun.ttakkeun_server.dto.tip.*;
+import ttakkeun.ttakkeun_server.dto.tip.TipCreateRequestDTO;
+import ttakkeun.ttakkeun_server.dto.tip.TipResponseDTO;
 import ttakkeun.ttakkeun_server.entity.Member;
 import ttakkeun.ttakkeun_server.entity.TipImage;
 import ttakkeun.ttakkeun_server.entity.enums.Category;
 import ttakkeun.ttakkeun_server.service.TipService;
+
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -66,4 +68,27 @@ public class TipController {
         List<TipResponseDTO> result = tipService.getTipsByCategory(category, page, size);
         return ApiResponse.onSuccess(result);
     }
+
+
+    @Operation(summary = "전체 팁 조회 API")
+    @GetMapping("/all")
+    public ApiResponse<List<TipResponseDTO>> getAllTips(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size) {
+
+        List<TipResponseDTO> result = tipService.getAllTips(page, size);
+        return ApiResponse.onSuccess(result);
+    }
+
+    @Operation(summary = "Best 팁 조회 API")
+    @GetMapping("/best")
+    public ApiResponse<List<TipResponseDTO>> getBestTips(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size) {
+
+        List<TipResponseDTO> result = tipService.getBestTips(page, size);
+        return ApiResponse.onSuccess(result);
+
+
+}
 }

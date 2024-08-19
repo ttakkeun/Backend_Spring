@@ -11,5 +11,9 @@ import ttakkeun.ttakkeun_server.entity.enums.Category;
 
 @Repository
 public interface TipRepository extends JpaRepository<Tip, Long> {
-    Page<Tip> findByTipCategory(Category category, Pageable pageable);
+    Page<Tip> findByCategory(Category category, Pageable pageable);
+
+    Page<Tip> findByIsPopularTrue(Pageable pageable);
+
 }
+

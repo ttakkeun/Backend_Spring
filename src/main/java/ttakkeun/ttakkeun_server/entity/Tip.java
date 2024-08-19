@@ -29,7 +29,7 @@ public class Tip extends BaseEntity {
     private String content;
 
     @Column(nullable = false)
-    private Category tipCategory;
+    private Category category;
 
     @Column
     private Integer recommendCount = 0;
