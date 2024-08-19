@@ -32,10 +32,10 @@ public class RecordController {
     public ApiResponse<RecordListResponse> getRecordList(
             @AuthenticationPrincipal Member member,
             @PathVariable(name = "pet_id") Long petId, @PathVariable(name = "category") Category category,
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "21") int size
     ){
         System.out.println("일지 목록 조회 API Controller");
+        int page = 0;
+        int size = 21;
         List<RecordListResponseDto> records = recordService.getRecordsByCategory(member, petId, category, page, size);
         RecordListResponse result = new RecordListResponse(category, records);
         return ApiResponse.onSuccess(result);
@@ -76,12 +76,9 @@ public class RecordController {
             //@RequestPart RecordRequestDTO.RecordImageDTO recordImageDTO
     )
     {
-        System.out.println("일지 목록 조회 API Controller");
         List<RecordRequestDTO.RecordImageDTO> result = recordService.uploadImages(recordId,questionId,images);
         return ApiResponse.of(IMAGE_SUCCESS,result);
     }
-
-
 
     @Operation(summary = "일지 상세 내용 조회 API")
     @GetMapping("/detail/{pet_id}/{record_id}")
