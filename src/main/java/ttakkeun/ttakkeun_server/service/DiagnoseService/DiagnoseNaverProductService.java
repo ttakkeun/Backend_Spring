@@ -23,6 +23,7 @@ import ttakkeun.ttakkeun_server.repository.ResultRepository;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -65,7 +66,12 @@ public class DiagnoseNaverProductService {
             List<NaverProductDTO> products = updateProductsRequestDTO.products().stream()
                     .map(productTitle -> {
                         System.out.println("product is : " + productTitle);
-                        NaverProductDTO naverShopSearch = naverShopSearch(productTitle, resultCategory);
+                        return naverShopSearch(productTitle, resultCategory);
+                    })
+                    .filter(Objects::nonNull) // null 값을 필터링하여 제외
+                    // 앞서 네이버 쇼핑 API에서 검색 결과가 없으면 null을 반환하도록 처리하였으므로
+                    // 만약 검색 결과가 없다면 해당 제품은 저장되지 않음
+                    .map(naverShopSearch -> {
                         Product product = saveProduct(naverShopSearch);
 
                         // ResultProduct 테이블에 다대다 매핑 추가
@@ -124,8 +130,10 @@ public class DiagnoseNaverProductService {
             JSONArray items  = rjson.getJSONArray("items");
 
             if (items.length() == 0) { // 네이버 쇼핑 API 결과에 제품이 존재하지 않을 경우
-                // 네이버 쇼핑 API는 유사도로 검색을 하기 때문에 items에 값이 없는 경우에는 예외로 처리하였음
-                throw new NoSuchElementException("검색 결과가 없습니다. 다시 시도해주세요");
+//                // 네이버 쇼핑 API는 유사도로 검색을 하기 때문에 items에 값이 없는 경우에는 예외로 처리하였음
+//                throw new NoSuchElementException("검색 결과가 없습니다. 다시 시도해주세요");
+                // 예외 처리가 아니라 null을 리턴하도록 수정함
+                return null;
             }
 
             JSONObject itemJson = items.getJSONObject(0); // 유사도가 가장 높은 제품, 즉 첫 번째 제품을 사용
