@@ -19,7 +19,6 @@ public class Product extends BaseEntity {
 
     @Id
     @Column(name = "product_id")
-    // productId는 네이버 쇼핑의 productId를 사용하므로 @GeneratedValue(strategy = GenerationType.IDENTITY) 제거하였음
     private Long productId;
 
     @Builder.Default

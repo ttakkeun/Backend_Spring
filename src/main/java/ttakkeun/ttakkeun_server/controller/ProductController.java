@@ -9,6 +9,7 @@ import ttakkeun.ttakkeun_server.apiPayLoad.ApiResponse;
 import ttakkeun.ttakkeun_server.dto.LikeResponseDTO;
 import ttakkeun.ttakkeun_server.dto.product.ProductApiResponseDTO;
 import ttakkeun.ttakkeun_server.dto.RecommendProductDTO;
+import ttakkeun.ttakkeun_server.dto.product.ProductRequestDTO;
 import ttakkeun.ttakkeun_server.entity.Member;
 import ttakkeun.ttakkeun_server.entity.enums.Category;
 import ttakkeun.ttakkeun_server.repository.MemberRepository;
@@ -91,9 +92,11 @@ public class ProductController {
     @PatchMapping("/like/{product_id}")
     public ApiResponse<LikeResponseDTO.Result> toggleLikeProduct(
             @PathVariable Long product_id,
-            @AuthenticationPrincipal Member member
+            @AuthenticationPrincipal Member member,
+            @RequestBody ProductRequestDTO requestBody
     ) {
         Long memberId = member.getMemberId();
+        productService.addNewProduct(product_id, requestBody);
         likeService.toggleLikeProduct(product_id, memberId);
 
         LikeResponseDTO.Result result = likeService.getLikeInfo(product_id, memberId);
