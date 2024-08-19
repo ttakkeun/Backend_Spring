@@ -57,7 +57,12 @@ public enum ErrorStatus implements BaseErrorCode {
     QUESTION_NOT_FOUND(HttpStatus.BAD_REQUEST, "QUESTION4001", "유효하지 않은 Question ID입니다."),
 
     // point 에러
-    MEMBER_HAS_NO_POINT(HttpStatus.NOT_FOUND, "POINT4001", "해당하는 멤버에게 포인트 값이 존재하지 않습니다. DB 관리자에게 문의해주세요");
+    MEMBER_HAS_NO_POINT(HttpStatus.NOT_FOUND, "POINT4001", "해당하는 멤버에게 포인트 값이 존재하지 않습니다. DB 관리자에게 문의해주세요"),
+
+    // 투두 에러
+    TODO_ID_NOT_AVAILABLE(HttpStatus.BAD_REQUEST, "TODO4000", "유효하지 않은 Todo ID입니다."),
+    TODO_STATUS_IS_DONE(HttpStatus.BAD_REQUEST, "TODO4001", "투두 항목이 이미 완료된 상태입니다."),
+    TODO_STATUS_IS_ONPROGRESS(HttpStatus.BAD_REQUEST, "TODO4002", "투두 항목이 완료되지 않았습니다.");
 
 
     private final HttpStatus httpStatus;
