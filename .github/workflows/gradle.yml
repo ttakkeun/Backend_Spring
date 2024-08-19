@@ -75,5 +75,6 @@ jobs:
                            -e APPLE_Secret=${APPLE_Secret} -e apple_key_id=${apple_key_id} \
                            -e apple_team_id=${apple_team_id} -e JWT_Secret=${JWT_Secret} \
                            -e aws_access=${aws_access} -e aws_secret=${aws_secret} \
+                           -e TZ=Asia/Seoul \
                            -d -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/ttakkeun
           sudo docker image prune -f
