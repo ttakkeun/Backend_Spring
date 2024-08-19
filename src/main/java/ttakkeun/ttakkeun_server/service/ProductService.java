@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ttakkeun.ttakkeun_server.converter.ProductConverter;
 import ttakkeun.ttakkeun_server.dto.RecommendProductDTO;
+import ttakkeun.ttakkeun_server.dto.product.ProductRequestDTO;
 import ttakkeun.ttakkeun_server.entity.Product;
 import ttakkeun.ttakkeun_server.entity.enums.Category;
 import ttakkeun.ttakkeun_server.repository.ProductRepository;
@@ -59,13 +60,13 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
-    //좋아요를 누른 새로운 제품을 저장
-    public void saveNewProduct(RecommendProductDTO recommendProductDTO) {
-        if (recommendProductDTO.getProduct_id() != null && productRepository.existsById(recommendProductDTO.getProduct_id())) {
-            return;
+    //새로운 제품을 좋아요 했을 경우 Product DB에 추가
+    public void addNewProduct(Long productId, ProductRequestDTO requestDTO) {
+        Product product = productConverter.toProduct(productId, requestDTO);
+
+        if(productRepository.findById(productId).isEmpty()) {
+            productRepository.save(product);
         }
-        Product product = productConverter.toEntity(recommendProductDTO);
-        productRepository.save(product);
     }
 
     //검색 기능 - 따끈 DB에서 불러오기
