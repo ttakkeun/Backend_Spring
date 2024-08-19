@@ -4,24 +4,18 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import ttakkeun.ttakkeun_server.apiPayLoad.ApiResponse;
 import ttakkeun.ttakkeun_server.apiPayLoad.code.status.ErrorStatus;
 import ttakkeun.ttakkeun_server.apiPayLoad.code.status.SuccessStatus;
-import ttakkeun.ttakkeun_server.dto.diagnose.GetMyDiagnoseListResponseDTO;
-import ttakkeun.ttakkeun_server.dto.diagnose.GetMyDiagnoseResponseDTO;
-import ttakkeun.ttakkeun_server.dto.diagnose.GetMyPointResponseDTO;
-import ttakkeun.ttakkeun_server.dto.diagnose.UpdateMyPointResponseDTO;
-import ttakkeun.ttakkeun_server.entity.Member;
+import ttakkeun.ttakkeun_server.dto.diagnose.*;
 import ttakkeun.ttakkeun_server.entity.enums.Category;
-import ttakkeun.ttakkeun_server.repository.MemberRepository;
-import ttakkeun.ttakkeun_server.service.DiagnoseService;
+import ttakkeun.ttakkeun_server.service.DiagnoseService.DiagnoseChatGPTService;
+import ttakkeun.ttakkeun_server.service.DiagnoseService.DiagnoseService;
 //import ttakkeun.ttakkeun_server.dto.UpdateProductsDTO;
 
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,6 +23,9 @@ import java.util.Optional;
 public class DiagnoseTestController {
     @Autowired
     private DiagnoseService diagnoseService;
+
+    @Autowired
+    private DiagnoseChatGPTService diagnoseChatGPTService;
 
     // 진단 버튼 클릭시 사용자의 포인트를 조회하는 API
     @Operation(summary = "사용자 포인트 조회 테스트 API")
@@ -78,6 +75,25 @@ public class DiagnoseTestController {
     }
 
 
+    @Operation(summary = "AI 진단하기 API")
+    @PostMapping("/loading")
+    public ResponseEntity<ApiResponse<PostDiagnoseResponseDTO>> postDiagnoseByRecord(@RequestBody PostDiagnoseRequestDTO records) {
+        try {
+            // memberId가 1인 유저로 테스트함
+            PostDiagnoseResponseDTO postDiagnoseResponseDTO = diagnoseChatGPTService.postDiagnoseByRecord(1L, records);
+            ApiResponse<PostDiagnoseResponseDTO> response = ApiResponse.of(SuccessStatus._OK, postDiagnoseResponseDTO);
+            return ResponseEntity.ok(response);
+        } catch (NoSuchElementException e) {
+            ApiResponse<PostDiagnoseResponseDTO> response = ApiResponse.ofFailure(ErrorStatus.MEMBER_HAS_NO_POINT, null);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        } catch (UsernameNotFoundException e) {
+            ApiResponse<PostDiagnoseResponseDTO> response = ApiResponse.ofFailure(ErrorStatus._UNAUTHORIZED, null);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        } catch (Exception e) {
+            ApiResponse<PostDiagnoseResponseDTO> response = ApiResponse.ofFailure(ErrorStatus._INTERNAL_SERVER_ERROR, null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
 
 
     // 진단시 사용자 포인트 차감 API

@@ -13,21 +13,27 @@ import ttakkeun.ttakkeun_server.apiPayLoad.code.status.SuccessStatus;
 import ttakkeun.ttakkeun_server.dto.diagnose.*;
 import ttakkeun.ttakkeun_server.entity.Member;
 import ttakkeun.ttakkeun_server.entity.enums.Category;
-import ttakkeun.ttakkeun_server.service.DiagnoseNaverProductService;
-import ttakkeun.ttakkeun_server.service.DiagnoseService;
+import ttakkeun.ttakkeun_server.service.DiagnoseService.DiagnoseChatGPTService;
+import ttakkeun.ttakkeun_server.service.DiagnoseService.DiagnoseNaverProductService;
+import ttakkeun.ttakkeun_server.service.DiagnoseService.DiagnoseService;
 //import ttakkeun.ttakkeun_server.dto.UpdateProductsDTO;
 
 import java.util.NoSuchElementException;
+
+import static ttakkeun.ttakkeun_server.apiPayLoad.code.status.ErrorStatus.PET_ID_NOT_AVAILABLE;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/diagnose")
 public class DiagnoseController {
     @Autowired
-    private final DiagnoseService diagnoseService;
+    private DiagnoseService diagnoseService;
 
     @Autowired
-    private final DiagnoseNaverProductService diagnoseNaverProductService;
+    private DiagnoseNaverProductService diagnoseNaverProductService;
+
+    @Autowired
+    private DiagnoseChatGPTService diagnoseChatGPTService;
 
     // 진단 버튼 클릭시 사용자의 포인트를 조회하는 API
     @Operation(summary = "사용자 포인트 조회 API")
@@ -59,8 +65,8 @@ public class DiagnoseController {
     @Operation(summary = "진단 결과 목록 조회 API")
     @GetMapping("/{pet_id}/{category}/{page}")
     public ResponseEntity<ApiResponse<GetMyDiagnoseListResponseDTO>> getDiagnoseListByPet(@AuthenticationPrincipal Member member, @PathVariable(name = "pet_id") Long petId,
-                                                                                              @PathVariable(name = "category") Category category,
-                                                                                              @PathVariable(name = "page") int page) {
+                                                                                          @PathVariable(name = "category") Category category,
+                                                                                          @PathVariable(name = "page") int page) {
         try {
             if (member == null) { // 사용자 정보를 가져오지 못할 경우 UsernameNotFoundException 에러 발생
                 throw new UsernameNotFoundException("인증이 필요합니다. 로그인 정보를 확인해주세요.");
@@ -70,13 +76,40 @@ public class DiagnoseController {
             ApiResponse<GetMyDiagnoseListResponseDTO> response = ApiResponse.of(SuccessStatus._OK, getMyDiagnoseListResponseDTO);
             return ResponseEntity.ok(response);
         } catch (NoSuchElementException e) {
-            ApiResponse<GetMyDiagnoseListResponseDTO> response = ApiResponse.ofFailure(ErrorStatus.PET_ID_NOT_AVAILABLE, null);
+            ApiResponse<GetMyDiagnoseListResponseDTO> response = ApiResponse.ofFailure(PET_ID_NOT_AVAILABLE, null);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         } catch (UsernameNotFoundException e) {
             ApiResponse<GetMyDiagnoseListResponseDTO> response = ApiResponse.ofFailure(ErrorStatus._UNAUTHORIZED, null);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         } catch (Exception e) {
             ApiResponse<GetMyDiagnoseListResponseDTO> response = ApiResponse.ofFailure(ErrorStatus._INTERNAL_SERVER_ERROR, null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+
+    @Operation(summary = "AI 진단하기 API")
+    @PostMapping("/loading")
+    public ResponseEntity<ApiResponse<PostDiagnoseResponseDTO>> postDiagnoseByRecord(@AuthenticationPrincipal Member member, @RequestBody PostDiagnoseRequestDTO records) {
+        try {
+            if (member == null) { // 사용자 정보를 가져오지 못할 경우 UsernameNotFoundException 에러 발생
+                throw new UsernameNotFoundException("인증이 필요합니다. 로그인 정보를 확인해주세요.");
+            }
+            Long memberId = member.getMemberId(); // 인증된 사용자의 memberId를 가져옴
+            PostDiagnoseResponseDTO postDiagnoseResponseDTO = diagnoseChatGPTService.postDiagnoseByRecord(memberId, records);
+            ApiResponse<PostDiagnoseResponseDTO> response = ApiResponse.of(SuccessStatus._OK, postDiagnoseResponseDTO);
+            return ResponseEntity.ok(response);
+        } catch (NoSuchElementException e) {
+            ApiResponse<PostDiagnoseResponseDTO> response = ApiResponse.ofFailure(PET_ID_NOT_AVAILABLE, null);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        } catch (UsernameNotFoundException e) {
+            ApiResponse<PostDiagnoseResponseDTO> response = ApiResponse.ofFailure(ErrorStatus._UNAUTHORIZED, null);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        } catch (NullPointerException e) {
+            ApiResponse<PostDiagnoseResponseDTO> response = ApiResponse.ofFailure(ErrorStatus._INTERNAL_SERVER_ERROR, null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        } catch (Exception e) {
+            ApiResponse<PostDiagnoseResponseDTO> response = ApiResponse.ofFailure(ErrorStatus._INTERNAL_SERVER_ERROR, null);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
@@ -108,7 +141,7 @@ public class DiagnoseController {
     }
 
     // 네이버 쇼핑 API로 진단 결과 DB 정보 업데이트 API
-    @Operation(summary = "추천 제품 네이버 쇼핑 정보로 업데이트")
+    @Operation(summary = "추천 제품 네이버 쇼핑 정보로 업데이트 API")
     @PatchMapping("/{diagnose_id}")
     // 등록되지 않은 제품일 경우 새로운 정보를 등록하지만, 네이버 검색 API로 등록된 제품들은 기존 제품 정보에서 태그값만 업데이트하게 되므로 PATCH 사용하였음
     public ResponseEntity<ApiResponse<UpdateProductsResponseDTO>> updateDiagnoseProducts(@PathVariable("diagnose_id") Long resultId, @RequestBody UpdateProductsRequestDTO products) {

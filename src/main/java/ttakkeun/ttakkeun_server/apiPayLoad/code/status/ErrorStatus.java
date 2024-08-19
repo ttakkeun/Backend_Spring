@@ -55,7 +55,7 @@ public enum ErrorStatus implements BaseErrorCode {
 
     //Question 에러
     QUESTION_NOT_FOUND(HttpStatus.BAD_REQUEST, "QUESTION4001", "유효하지 않은 Question ID입니다."),
-  
+
     // point 에러
     MEMBER_HAS_NO_POINT(HttpStatus.NOT_FOUND, "POINT4001", "해당하는 멤버에게 포인트 값이 존재하지 않습니다. DB 관리자에게 문의해주세요");
 
