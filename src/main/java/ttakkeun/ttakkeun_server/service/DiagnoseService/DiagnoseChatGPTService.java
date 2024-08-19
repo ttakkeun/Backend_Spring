@@ -210,77 +210,73 @@ public class DiagnoseChatGPTService {
         // 여기에 지금 answerDTO 값이 null로 들어옴!!!!
         System.out.println("make Question String에 들어온 chatGptQuestionDTO는 : " + chatGPTQuestionDTO);
 
-        String question;
-
-        try {
-
-            String petType = switch (chatGPTQuestionDTO.petType()) {
-                case CAT -> "고양이";
-                case DOG -> "강아지";
-                default -> "에러 발생";
-                // default -> throw new NullPointerException("반려동물 정보가 정확히 저장되어 있지 않습니다.");
-                // ENUM PetType은 CAT, DOG만 있으므로 이외의 경우는 모두 null로 간주하고 처리하였음
-            };
-
-            String petVariety = Objects.requireNonNull(chatGPTQuestionDTO.petVariety(), "반려동물 정보가 정확히 저장되어 있지 않습니다.");
-
-            // 생년월일은 null 허용
-            String birth = Objects.requireNonNull(chatGPTQuestionDTO.birth(), "반려동물 정보가 정확히 저장되어 있지 않습니다.");
-
-            String neutralization = switch (chatGPTQuestionDTO.neutralization()) {
-                case NEUTRALIZATION -> "된 상태야";
-                case UNNEUTRALIZATION -> "되지 않은 상태야";
-                default -> "에러 발생";
-                // default -> throw new NullPointerException("반려동물 정보가 정확히 저장되어 있지 않습니다.");
-                // ENUM neutralization은 NEUTRALIZATION, UNNEUTRALIZATION만 있으므로 이외의 경우는 모두 null로 간주하고 처리하였음
-            };
 
 
-            question = "다음과 같은 질문에 답변해줘. 사용자의 반려동물에 대한 기록을 보고 해당 반려동물에 상태에 대해 판단할거야. " +
-                    "사용자의 반려동물은 " + petType + "이고, 종은 " + petVariety + "야. 생년월일은 " +
-                    birth + "이고 중성화는 " + neutralization + ". 이제 사용자가 기록한 일지의 내용을 알려줄게." +
-                    " 일지는 최소 1개부터 최대 5개까지 제시될 거고, 만약 일지가 여러 개라면 여러 개의 일지 내용을 분석해서 진단을 내려줘. \n";
+        String petType = switch (chatGPTQuestionDTO.petType()) {
+            case CAT -> "고양이";
+            case DOG -> "강아지";
+            default -> "에러 발생";
+            // default -> throw new NullPointerException("반려동물 정보가 정확히 저장되어 있지 않습니다.");
+            // ENUM PetType은 CAT, DOG만 있으므로 이외의 경우는 모두 null로 간주하고 처리하였음
+        };
 
+//            String petVariety = Objects.requireNonNull(chatGPTQuestionDTO.petVariety(), "반려동물 정보가 정확히 저장되어 있지 않습니다.");
+//
+//            // 생년월일은 null 허용
+//            String birth = Objects.requireNonNull(chatGPTQuestionDTO.birth(), "반려동물 정보가 정확히 저장되어 있지 않습니다.");
+//
+//            String neutralization = switch (chatGPTQuestionDTO.neutralization()) {
+//                case NEUTRALIZATION -> "된 상태야";
+//                case UNNEUTRALIZATION -> "되지 않은 상태야";
+//                default -> "에러 발생";
+//                // default -> throw new NullPointerException("반려동물 정보가 정확히 저장되어 있지 않습니다.");
+//                // ENUM neutralization은 NEUTRALIZATION, UNNEUTRALIZATION만 있으므로 이외의 경우는 모두 null로 간주하고 처리하였음
+//            };
 
-        } catch(NullPointerException e) {
-            log.error("반려동물 정보가 정확히 저장되어 있지 않습니다.", e);
-            throw new NullPointerException("반려동물 정보가 정확히 저장되어 있지 않습니다.");
-        }
 
         // 진단에 사용된 일지가 몇개인지 확인
         int recordCount = chatGPTQuestionDTO.recordDetailDTO().size();
 
-        String category = null;
+        String question = "";
+
+        Category categoryEnum = chatGPTQuestionDTO.recordDetailDTO().get(0).category();
+        String category = categoryEnum.name();
+
+        question = petType + " " + category + "일지를 기반으로 반려동물 건강을 진단해줘\n";
 
         // 일지 개수만큼 반복하며 일지 내용을 question 문장에 추가함
         for (int i = 0; i < recordCount; i++) {
             if (recordCount == 0) {
                 throw new IllegalArgumentException("일지가 선택되지 않았습니다. 다시 시도해주세요");
-            } else {
-                // 답변이 db에 없을 때 오류처리 필요
-                Category categoryEnum = chatGPTQuestionDTO.recordDetailDTO().get(i).category();
-                category = categoryEnum.name();
-                question += "다음은 사용자가 기록한 " + i+1 + "번째 일지의 내용이야. 이 일지는 " + chatGPTQuestionDTO.recordDetailDTO().get(i).created_at() + "에 저장되었고, " +
-                        category + "에 대한 기록이야. ";
-                // 하나의 일지는 3개의 질문을 기록하므로
-                for (int j = 0; j < 3; j++) {
-                    question += j+1 + "번째 질문은 '" + chatGPTQuestionDTO.recordDetailDTO().get(i).answerDTO().get(j).questionText() + "'이고 " +
-                            "추가적인 서비스의 설명은 '" + chatGPTQuestionDTO.recordDetailDTO().get(i).answerDTO().get(j).descriptionText() + "'야. " +
-                            "사용자는 이에 대해 '" + chatGPTQuestionDTO.recordDetailDTO().get(i).answerDTO().get(j).answerText() + " '라고 답변했어. ";
-                }
-                question += " 마지막으로 사용자는 이 일지에 대해 다음과 같이 추가적으로 기록했어. '" + chatGPTQuestionDTO.recordDetailDTO().get(i).etc() +"' \n";
+            } else if (recordCount > 1) {
+                // 일지가 2개 이상인 경우에만 일지 번호 작성
+                question += "일지 " + i + 1 + "\n";
             }
+
+            // 하나의 일지는 3개의 질문을 기록하므로
+            for (int j = 0; j < 3; j++) {
+                question += "Q." + chatGPTQuestionDTO.recordDetailDTO().get(i).answerDTO().get(j).questionText() + " " +
+                        "A. " + chatGPTQuestionDTO.recordDetailDTO().get(i).answerDTO().get(j).answerText() + "\n";
+            }
+            if (chatGPTQuestionDTO.recordDetailDTO().get(i).etc() != null) {
+                // null이 아닌 경우에만 추가기록 작성
+                question += "추가기록:" + chatGPTQuestionDTO.recordDetailDTO().get(i).etc();
+            }
+
+            question += "\n";
         }
 
-        question += "이제 위 기록을 통해 반려동물의 " + category + "건강상태 진단을 내려줘. 내가 알고 싶은 건 100점 만점으로 평가한 점수, 진단에 대한 세부 설명, " +
-                "추후 관리법, 추천 제품 5개야. 추천 제품은 이름만 알려주면 되고, 한국에 사는 사용자가 구매할 수 있도록 한국에서 판매하는 제품을 추천해줘. " +
-                "만약 너가 모든 제품의 이름이 영어로 되어있는 제품을 추천한다면, 잘못된 추천일 가능성이 높아. \n" +
-                "나는 너가 한 답변을 DB에 저장해야 하니 다음과 같은 형식을 반드시 맞춰서 답변해줘. 내가 제시한 형식과 동일하게 대괄호, score와 같은 변수명, 등호를 포함하도록 유의해야 돼. " +
-                "등호의 오른쪽에는 너의 답변을 넣어주면 돼. \n" +
-                "'위 기록의 점수는 [score=점수]점입니다. 세부 설명은 다음과 같습니다. [detail=세부 설명] 추후 관리법은 다음과 같습니다. [care=추후 관리법] 추천 제품은 다음과 같습니다. " +
-                "1. [product1=첫 번째 추천 제품] 2. [product2=두 번째 추천 제품] 3. [product3=세 번째 추천 제품] 4. [product4=네 번째 추천 제품] 5. [product5=다섯 번째 추천 제품]'";
+        question += "아래 형식을 반드시 지켜서 등호의 오른쪽에 답변내용을 넣어줘. 점수는100점만점으로숫자만넣어줘\n" +
+                "위 기록의 점수는 [score=점수]점입니다. [detail=세부설명] [care=추후관리법] 추천 제품은 다음과 같습니다. " +
+                "[product1=추천제품] [product2=추천제품] [product3=추천제품] [product4=추천제품] [product5=추천제품]";
 
 
+        // Q.귀 안쪽에 귀지가 많이 쌓여있나요? A.귀지가 많아요.,귀지의 색이 이상해요.
+        //Q.귀에서 악취가 나나요? A.악취가 나지 않아요.
+        //Q.귀를 흔들거나 과도하게 긁나요? A.평소와 같아요.
+        //추가기록:Example details 1
+        //아래 형식을 반드시 지켜서 등호의 오른쪽에 답변내용을 넣어줘. 점수는100점만점으로숫자만넣어줘
+        //위 기록의 점수는 [score=점수]점입니다. [detail=세부설명] [care=추후관리법] 추천 제품은 다음과 같습니다. [product1=추천제품] [product2=추천제품] [product3=추천제품] [product4=추천제품] [product5=추천제품]
 
         return question;
     }
