@@ -1,18 +1,12 @@
-package ttakkeun.ttakkeun_server.service;
+package ttakkeun.ttakkeun_server.service.DiagnoseService;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 import ttakkeun.ttakkeun_server.dto.diagnose.*;
 import ttakkeun.ttakkeun_server.entity.Pet;
 import ttakkeun.ttakkeun_server.entity.Product;
@@ -26,7 +20,6 @@ import ttakkeun.ttakkeun_server.repository.ResultRepository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;

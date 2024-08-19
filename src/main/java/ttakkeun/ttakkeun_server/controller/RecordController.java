@@ -64,7 +64,7 @@ public class RecordController {
         return ApiResponse.onSuccess(responseDTO);
     }
 
-  
+
     @Operation(summary = "일지 사진 저장 API")
     @PostMapping(value = "/register/image/{recordId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)

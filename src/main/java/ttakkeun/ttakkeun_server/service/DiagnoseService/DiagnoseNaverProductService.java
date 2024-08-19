@@ -1,4 +1,4 @@
-package ttakkeun.ttakkeun_server.service;
+package ttakkeun.ttakkeun_server.service.DiagnoseService;
 
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
@@ -40,8 +40,8 @@ public class DiagnoseNaverProductService {
 
     @Autowired
     public DiagnoseNaverProductService(ResultRepository resultRepository, ProductRepository productRepository, ResultProductRepository resultProductRepository,
-                           @Value("${naverApi.clientId}") String naverClientId,
-                           @Value("${naverApi.clientSecret}") String naverClientSecret) {
+                                       @Value("${NAVER_ClientID}") String naverClientId,
+                                       @Value("${NAVER_ClientSecret}") String naverClientSecret) {
         this.resultRepository = resultRepository;
         this.productRepository = productRepository;
         this.resultProductRepository = resultProductRepository;
@@ -119,46 +119,46 @@ public class DiagnoseNaverProductService {
 
     // naverShopSearch에서 받은 JSON을 파싱해서 NaverProductDTO 객체 리스트로 변환함
     public NaverProductDTO fromJSONToNaverProducts(String result, Category resultCategory) {
-            try {
-                JSONObject rjson = new JSONObject(result);
-                JSONArray items  = rjson.getJSONArray("items");
+        try {
+            JSONObject rjson = new JSONObject(result);
+            JSONArray items  = rjson.getJSONArray("items");
 
-                if (items.length() == 0) { // 네이버 쇼핑 API 결과에 제품이 존재하지 않을 경우
-                    // 네이버 쇼핑 API는 유사도로 검색을 하기 때문에 items에 값이 없는 경우에는 예외로 처리하였음
-                    throw new NoSuchElementException("검색 결과가 없습니다. 다시 시도해주세요");
-                }
+            if (items.length() == 0) { // 네이버 쇼핑 API 결과에 제품이 존재하지 않을 경우
+                // 네이버 쇼핑 API는 유사도로 검색을 하기 때문에 items에 값이 없는 경우에는 예외로 처리하였음
+                throw new NoSuchElementException("검색 결과가 없습니다. 다시 시도해주세요");
+            }
 
-                JSONObject itemJson = items.getJSONObject(0); // 유사도가 가장 높은 제품, 즉 첫 번째 제품을 사용
-                System.out.println("itemJson : " + itemJson);
-                String productIdStr = itemJson.getString("productId");
-                Long productId = Long.parseLong(productIdStr);
-                String title = itemJson.getString("title");
-                String link = itemJson.getString("link");
-                String image = itemJson.getString("image");
-                String lpriceStr = itemJson.getString("lprice");
-                Integer lprice = Integer.parseInt(lpriceStr);
-                String mall_name = itemJson.getString("mallName");
-                String brand = itemJson.getString("brand");
-                String category1 = itemJson.getString("category1");
-                String category2 = itemJson.getString("category2");
-                String category3 = itemJson.getString("category3");
-                String category4 = itemJson.getString("category4");
+            JSONObject itemJson = items.getJSONObject(0); // 유사도가 가장 높은 제품, 즉 첫 번째 제품을 사용
+            System.out.println("itemJson : " + itemJson);
+            String productIdStr = itemJson.getString("productId");
+            Long productId = Long.parseLong(productIdStr);
+            String title = itemJson.getString("title");
+            String link = itemJson.getString("link");
+            String image = itemJson.getString("image");
+            String lpriceStr = itemJson.getString("lprice");
+            Integer lprice = Integer.parseInt(lpriceStr);
+            String mall_name = itemJson.getString("mallName");
+            String brand = itemJson.getString("brand");
+            String category1 = itemJson.getString("category1");
+            String category2 = itemJson.getString("category2");
+            String category3 = itemJson.getString("category3");
+            String category4 = itemJson.getString("category4");
 
-                // Json에서 가져온 값으로 DTO build
-                NaverProductDTO naverProductDTO = NaverProductDTO.builder()
-                        .productId(productId)
-                        .title(title)
-                        .link(link)
-                        .image(image)
-                        .lprice(lprice)
-                        .mall_name(mall_name)
-                        .brand(brand)
-                        .category1(category1)
-                        .category2(category2)
-                        .category3(category3)
-                        .category4(category4)
-                        .tag(resultCategory)
-                        .build();
+            // Json에서 가져온 값으로 DTO build
+            NaverProductDTO naverProductDTO = NaverProductDTO.builder()
+                    .productId(productId)
+                    .title(title)
+                    .link(link)
+                    .image(image)
+                    .lprice(lprice)
+                    .mall_name(mall_name)
+                    .brand(brand)
+                    .category1(category1)
+                    .category2(category2)
+                    .category3(category3)
+                    .category4(category4)
+                    .tag(resultCategory)
+                    .build();
 
             return naverProductDTO;
         } catch (JSONException e) {
@@ -200,10 +200,10 @@ public class DiagnoseNaverProductService {
         } else { // DB에 존재하는 제품이라면
             product = productOpt.get();
             if (product.getTag() == null) {
-                    // product값은 db에 존재하나 해당 product값에 tag값이 존재하지 않을 경우
-                    // 검색 결과를 통해 저장한 제품은 자체적으로 분류한 태그값이 들어가있지 않기 때문에 태그값을 저장해줘야 함
-                    product.setTag(naverProductDTO.tag());  // tag값 설정 후 DB에 저장
-                    productRepository.save(product);
+                // product값은 db에 존재하나 해당 product값에 tag값이 존재하지 않을 경우
+                // 검색 결과를 통해 저장한 제품은 자체적으로 분류한 태그값이 들어가있지 않기 때문에 태그값을 저장해줘야 함
+                product.setTag(naverProductDTO.tag());  // tag값 설정 후 DB에 저장
+                productRepository.save(product);
             }
             // 이외의 경우 이전에 진단을 받은 제품이거나 자체적으로 삽입한 제품값들이기 때문에 별도의 저장 과정을 거치지 않아도 됨
         }
