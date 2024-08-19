@@ -20,8 +20,9 @@ public class UserAnswer extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userAnswerId;
 
-    @Convert(converter = StringListConverter.class)
-    private List<String> userAnswerText;
+//    @Convert(converter = StringListConverter.class)
+//    private List<String> userAnswerText;
+    private String userAnswerText;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question_id")

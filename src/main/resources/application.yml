@@ -58,7 +58,6 @@ cloud:
 openai:
   secret-key: ${OPENAI_KEY}
   url:
-    model: "https://api.openai.com/v1/models/gpt-4"
+    model: "https://api.openai.com/v1/models"
     model-list: "https://api.openai.com/v1/models/"
-    prompt: "https://api.openai.com/v1/chat/completions/gpt-4"
-
+    prompt: "https://api.openai.com/v1/chat/completions"
