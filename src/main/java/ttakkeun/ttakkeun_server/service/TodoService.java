@@ -10,7 +10,7 @@ import ttakkeun.ttakkeun_server.entity.enums.TodoStatus;
 import ttakkeun.ttakkeun_server.repository.PetRepository;
 import ttakkeun.ttakkeun_server.repository.TodoRepository;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
@@ -27,12 +27,13 @@ public class TodoService {
         Todo todo = Todo.builder()
                 .todoName(request.getTodoName())
                 .todoCategory(request.getTodoCategory())
+                .todoDate(LocalDate.now())
                 .pet(pet)
                 .build();
 
         todoRepository.save(todo);
 
-        return new TodoResponseDto(todo.getTodoId(), todo.getCreatedAt(), null);
+        return new TodoResponseDto(todo.getTodoId(), todo.getTodoDate());
     }
 
     @Transactional
@@ -48,7 +49,7 @@ public class TodoService {
 
         todoRepository.save(todo);
 
-        return new TodoResponseDto(todo.getTodoId(), todo.getCreatedAt(), null);
+        return new TodoResponseDto(todo.getTodoId(), todo.getTodoDate());
     }
 
     @Transactional
@@ -61,7 +62,7 @@ public class TodoService {
         todo.setTodoStatus(request.getTodoStatus());
         todoRepository.save(todo);
 
-        return new TodoResponseDto(todo.getTodoId(), todo.getCreatedAt(), null);
+        return new TodoResponseDto(todo.getTodoId(), todo.getTodoDate());
     }
 
     @Transactional
@@ -88,12 +89,12 @@ public class TodoService {
                 .todoCategory(originalTodo.getTodoCategory())
                 .todoStatus(TodoStatus.ONPROGRESS) // 새로운 투두 항목은 완료되지 않은 상태로 생성
                 .pet(originalTodo.getPet())
-                .createdAt(LocalDateTime.now().plusDays(1))
+                .todoDate(originalTodo.getTodoDate().plusDays(1))
                 .build();
 
         todoRepository.save(newTodo);
 
-        return new TodoResponseDto(newTodo.getTodoId(), newTodo.getCreatedAt(), null);
+        return new TodoResponseDto(newTodo.getTodoId(), newTodo.getTodoDate());
     }
 
     @Transactional
@@ -105,11 +106,11 @@ public class TodoService {
             throw new IllegalStateException("투두 항목이 이미 완료된 상태입니다.");
         }
 
-        todo.setUpdatedAt(LocalDateTime.now().plusDays(1));
+        todo.setTodoDate(todo.getTodoDate().plusDays(1));
 
         todoRepository.save(todo);
 
-        return new TodoResponseDto(todo.getTodoId(), null, todo.getUpdatedAt());
+        return new TodoResponseDto(todo.getTodoId(), todo.getTodoDate());
     }
 
     @Transactional
@@ -121,19 +122,19 @@ public class TodoService {
             throw new IllegalStateException("투두 항목이 완료되지 않았습니다.");
         }
 
-        LocalDateTime newDate = requestDto.getNewDate();
+        LocalDate newDate = requestDto.getNewDate();
 
         Todo newTodo = Todo.builder()
                 .todoName(originalTodo.getTodoName())
                 .todoCategory(originalTodo.getTodoCategory())
                 .todoStatus(TodoStatus.ONPROGRESS)
                 .pet(originalTodo.getPet())
-                .createdAt(newDate)
+                .todoDate(newDate)
                 .build();
 
         todoRepository.save(newTodo);
 
-        return new TodoResponseDto(newTodo.getTodoId(), newTodo.getCreatedAt(), null);
+        return new TodoResponseDto(newTodo.getTodoId(), newTodo.getTodoDate());
     }
 
     @Transactional
@@ -145,10 +146,10 @@ public class TodoService {
             throw new IllegalStateException("투두 항목이 이미 완료된 상태입니다.");
         }
 
-        LocalDateTime newDate = requestDto.getNewDate();
-        todo.setUpdatedAt(newDate);
+        LocalDate newDate = requestDto.getNewDate();
+        todo.setTodoDate(newDate);
         todoRepository.save(todo);
 
-        return new TodoResponseDto(todo.getTodoId(), null, todo.getUpdatedAt());
+        return new TodoResponseDto(todo.getTodoId(), todo.getTodoDate());
     }
 }

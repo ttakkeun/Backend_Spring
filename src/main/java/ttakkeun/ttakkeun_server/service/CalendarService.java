@@ -7,8 +7,7 @@ import ttakkeun.ttakkeun_server.entity.Todo;
 import ttakkeun.ttakkeun_server.entity.enums.Category;
 import ttakkeun.ttakkeun_server.repository.TodoRepository;
 
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,10 +22,9 @@ public class CalendarService {
     }
 
     public CalendarResponseDto getCalendarData(int year, int month, int date) {
-        LocalDateTime start = LocalDateTime.of(year, month, date, 0, 0);
-        LocalDateTime end = start.with(LocalTime.MAX);
+        LocalDate selectDate = LocalDate.of(year, month, date);
 
-        List<Todo> todos = todoRepository.findByCreatedAtBetween(start, end);
+        List<Todo> todos = todoRepository.findByTodoDate(selectDate);
 
         // 투두 항목별로 분류하기
         List<TodoDto> earTodos = filterTodosByCategory(todos, Category.EAR);
@@ -36,7 +34,7 @@ public class CalendarService {
         List<TodoDto> teethTodos = filterTodosByCategory(todos, Category.TEETH);
 
         return new CalendarResponseDto(
-                String.format("%04d-%02d-%02d", year, month, date),
+                selectDate,
                 earTodos, hairTodos, clawTodos, eyeTodos, teethTodos
         );
     }

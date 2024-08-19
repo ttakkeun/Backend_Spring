@@ -6,7 +6,7 @@ import ttakkeun.ttakkeun_server.entity.common.BaseEntity;
 import ttakkeun.ttakkeun_server.entity.enums.Category;
 import ttakkeun.ttakkeun_server.entity.enums.TodoStatus;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,10 +40,7 @@ public class Todo extends BaseEntity {
     @OneToMany(mappedBy = "todo", cascade = CascadeType.ALL)
     private List<History> HistoryList = new ArrayList<>();
 
-    @Builder.Default
-    private LocalDateTime createdAt = LocalDateTime.now();
-
-    private LocalDateTime updatedAt;
+    private LocalDate todoDate;
 
     public Todo(String todoName, Category todoCategory, TodoStatus todoStatus, Pet pet) {
         this.todoName = todoName;
