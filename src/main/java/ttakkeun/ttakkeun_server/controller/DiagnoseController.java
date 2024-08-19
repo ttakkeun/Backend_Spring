@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 import static ttakkeun.ttakkeun_server.apiPayLoad.code.status.ErrorStatus.PET_ID_NOT_AVAILABLE;
+import static ttakkeun.ttakkeun_server.apiPayLoad.code.status.ErrorStatus.RECORD_NOT_FOUND;
 
 @Slf4j
 @RestController
@@ -106,7 +107,7 @@ public class DiagnoseController {
             ApiResponse<PostDiagnoseResponseDTO> response = ApiResponse.of(SuccessStatus._OK, postDiagnoseResponseDTO);
             return ResponseEntity.ok(response);
         } catch (NoSuchElementException e) {
-            ApiResponse<PostDiagnoseResponseDTO> response = ApiResponse.ofFailure(PET_ID_NOT_AVAILABLE, null);
+            ApiResponse<PostDiagnoseResponseDTO> response = ApiResponse.ofFailure(RECORD_NOT_FOUND, null);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         } catch (UsernameNotFoundException e) {
             ApiResponse<PostDiagnoseResponseDTO> response = ApiResponse.ofFailure(ErrorStatus._UNAUTHORIZED, null);

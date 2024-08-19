@@ -63,106 +63,123 @@ public class DiagnoseChatGPTService {
     private String promptUrl;
 
     public PostDiagnoseResponseDTO postDiagnoseByRecord(Long memberId, PostDiagnoseRequestDTO postDiagnoseRequestDTO) throws Exception {
-        Long petId = postDiagnoseRequestDTO.pet_id(); // request body에서 pet_id값을 가져옴
-        Optional<Pet> petOpt= petRepository.findByPetIdAndMember_MemberId(petId, memberId);
+        try {
+            Long petId = postDiagnoseRequestDTO.pet_id(); // request body에서 pet_id값을 가져옴
+            Optional<Pet> petOpt = petRepository.findByPetIdAndMember_MemberId(petId, memberId);
 
-        if (!petOpt.isPresent()) {
-            // Optional 객체에서 값이 비어있는 경우 예외를 던짐
-            throw new NoSuchElementException("Pet with ID " + petId + " not found");
+            if (!petOpt.isPresent()) {
+                // Optional 객체에서 값이 비어있는 경우 예외를 던짐
+                throw new NoSuchElementException("Pet with ID " + petId + " not found");
+            }
+
+            Pet pet = petOpt.get();
+
+            // GPT에게 질문할 때 사용할 반려동물 정보, 일지 내용을 가져옴
+            ChatGPTQuestionDTO questionByDTO = makeQuestionForGPT(pet, postDiagnoseRequestDTO);
+
+            // 질문 문장 구성
+            String questionString = makeQuestionString(questionByDTO);
+            System.out.println("question is : " + questionString);
+
+            // ChatGPT 진단
+            String chatGPTRequestDTO = diagnoseByChatGPT(questionString);
+
+            // 이후 ChatGPT의 답변에서 필요한 값을 추출하고 DB에 POST해야 함
+
+            // 값을 저장할 HashMap
+            Map<String, String> extractedValues = new HashMap<>();
+
+            // 받은 답변에서 대괄호 안의 등호 오른쪽 값을 추출해냄
+            Pattern pattern = Pattern.compile("\\[(\\w+)=(.*?)\\]");
+            Matcher matcher = pattern.matcher(chatGPTRequestDTO);
+
+            // 모든 일치 항목 찾기
+            while (matcher.find()) {
+                extractedValues.put(matcher.group(1), matcher.group(2));
+            }
+
+            int score = Integer.parseInt(extractedValues.get("score"));
+            String detail = extractedValues.get("detail");
+            String care = extractedValues.get("care");
+            String product1 = extractedValues.get("product1");
+            String product2 = extractedValues.get("product2");
+            String product3 = extractedValues.get("product3");
+            String product4 = extractedValues.get("product4");
+            String product5 = extractedValues.get("product5");
+
+
+            Long recordId = postDiagnoseRequestDTO.records().get(0).record_id();
+
+            Optional<Record> recordOpt = recordRepository.findByRecordId(recordId);
+
+            if (!recordOpt.isPresent()) {
+                // Optional 객체에서 값이 비어있는 경우 예외를 던짐
+                throw new NoSuchElementException("Record with ID " + recordId + " not found");
+            }
+
+            Record record = recordOpt.get();
+            Category category = record.getCategory();
+
+            // record는 객체를 넣어줘야 함
+            // record에는 여러 개가 들어와도 하나만 넣음
+            // postDiagnoseRequestDTO에서 첫 번째 record_id값을 가져와서 해당 객체를 참조하도록 하고,
+            // 해당 record 객체의 카테고리 값으로 category도 저장함
+            Result result = Result.builder()
+                    .score(score)
+                    .resultDetail(detail)
+                    .resultCare(care)
+                    .record(record)
+                    .resultCategory(category)
+                    .build();
+
+
+            // 결과 저장
+            Result savedResult = resultRepository.save(result);
+
+            // DTO에 제품명 반환을 위해 products 리스트 구성
+            List<String> products = new ArrayList<>();
+            products.add(product1);
+            products.add(product2);
+            products.add(product3);
+            products.add(product4);
+            products.add(product5);
+
+            return new PostDiagnoseResponseDTO(score, detail, care, products);
+        } catch (NoSuchElementException e) {
+            e.printStackTrace();
+            log.error("데이터 조회에 실패했습니다." + e.getMessage(), e);
+            throw new NoSuchElementException("데이터 조회에 실패했습니다. 서버 관리자에게 문의해주세요" + e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("알 수 없는 오류가 발생했습니다." + e.getMessage(), e);
+            throw new RuntimeException("알 수 없는 오류가 발생했습니다. 서버 관리자에게 문의해주세요" + e.getMessage());
         }
-
-        Pet pet = petOpt.get();
-
-        // GPT에게 질문할 때 사용할 반려동물 정보, 일지 내용을 가져옴
-        ChatGPTQuestionDTO questionByDTO = makeQuestionForGPT(pet, postDiagnoseRequestDTO);
-
-        // 질문 문장 구성
-        String questionString = makeQuestionString(questionByDTO);
-        System.out.println("question is : " + questionString);
-
-        // ChatGPT 진단 수행
-        String chatGPTRequestDTO = diagnoseByChatGPT(questionString);
-
-        // 이후 ChatGPT의 답변에서 필요한 값을 추출하고 DB에 POST해야 함
-
-        // 값을 저장할 HashMap
-        Map<String, String> extractedValues = new HashMap<>();
-
-        // 받은 답변에서 대괄호 안의 등호 오른쪽 값을 추출해냄
-        Pattern pattern = Pattern.compile("\\[(\\w+)=(.*?)\\]");
-        Matcher matcher = pattern.matcher(chatGPTRequestDTO);
-
-        // 모든 일치 항목 찾기
-        while (matcher.find()) {
-            extractedValues.put(matcher.group(1), matcher.group(2));
-        }
-
-        int score = Integer.parseInt(extractedValues.get("score"));
-        String detail = extractedValues.get("detail");
-        String care = extractedValues.get("care");
-        String product1 = extractedValues.get("product1");
-        String product2 = extractedValues.get("product2");
-        String product3 = extractedValues.get("product3");
-        String product4 = extractedValues.get("product4");
-        String product5 = extractedValues.get("product5");
-
-
-        Long recordId = postDiagnoseRequestDTO.records().get(0).record_id();
-
-        Optional<Record> recordOpt = recordRepository.findByRecordId(recordId);
-
-        if (!recordOpt.isPresent()) {
-            // Optional 객체에서 값이 비어있는 경우 예외를 던짐
-            throw new NoSuchElementException("Record with ID " + recordId + " not found");
-        }
-
-        Record record = recordOpt.get();
-        Category category = record.getCategory();
-
-        // record는 객체를 넣어줘야 함
-        // record에는 여러 개가 들어와도 하나만 넣음
-        // postDiagnoseRequestDTO에서 첫 번째 record_id값을 가져와서 해당 객체를 참조하도록 하고,
-        // 해당 record 객체의 카테고리 값으로 category도 저장함
-        Result result = Result.builder()
-                .score(score)
-                .resultDetail(detail)
-                .resultCare(care)
-                .record(record)
-                .resultCategory(category)
-                .build();
-
-        // record, category 추가해야 함
-        //                 .record(record)
-        //                .resultCategory(category)
-
-        // 결과 저장
-        Result savedResult = resultRepository.save(result);
-
-        // DTO에 제품명 반환을 위해 products 리스트 구성
-        List<String> products = new ArrayList<>();
-        products.add(product1);
-        products.add(product2);
-        products.add(product3);
-        products.add(product4);
-        products.add(product5);
-
-        return new PostDiagnoseResponseDTO(score, detail, care, products);
     }
 
     public ChatGPTQuestionDTO makeQuestionForGPT(Pet pet, PostDiagnoseRequestDTO postDiagnoseRequestDTO) throws Exception {
+        try {
 
-        // pet 객체에서 가져와야하는 반려동물 정보 : petVariety, birth, neutralization, petType
-        PetType petType = pet.getPetType(); // 고양이인지 강아지인지 (CAT, DOG)
-        String petVariety = pet.getPetVariety(); // 종
-        String birth = pet.getBirth(); // 생년월일
-        Neutralization neutralization = pet.getNeutralization(); // 중성화 여부 (NEUTRALIZATION, UNNEUTRALIZATION)
+            // pet 객체에서 가져와야하는 반려동물 정보 : petVariety, birth, neutralization, petType
+            PetType petType = pet.getPetType(); // 고양이인지 강아지인지 (CAT, DOG)
+            String petVariety = pet.getPetVariety(); // 종
+            String birth = pet.getBirth(); // 생년월일
+            Neutralization neutralization = pet.getNeutralization(); // 중성화 여부 (NEUTRALIZATION, UNNEUTRALIZATION)
 
-        // PostDiagnoseRequestDTO의 records에서 record_id추출 후 QuestionDetailDTO 구성
-        List<ChatGPTQuestionDTO.RecordDetailDTO> recordDetailDTOList = postDiagnoseRequestDTO.records().stream()
-                .map(this::getRecordDetail)
-                .collect(Collectors.toList());
+            // PostDiagnoseRequestDTO의 records에서 record_id추출 후 QuestionDetailDTO 구성
+            List<ChatGPTQuestionDTO.RecordDetailDTO> recordDetailDTOList = postDiagnoseRequestDTO.records().stream()
+                    .map(this::getRecordDetail)
+                    .collect(Collectors.toList());
 
-        return new ChatGPTQuestionDTO(petType, petVariety, birth, neutralization, recordDetailDTOList);
+            return new ChatGPTQuestionDTO(petType, petVariety, birth, neutralization, recordDetailDTOList);
+        } catch (NoSuchElementException e) {
+            e.printStackTrace();
+            log.error("데이터 조회 오류가 발생했습니다." + e.getMessage(), e);
+            throw new NoSuchElementException("데이터 조회 오류가 발생했습니다. 서버 관리자에게 문의해주세요" + e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("알 수 없는 오류가 발생했습니다." + e.getMessage(), e);
+            throw new RuntimeException("알 수 없는 오류가 발생했습니다. 서버 관리자에게 문의해주세요" + e.getMessage());
+        }
     }
 
     // ChatGPT에게 질문시 사용할 일지 내용을 가져옴
@@ -193,51 +210,65 @@ public class DiagnoseChatGPTService {
                     .collect(Collectors.toList());
 
             return new ChatGPTQuestionDTO.RecordDetailDTO(createdAt, category, answerDTOList, etc);
+        } catch (NoSuchElementException e) {
+            e.printStackTrace();
+            log.error("데이터 조회 오류가 발생했습니다." + e.getMessage(), e);
+            throw new NoSuchElementException("데이터 조회 오류가 발생했습니다. 서버 관리자에게 문의해주세요" + e.getMessage());
         } catch (Exception e) {
-            log.error(e.getMessage());
-            throw new RuntimeException("에러 발생");
+            e.printStackTrace();
+            log.error("알 수 없는 오류가 발생했습니다." + e.getMessage(), e);
+            throw new RuntimeException("알 수 없는 오류가 발생했습니다. 서버 관리자에게 문의해주세요" + e.getMessage());
         }
     }
 
     // 일지 중 질문, 답변과 관련된 것들을 가져옴
     public ChatGPTQuestionDTO.AnswerDTO getAnswerDetail(UserAnswer answer) {
-        // answer를 통해 questionText, descriptionText, answerText, imageURLs를 가져옴
+        try {
+            // answer를 통해 questionText, descriptionText, answerText, imageURLs를 가져옴
 
-        // answerList 객체에서 가져올 것 : answerText, question 객체, imageList 객체
-        // question 객체에서 가져올 것 : questionText, descriptionText
-        List<String> answerText = answer.getUserAnswerText();
-        ChecklistQuestion question = answer.getQuestion();
-        String questionText = question.getQuestionText();
-        String descriptionText = question.getDescriptionText();
-        List<Image> imageList = answer.getImages(); // 답변과 함께 저장된 images
+            // answerList 객체에서 가져올 것 : answerText, question 객체, imageList 객체
+            // question 객체에서 가져올 것 : questionText, descriptionText
+            List<String> answerText = answer.getUserAnswerText();
+            ChecklistQuestion question = answer.getQuestion();
+            String questionText = question.getQuestionText();
+            String descriptionText = question.getDescriptionText();
+            List<Image> imageList = answer.getImages(); // 답변과 함께 저장된 images
 
-        // image 객체에서 가져올 것 : imageUrl
-        // image 객체 리스트에서 스트림 생성. imageUrl들을 리스트로 수집함
-        List<String> imageURLs = imageList.stream()
-                .map(Image::getImageUrl)
-                .collect(Collectors.toList());
+            // image 객체에서 가져올 것 : imageUrl
+            // image 객체 리스트에서 스트림 생성. imageUrl들을 리스트로 수집함
+            List<String> imageURLs = imageList.stream()
+                    .map(Image::getImageUrl)
+                    .collect(Collectors.toList());
 
-        // 현재 userAnswerText가 List<String>이므로 String으로 변환해서 처리
-        String answerTexts = String.join(",", answerText);
+            // 현재 userAnswerText가 List<String>이므로 String으로 변환해서 처리
+            String answerTexts = String.join(",", answerText);
 
-        return new ChatGPTQuestionDTO.AnswerDTO(questionText, descriptionText, answerTexts, imageURLs);
+            return new ChatGPTQuestionDTO.AnswerDTO(questionText, descriptionText, answerTexts, imageURLs);
+        } catch (NoSuchElementException e) {
+            e.printStackTrace();
+            log.error("데이터 조회 오류가 발생했습니다." + e.getMessage(), e);
+            throw new NoSuchElementException("데이터 조회 오류가 발생했습니다. 서버 관리자에게 문의해주세요" + e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("알 수 없는 오류가 발생했습니다." + e.getMessage(), e);
+            throw new RuntimeException("알 수 없는 오류가 발생했습니다. 서버 관리자에게 문의해주세요" + e.getMessage());
+        }
     }
 
     // DTO의 내용으로 구체적인 질문 내용을 만듦
     public String makeQuestionString(ChatGPTQuestionDTO chatGPTQuestionDTO) {
+        try {
 
-        // 여기에 지금 answerDTO 값이 null로 들어옴!!!!
-        System.out.println("make Question String에 들어온 chatGptQuestionDTO는 : " + chatGPTQuestionDTO);
+            // 여기에 지금 answerDTO 값이 null로 들어옴!!!!
+            System.out.println("make Question String에 들어온 chatGptQuestionDTO는 : " + chatGPTQuestionDTO);
 
 
-
-        String petType = switch (chatGPTQuestionDTO.petType()) {
-            case CAT -> "고양이";
-            case DOG -> "강아지";
-            default -> "에러 발생";
-            // default -> throw new NullPointerException("반려동물 정보가 정확히 저장되어 있지 않습니다.");
-            // ENUM PetType은 CAT, DOG만 있으므로 이외의 경우는 모두 null로 간주하고 처리하였음
-        };
+            String petType = switch (chatGPTQuestionDTO.petType()) {
+                case CAT -> "고양이";
+                case DOG -> "강아지";
+                default -> throw new NullPointerException("반려동물 정보가 정확히 저장되어 있지 않습니다.");
+                // ENUM PetType은 CAT, DOG만 있으므로 이외의 경우는 모두 null로 간주하고 처리하였음
+            };
 
 //            String petVariety = Objects.requireNonNull(chatGPTQuestionDTO.petVariety(), "반려동물 정보가 정확히 저장되어 있지 않습니다.");
 //
@@ -253,51 +284,61 @@ public class DiagnoseChatGPTService {
 //            };
 
 
-        // 진단에 사용된 일지가 몇개인지 확인
-        int recordCount = chatGPTQuestionDTO.recordDetailDTO().size();
+            // 진단에 사용된 일지가 몇개인지 확인
+            int recordCount = chatGPTQuestionDTO.recordDetailDTO().size();
 
-        String question = "";
+            String question = "";
 
-        Category categoryEnum = chatGPTQuestionDTO.recordDetailDTO().get(0).category();
-        String category = categoryEnum.name();
+            Category categoryEnum = chatGPTQuestionDTO.recordDetailDTO().get(0).category();
+            String category = categoryEnum.name();
 
-        question = petType + " " + category + "일지를 기반으로 반려동물 건강을 진단해줘\n";
+            question = petType + " " + category + "일지를 기반으로 반려동물 건강을 진단해줘\n";
 
-        // 일지 개수만큼 반복하며 일지 내용을 question 문장에 추가함
-        for (int i = 0; i < recordCount; i++) {
-            if (recordCount == 0) {
-                throw new IllegalArgumentException("일지가 선택되지 않았습니다. 다시 시도해주세요");
-            } else if (recordCount > 1) {
-                // 일지가 2개 이상인 경우에만 일지 번호 작성
-                question += "일지 " + i + 1 + "\n";
+            // 일지 개수만큼 반복하며 일지 내용을 question 문장에 추가함
+            for (int i = 0; i < recordCount; i++) {
+                if (recordCount == 0) {
+                    throw new IllegalArgumentException("일지가 선택되지 않았습니다. 다시 시도해주세요");
+                } else if (recordCount > 1) {
+                    // 일지가 2개 이상인 경우에만 일지 번호 작성
+                    question += "일지 " + (i + 1) + "\n";
+                }
+
+                // 하나의 일지는 3개의 질문을 기록하므로
+                for (int j = 0; j < 3; j++) {
+                    question += "Q." + chatGPTQuestionDTO.recordDetailDTO().get(i).answerDTO().get(j).questionText() + " " +
+                            "A. " + chatGPTQuestionDTO.recordDetailDTO().get(i).answerDTO().get(j).answerText() + "\n";
+                }
+                if (chatGPTQuestionDTO.recordDetailDTO().get(i).etc() != null) {
+                    // null이 아닌 경우에만 추가기록 작성
+                    question += "추가기록:" + chatGPTQuestionDTO.recordDetailDTO().get(i).etc();
+                }
+                chatGPTQuestionDTO.recordDetailDTO().get(i).answerDTO().get(0).imageURLs();
+
+                question += "\n";
             }
 
-            // 하나의 일지는 3개의 질문을 기록하므로
-            for (int j = 0; j < 3; j++) {
-                question += "Q." + chatGPTQuestionDTO.recordDetailDTO().get(i).answerDTO().get(j).questionText() + " " +
-                        "A. " + chatGPTQuestionDTO.recordDetailDTO().get(i).answerDTO().get(j).answerText() + "\n";
-            }
-            if (chatGPTQuestionDTO.recordDetailDTO().get(i).etc() != null) {
-                // null이 아닌 경우에만 추가기록 작성
-                question += "추가기록:" + chatGPTQuestionDTO.recordDetailDTO().get(i).etc();
-            }
+            question += "아래 형식을 반드시 지켜서 등호의 오른쪽에 답변내용을 넣어줘. 점수는100점만점으로숫자만넣어줘\n" +
+                    "위 기록의 점수는 [score=점수]점입니다. [detail=세부설명] [care=추후관리법] 추천 제품은 다음과 같습니다. " +
+                    "[product1=추천제품] [product2=추천제품] [product3=추천제품] [product4=추천제품] [product5=추천제품]";
 
-            question += "\n";
+
+            // Q.귀 안쪽에 귀지가 많이 쌓여있나요? A.귀지가 많아요.,귀지의 색이 이상해요.
+            //Q.귀에서 악취가 나나요? A.악취가 나지 않아요.
+            //Q.귀를 흔들거나 과도하게 긁나요? A.평소와 같아요.
+            //추가기록:Example details 1
+            //아래 형식을 반드시 지켜서 등호의 오른쪽에 답변내용을 넣어줘. 점수는100점만점으로숫자만넣어줘
+            //위 기록의 점수는 [score=점수]점입니다. [detail=세부설명] [care=추후관리법] 추천 제품은 다음과 같습니다. [product1=추천제품] [product2=추천제품] [product3=추천제품] [product4=추천제품] [product5=추천제품]
+
+            return question;
+        } catch (NullPointerException e) {
+          e.printStackTrace();
+          log.error("데이터 조회 오류가 발생했습니다." + e.getMessage(), e);
+          throw new NullPointerException("데이터 조회 오류가 발생했습니다. 서버 관리자에게 문의해주세요" + e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("알 수 없는 오류가 발생했습니다." + e.getMessage(), e);
+            throw new RuntimeException("알 수 없는 오류가 발생했습니다. 서버 관리자에게 문의해주세요" + e.getMessage());
         }
-
-        question += "아래 형식을 반드시 지켜서 등호의 오른쪽에 답변내용을 넣어줘. 점수는100점만점으로숫자만넣어줘\n" +
-                "위 기록의 점수는 [score=점수]점입니다. [detail=세부설명] [care=추후관리법] 추천 제품은 다음과 같습니다. " +
-                "[product1=추천제품] [product2=추천제품] [product3=추천제품] [product4=추천제품] [product5=추천제품]";
-
-
-        // Q.귀 안쪽에 귀지가 많이 쌓여있나요? A.귀지가 많아요.,귀지의 색이 이상해요.
-        //Q.귀에서 악취가 나나요? A.악취가 나지 않아요.
-        //Q.귀를 흔들거나 과도하게 긁나요? A.평소와 같아요.
-        //추가기록:Example details 1
-        //아래 형식을 반드시 지켜서 등호의 오른쪽에 답변내용을 넣어줘. 점수는100점만점으로숫자만넣어줘
-        //위 기록의 점수는 [score=점수]점입니다. [detail=세부설명] [care=추후관리법] 추천 제품은 다음과 같습니다. [product1=추천제품] [product2=추천제품] [product3=추천제품] [product4=추천제품] [product5=추천제품]
-
-        return question;
     }
 
 
@@ -316,7 +357,7 @@ public class DiagnoseChatGPTService {
             ChatGPTCompletionDTO chatGPTCompletionDTO = new ChatGPTCompletionDTO("user", question);
 
             // String으로 받아온 questions를 DTO에 넣어서 DTO 구성
-            ChatGPTRequestDTO chatGPTRequestDTO = new ChatGPTRequestDTO("gpt-4o-mini", List.of(chatGPTCompletionDTO));
+            ChatGPTRequestDTO chatGPTRequestDTO = new ChatGPTRequestDTO("gpt-4o", List.of(chatGPTCompletionDTO));
             System.out.println("chatGPTRequestDTO is  : " + chatGPTRequestDTO);
 
             // ObjectMapper를 사용하여 DTO를 JSON 문자열로 변환
@@ -354,15 +395,10 @@ public class DiagnoseChatGPTService {
 
             return content;
 
-        } catch (JsonProcessingException e) {
+        } catch (NoSuchElementException e) {
             e.printStackTrace();
-            log.debug("JsonMappingException :: " + e.getMessage(), e);
-            throw new RuntimeException("오류가 발생했습니다. 서버 관리자에게 문의해주세요" + e.getMessage());
-        } catch (RuntimeException e) {
-            e.printStackTrace();
-            // try문 내의 if문 실행되지 않을 경우 content값이 null이므로 에러 발생
-            log.debug("RuntimeException :: " + e.getMessage(), e);
-            throw new RuntimeException("오류가 발생했습니다. 서버 관리자에게 문의해주세요" + e.getMessage());
+            log.error("데이터 조회 오류가 발생했습니다." + e.getMessage(), e);
+            throw new NoSuchElementException("데이터 조회 오류가 발생했습니다. 서버 관리자에게 문의해주세요" + e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
             log.error("알 수 없는 오류가 발생했습니다." + e.getMessage(), e);
