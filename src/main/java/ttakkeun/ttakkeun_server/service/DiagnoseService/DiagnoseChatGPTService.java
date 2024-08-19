@@ -307,17 +307,25 @@ public class DiagnoseChatGPTService {
                 for (int j = 0; j < 3; j++) {
                     question += "Q." + chatGPTQuestionDTO.recordDetailDTO().get(i).answerDTO().get(j).questionText() + " " +
                             "A. " + chatGPTQuestionDTO.recordDetailDTO().get(i).answerDTO().get(j).answerText() + "\n";
+
+                    List<String> imageURL = chatGPTQuestionDTO.recordDetailDTO().get(i).answerDTO().get(j).imageURLs();
+
+                    if (imageURL.size() > 0) {
+                        // 이미지가 있는 경우에만 question에 링크 삽입
+                        String imageURLs = String.join(", ", imageURL);
+                        question += "이미지:" + imageURLs + "\n";
+                    }
                 }
+
                 if (chatGPTQuestionDTO.recordDetailDTO().get(i).etc() != null) {
                     // null이 아닌 경우에만 추가기록 작성
                     question += "추가기록:" + chatGPTQuestionDTO.recordDetailDTO().get(i).etc();
                 }
-                chatGPTQuestionDTO.recordDetailDTO().get(i).answerDTO().get(0).imageURLs();
 
                 question += "\n";
             }
 
-            question += "아래 형식을 반드시 지켜서 등호의 오른쪽에 답변내용을 넣어줘. 점수는100점만점으로숫자만넣어줘\n" +
+            question += "아래 형식을 반드시 지켜서 등호의 오른쪽에 답변내용을 넣어줘. 점수는100점만점으로숫자만넣어줘. 추천제품은 구체적인 제품명을 알려줘\n" +
                     "위 기록의 점수는 [score=점수]점입니다. [detail=세부설명] [care=추후관리법] 추천 제품은 다음과 같습니다. " +
                     "[product1=추천제품] [product2=추천제품] [product3=추천제품] [product4=추천제품] [product5=추천제품]";
 
