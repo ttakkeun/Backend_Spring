@@ -28,12 +28,13 @@ public class ProductController {
 
     //ai 추천 제품
     @Operation(summary = "가장 최근 진단 기준 최대 5개의 추천 제품 조회 API")
-    @GetMapping("/ai")
+    @GetMapping("/ai/{pet_id}")
     public ApiResponse<List<RecommendProductDTO>> getAiProducts(
+            @PathVariable Long pet_id,
             @AuthenticationPrincipal Member member
     ) {
         Long memberId = member.getMemberId();
-        List<RecommendProductDTO> products = productService.getResultProducts(memberId);
+        List<RecommendProductDTO> products = productService.getResultProducts(pet_id, memberId);
 
         return ApiResponse.onSuccess(products);
     }

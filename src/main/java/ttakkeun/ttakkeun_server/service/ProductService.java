@@ -11,13 +11,16 @@ import ttakkeun.ttakkeun_server.converter.ProductConverter;
 import ttakkeun.ttakkeun_server.dto.RecommendProductDTO;
 import ttakkeun.ttakkeun_server.dto.product.ProductRequestDTO;
 import ttakkeun.ttakkeun_server.entity.Product;
+import ttakkeun.ttakkeun_server.entity.Record;
 import ttakkeun.ttakkeun_server.entity.enums.Category;
 import ttakkeun.ttakkeun_server.repository.ProductRepository;
+import ttakkeun.ttakkeun_server.repository.RecordRepository;
 import ttakkeun.ttakkeun_server.repository.ResultRepository;
 import ttakkeun.ttakkeun_server.utils.NaverShopSearch;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,10 +32,13 @@ public class ProductService {
     private final LikeService likeService;
     private final ProductConverter productConverter;
     private final NaverShopSearch naverShopSearch;
+    private final RecordRepository recordRepository;
 
     //진단의 ai추천제품
-    public List<RecommendProductDTO> getResultProducts(Long memberId) {
-        Long latestResultId = resultRepository.findLatestResultId();
+    public List<RecommendProductDTO> getResultProducts(Long petId, Long memberId) {
+        //펫 -> 일지 -> 가장 최근 진단 -> 진단 추천 제품
+        List<Record> records = recordRepository.findByPet_PetId(petId);
+        Long latestResultId = resultRepository.findLatestResultId(records);
         List<Product> products = productRepository.findByResultId(latestResultId);
 
         return products.stream()
@@ -84,23 +90,27 @@ public class ProductService {
 
         List<RecommendProductDTO> productDTOs = new ArrayList<>();
 
-        //검색 키워드 앞에 반려동물을 붙여서 검색 ex)샴푸 -> 반려동물 샴푸
+        //검색 키워드 앞에 반려동물을 붙여서 검색 ex) 샴푸 검색 -> 반려동물 샴푸 검색
+        //총 10개의 알맞은 제품을 가지고 오거나 총 100개의 제품까지 탐색했을 때까지 반복
         for(int page = 0; productDTOs.size() < 10 && page < 10; page++) {
             String naverString = naverShopSearch.search("반려동물 " + keyword, page);
             JSONObject jsonObject = new JSONObject(naverString);
             JSONArray jsonArray = jsonObject.getJSONArray("items");
 
+
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject JSONProduct = (JSONObject) jsonArray.get(i);
                 RecommendProductDTO productDTO = productConverter.JSONToDTO(JSONProduct, memberId);
 
+                //제품이 알맞은 스킨케어 관련 카테고리를 가지고 있는지 확인
                 if (productDTOs.size() < 10 && productConverter.categoryFilter(productDTO)) {
                     productDTOs.add(productDTO);
                 }
             }
         }
 
-        //키워드 그대로 검색
+        //키워드 그대로 검색 (검색어 앞에 반려동물을 붙이면 올바른 제품이 나오지 않을 때가 있음)
+        //총 10개의 알맞은 제품을 가지고 오거나 총 100개의 제품까지 탐색했을 때까지 반복
         for(int page = 0; productDTOs.size() < 10 && page < 10; page++) {
             String naverString = naverShopSearch.search(keyword, page);
             JSONObject jsonObject = new JSONObject(naverString);
@@ -110,6 +120,7 @@ public class ProductService {
                 JSONObject JSONProduct = (JSONObject) jsonArray.get(i);
                 RecommendProductDTO productDTO = productConverter.JSONToDTO(JSONProduct, memberId);
 
+                //제품이 알맞은 스킨케어 관련 카테고리를 가지고 있는지 확인
                 if (productDTOs.size() < 10 && productConverter.categoryFilter(productDTO)) {
                     productDTOs.add(productDTO);
                 }

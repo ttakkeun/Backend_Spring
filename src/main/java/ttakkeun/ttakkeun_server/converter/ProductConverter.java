@@ -40,6 +40,7 @@ public class ProductConverter {
                 .build();
     }
 
+    //api Response의 추천제품DTO를 제품엔티티DTO로 변경
     public Product toEntity(RecommendProductDTO recommendProductDTO) {
         return Product.builder()
                 .productId(recommendProductDTO.getProduct_id())
@@ -84,6 +85,7 @@ public class ProductConverter {
                 .build();
     }
 
+    //api Request의 추천제품DTO를 제품엔티티DTO로 변경
     public Product toProduct(Long productId, ProductRequestDTO requestDTO) {
         return Product.builder()
                 .productId(productId)
@@ -99,6 +101,7 @@ public class ProductConverter {
                 .build();
     }
 
+    //네이버 api에서 가져오는 제품을 아래 카테고리로 한정
     public boolean categoryFilter(RecommendProductDTO productDTO) {
         List<String> validCategory3 = Arrays.asList(
                 "미용/목욕", "강아지 건강/관리용품", "고양이 건강/관리용품"
