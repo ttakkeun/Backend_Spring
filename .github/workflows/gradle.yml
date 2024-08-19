@@ -63,8 +63,8 @@ jobs:
           export JWT_Secret=${{ secrets.JWT_Secret }}
           export aws_access=${{ secrets.aws_access }}
           export aws_secret=${{ secrets.aws_secret }}
-
-         
+          export OPENAI_KEY=${{ secrets.OPENAI_KEY }}
+        
           ## Docker 작업
           sudo chmod 666 /var/run/docker.sock
           sudo docker stop $(docker ps -a -q) 
@@ -75,6 +75,7 @@ jobs:
                            -e APPLE_Secret=${APPLE_Secret} -e apple_key_id=${apple_key_id} \
                            -e apple_team_id=${apple_team_id} -e JWT_Secret=${JWT_Secret} \
                            -e aws_access=${aws_access} -e aws_secret=${aws_secret} \
+                           -e OPENAI_KEY=${OPENAI_KEY} \
                            -e TZ=Asia/Seoul \
                            -d -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/ttakkeun
           sudo docker image prune -f
