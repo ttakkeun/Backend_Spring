@@ -4,6 +4,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,7 @@ import java.util.stream.Collectors;
 @Transactional
 @RequiredArgsConstructor
 public class ProductService {
+    private static final Logger log = LoggerFactory.getLogger(ProductService.class);
     private final ProductRepository productRepository;
     private final ResultRepository resultRepository;
     private final LikeService likeService;
@@ -92,7 +95,7 @@ public class ProductService {
 
         //검색 키워드 앞에 반려동물을 붙여서 검색 ex) 샴푸 검색 -> 반려동물 샴푸 검색
         //총 10개의 알맞은 제품을 가지고 오거나 총 100개의 제품까지 탐색했을 때까지 반복
-        for(int page = 0; productDTOs.size() < 10 && page < 10; page++) {
+        for(int page = 0; productDTOs.size() < 10 && page < 5; page++) {
             String naverString = naverShopSearch.search("반려동물 " + keyword, page);
             JSONObject jsonObject = new JSONObject(naverString);
             JSONArray jsonArray = jsonObject.getJSONArray("items");
@@ -111,10 +114,12 @@ public class ProductService {
 
         //키워드 그대로 검색 (검색어 앞에 반려동물을 붙이면 올바른 제품이 나오지 않을 때가 있음)
         //총 10개의 알맞은 제품을 가지고 오거나 총 100개의 제품까지 탐색했을 때까지 반복
-        for(int page = 0; productDTOs.size() < 10 && page < 10; page++) {
+        for(int page = 0; productDTOs.size() < 10 && page < 5; page++) {
             String naverString = naverShopSearch.search(keyword, page);
             JSONObject jsonObject = new JSONObject(naverString);
             JSONArray jsonArray = jsonObject.getJSONArray("items");
+            log.info(jsonArray.toString());
+
 
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject JSONProduct = (JSONObject) jsonArray.get(i);
