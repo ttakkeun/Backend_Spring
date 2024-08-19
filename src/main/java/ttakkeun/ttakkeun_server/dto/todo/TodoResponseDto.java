@@ -4,14 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Getter
 @Setter
 @AllArgsConstructor
 public class TodoResponseDto {
     private Long todoId;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private LocalDate todoDate;
 
 }

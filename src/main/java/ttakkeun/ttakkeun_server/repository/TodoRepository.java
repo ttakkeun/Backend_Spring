@@ -7,13 +7,12 @@ import ttakkeun.ttakkeun_server.entity.Todo;
 import ttakkeun.ttakkeun_server.entity.enums.Category;
 import ttakkeun.ttakkeun_server.entity.enums.TodoStatus;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
 public interface TodoRepository extends JpaRepository<Todo, Long> {
-    List<Todo> findByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
-
+    List<Todo> findByTodoDate(LocalDate selectDate);
 
     long countByTodoCategoryAndPet(Category todoCategory, Pet pet);
     long countByTodoCategoryAndPetAndTodoStatus(Category todoCategory, Pet pet, TodoStatus todoStatus);

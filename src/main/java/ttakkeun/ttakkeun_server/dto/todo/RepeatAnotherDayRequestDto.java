@@ -3,10 +3,10 @@ package ttakkeun.ttakkeun_server.dto.todo;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Getter
 @Setter
 public class RepeatAnotherDayRequestDto {
-    private LocalDateTime newDate;
+    private LocalDate newDate;
 }
