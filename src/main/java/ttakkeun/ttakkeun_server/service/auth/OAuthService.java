@@ -86,6 +86,7 @@ public class OAuthService {
 
     @Transactional
     public LoginResponseDto appleLogin(AppleLoginRequestDto appleLoginRequestDto) throws Exception {
+        log.info("Current time is {}", LocalDateTime.now());
         // 1. 애플 공개 키 가져오기
         Map<String, String> headers = jwtService.parseHeader(appleLoginRequestDto.getIdentityToken());
         PublicKey publicKey = applePublicKeyGenerator.generatePublicKey(headers, appleAuthClient.getAppleAuthPublicKey());
