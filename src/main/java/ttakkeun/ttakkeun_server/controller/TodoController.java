@@ -27,9 +27,8 @@ public class TodoController {
     @PatchMapping("/{todo_id}/check")
     public ApiResponse<TodoResponseDto> updateTodoStatus(
             // @RequestHeader("Authorization") String accessToken,
-            @PathVariable Long todo_id,
-            @RequestBody TodoStatusUpdateRequestDto requestDto) {
-        TodoResponseDto result = todoService.updateTodoStatus(todo_id, requestDto);
+            @PathVariable Long todo_id) {
+        TodoResponseDto result = todoService.updateTodoStatus(todo_id);
         return ApiResponse.onSuccess(result);
     }
 

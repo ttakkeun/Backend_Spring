@@ -36,11 +36,16 @@ public class TodoService {
     }
 
     @Transactional
-    public TodoResponseDto updateTodoStatus(Long todoId, TodoStatusUpdateRequestDto request) {
+    public TodoResponseDto updateTodoStatus(Long todoId) {
         Todo todo = todoRepository.findById(todoId)
                 .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 Todo ID입니다."));
 
-        todo.setTodoStatus(request.getTodoStatus());
+        if (todo.getTodoStatus() == TodoStatus.ONPROGRESS) {
+            todo.setTodoStatus(TodoStatus.DONE);
+        } else {
+            todo.setTodoStatus(TodoStatus.ONPROGRESS);
+        }
+
         todoRepository.save(todo);
 
         return new TodoResponseDto(todo.getTodoId(), todo.getCreatedAt(), null);
