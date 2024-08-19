@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
 import org.springframework.stereotype.Component;
 import ttakkeun.ttakkeun_server.dto.RecommendProductDTO;
+import ttakkeun.ttakkeun_server.dto.product.ProductRequestDTO;
 import ttakkeun.ttakkeun_server.entity.Product;
 import ttakkeun.ttakkeun_server.repository.ProductRepository;
 import ttakkeun.ttakkeun_server.service.LikeService;
@@ -80,6 +81,21 @@ public class ProductConverter {
                 .category4(jsonObject.getString("category4"))
                 .total_likes(totalLikes)
                 .isLike(isLike)
+                .build();
+    }
+
+    public Product toProduct(Long productId, ProductRequestDTO requestDTO) {
+        return Product.builder()
+                .productId(productId)
+                .productTitle(requestDTO.getTitle())
+                .productLink(requestDTO.getLink())
+                .productImage(requestDTO.getImage())
+                .lprice(requestDTO.getPrice())
+                .brand(requestDTO.getBrand())
+                .category1(requestDTO.getCategory1())
+                .category2(requestDTO.getCategory2())
+                .category3(requestDTO.getCategory3())
+                .category4(requestDTO.getCategory4())
                 .build();
     }
 
