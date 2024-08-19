@@ -8,6 +8,7 @@ import ttakkeun.ttakkeun_server.dto.product.ProductRequestDTO;
 import ttakkeun.ttakkeun_server.entity.Product;
 import ttakkeun.ttakkeun_server.repository.ProductRepository;
 import ttakkeun.ttakkeun_server.service.LikeService;
+import ttakkeun.ttakkeun_server.service.ProductService;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,6 +19,7 @@ import java.util.List;
 public class ProductConverter {
     private final LikeService likeService;
     private final ProductRepository productRepository;
+    private final ProductService productService;
 
     //Product를 ProductDTO로 convert
     public RecommendProductDTO toDTO(Product product, Long memberId) {
@@ -71,7 +73,7 @@ public class ProductConverter {
 
         return RecommendProductDTO.builder()
                 .product_id(productId)
-                .title(jsonObject.getString("title"))
+                .title(productService.removeSpecificHtmlTags(jsonObject.getString("title")))
                 .image(jsonObject.getString("image"))
                 .price(Integer.valueOf(jsonObject.getString("lprice")))
                 .brand(jsonObject.getString("brand"))

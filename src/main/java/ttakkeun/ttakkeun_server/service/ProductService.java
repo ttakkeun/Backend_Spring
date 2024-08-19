@@ -128,4 +128,12 @@ public class ProductService {
         }
         return productDTOs;
     }
+
+    public String removeSpecificHtmlTags(String input) {
+        if (input == null) {
+            return null;
+        }
+        // <b>와 </b> 태그만 제거
+        return input.replaceAll("</?b>", "");
+    }
 }
