@@ -36,6 +36,7 @@ public class ProductService {
 
     //진단의 ai추천제품
     public List<RecommendProductDTO> getResultProducts(Long petId, Long memberId) {
+        //펫 -> 일지 -> 가장 최근 진단 -> 진단 추천 제품
         List<Record> records = recordRepository.findByPet_PetId(petId);
         Long latestResultId = resultRepository.findLatestResultId(records);
         List<Product> products = productRepository.findByResultId(latestResultId);

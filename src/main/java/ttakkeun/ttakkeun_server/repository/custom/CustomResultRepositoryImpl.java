@@ -16,6 +16,7 @@ public class CustomResultRepositoryImpl implements CustomResultRepository {
     @PersistenceContext
     private EntityManager em;
 
+    //일지에서 가장 최근 진단 하나를 찾음
     @Override
     public Long findLatestResultId(List<Record> records) {
         return em.createQuery("SELECT r.id FROM Result r WHERE r.record IN :records ORDER BY r.createdAt DESC", Long.class)
