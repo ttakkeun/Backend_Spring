@@ -106,10 +106,29 @@ public class DiagnoseChatGPTService {
         String product4 = extractedValues.get("product4");
         String product5 = extractedValues.get("product5");
 
+
+        Long recordId = postDiagnoseRequestDTO.records().get(0).record_id();
+
+        Optional<Record> recordOpt = recordRepository.findByRecordId(recordId);
+
+        if (!recordOpt.isPresent()) {
+            // Optional 객체에서 값이 비어있는 경우 예외를 던짐
+            throw new NoSuchElementException("Record with ID " + recordId + " not found");
+        }
+
+        Record record = recordOpt.get();
+        Category category = record.getCategory();
+
+        // record는 객체를 넣어줘야 함
+        // record에는 여러 개가 들어와도 하나만 넣음
+        // postDiagnoseRequestDTO에서 첫 번째 record_id값을 가져와서 해당 객체를 참조하도록 하고,
+        // 해당 record 객체의 카테고리 값으로 category도 저장함
         Result result = Result.builder()
                 .score(score)
                 .resultDetail(detail)
                 .resultCare(care)
+                .record(record)
+                .resultCategory(category)
                 .build();
 
         // record, category 추가해야 함
