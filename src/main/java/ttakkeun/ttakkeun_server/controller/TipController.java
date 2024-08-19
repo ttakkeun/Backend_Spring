@@ -62,10 +62,9 @@ public class TipController {
     @GetMapping
     public ApiResponse<List<TipResponseDTO>> getTips(
             @RequestParam("category") Category category,
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "21") int size) {
+            @RequestParam(name = "page", defaultValue = "0") int page) {
 
-        List<TipResponseDTO> result = tipService.getTipsByCategory(category, page, size);
+        List<TipResponseDTO> result = tipService.getTipsByCategory(category, page, 21);
         return ApiResponse.onSuccess(result);
     }
 
@@ -73,23 +72,17 @@ public class TipController {
     @Operation(summary = "전체 팁 조회 API")
     @GetMapping("/all")
     public ApiResponse<List<TipResponseDTO>> getAllTips(
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "21") int size) {
+            @RequestParam(name = "page", defaultValue = "0") int page) {
 
-        List<TipResponseDTO> result = tipService.getAllTips(page, size);
+        List<TipResponseDTO> result = tipService.getAllTips(page, 21);
         return ApiResponse.onSuccess(result);
     }
 
     @Operation(summary = "Best 팁 조회 API")
     @GetMapping("/best")
     public ApiResponse<List<TipResponseDTO>> getBestTips(
-//            @RequestParam(name = "page", defaultValue = "0") int page,
-//            @RequestParam(name = "size", defaultValue = "21") int size
     ) {
-
         List<TipResponseDTO> result = tipService.getBestTips();
         return ApiResponse.onSuccess(result);
-
-
 }
 }

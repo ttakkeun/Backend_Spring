@@ -138,17 +138,7 @@ public class TipService {
     // Best 카테고리 조회
     @Transactional(readOnly = true)
     public List<TipResponseDTO> getBestTips() {
-        //Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "recommendCount").and(Sort.by(Sort.Direction.DESC, "createdAt")));
         List<Tip> topTips = tipRepository.findByIsPopularTrue();
-
-
-        // 상위 10개의 팁을 가져오고, 이 팁들의 isPopular 값을 true로 바꾸기
-//        List<Tip> topTips = tipsPage.getContent().stream()
-//                .limit(10)
-//                .peek(tip -> tip.setIsPopular(true))
-//                .collect(Collectors.toList());
-//
-//        tipRepository.saveAll(topTips);
 
         return topTips.stream()
                 .map(tip -> new TipResponseDTO(

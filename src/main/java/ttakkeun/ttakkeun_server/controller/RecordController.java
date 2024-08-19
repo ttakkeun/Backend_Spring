@@ -31,12 +31,11 @@ public class RecordController {
     @GetMapping("/{pet_id}/{category}")
     public ApiResponse<RecordListResponse> getRecordList(
             @AuthenticationPrincipal Member member,
-            @PathVariable(name = "pet_id") Long petId, @PathVariable(name = "category") Category category
+            @PathVariable(name = "pet_id") Long petId, @PathVariable(name = "category") Category category,
+            @RequestParam(name = "page", defaultValue = "0") int page
     ){
         System.out.println("일지 목록 조회 API Controller");
-        int page = 0;
-        int size = 21;
-        List<RecordListResponseDto> records = recordService.getRecordsByCategory(member, petId, category, page, size);
+        List<RecordListResponseDto> records = recordService.getRecordsByCategory(member, petId, category, page, 21);
         RecordListResponse result = new RecordListResponse(category, records);
         return ApiResponse.onSuccess(result);
     }
@@ -108,10 +107,9 @@ public class RecordController {
             @PathVariable(name = "pet_id") Long petId,
             @PathVariable(name = "category") Category category,
             @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "21") int size,
             @RequestParam(name = "date") String date
     ){
-        List<RecordListResponseDto> records = recordService.getRecordsAtDate(member, petId, category, page, size, date);
+        List<RecordListResponseDto> records = recordService.getRecordsAtDate(member, petId, category, page, 21, date);
         RecordListResponse result = new RecordListResponse(category, records);
         return ApiResponse.onSuccess(result);
     }
