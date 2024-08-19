@@ -59,8 +59,7 @@ public class TipService {
                 tip.getImages().stream()
                         .map(TipImage::getTipImageUrl)
                         .collect(Collectors.toList()),
-                member.getUsername(),
-                tip.getIsPopular()
+                member.getUsername()
         );
     }
 
@@ -109,8 +108,7 @@ public class TipService {
                         tip.getRecommendCount(),
                         tip.getCreatedAt(),
                         tip.getImages().stream().map(TipImage::getTipImageUrl).collect(Collectors.toList()),
-                        tip.getMember().getUsername(),
-                        tip.getIsPopular()
+                        tip.getMember().getUsername()
                 ))
                 .collect(Collectors.toList());
     }
@@ -131,8 +129,7 @@ public class TipService {
                         tip.getRecommendCount(),
                         tip.getCreatedAt(),
                         tip.getImages().stream().map(TipImage::getTipImageUrl).collect(Collectors.toList()),
-                        tip.getMember().getUsername(),
-                        tip.getIsPopular()
+                        tip.getMember().getUsername()
                 ))
                 .collect(Collectors.toList());
     }
@@ -162,8 +159,7 @@ public class TipService {
                         tip.getRecommendCount(),
                         tip.getCreatedAt(),
                         tip.getImages().stream().map(TipImage::getTipImageUrl).collect(Collectors.toList()),
-                        tip.getMember().getUsername(),
-                        tip.getIsPopular()
+                        tip.getMember().getUsername()
                 ))
                 .collect(Collectors.toList());
     }

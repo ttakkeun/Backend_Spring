@@ -22,5 +22,4 @@ public class TipResponseDTO {
     private LocalDateTime createdAt;
     private List<String> imageUrls;
     private String authorName;
-    private Boolean isPopular;
 }

@@ -36,10 +36,6 @@ public class Tip extends BaseEntity {
     @Formula("(SELECT COUNT(lt.member_id) FROM like_tip lt WHERE lt.tip_id = tip_id)")
     private Integer recommendCount;
 
-    @Column
-    @Builder.Default
-    private Boolean isPopular = false;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
