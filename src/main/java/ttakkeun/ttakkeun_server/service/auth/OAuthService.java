@@ -50,7 +50,7 @@ public class OAuthService {
 
         System.out.println("member nickname : " + member.getUsername());
 
-        return new LoginResponseDto(newAccessToken, newRefreshToken, member.getEmail());
+        return new LoginResponseDto(newAccessToken, newRefreshToken);
     }
 
     // refreshToken으로 accessToken 발급하기
@@ -81,7 +81,7 @@ public class OAuthService {
 
         System.out.println("member nickname : " + member.getUsername());
 
-        return new LoginResponseDto(newAccessToken, newRefreshToken, member.getEmail());
+        return new LoginResponseDto(newAccessToken, newRefreshToken);
     }
 
     @Transactional
@@ -132,8 +132,8 @@ public class OAuthService {
             // 등록된 유저가 아닌 경우 회원가입 로직
             member = memberRepository.save(
                     Member.builder()
-                            .email(claims.get("email", String.class)) // 애플 JWT에 이메일 클레임이 포함된 경우 사용
-                            //.nickname(appleSignUpRequestDto.getName()) // appleLoginRequestDto에서 닉네임 가져오기
+                            //.email(claims.get("email", String.class)) // 애플 JWT에 이메일 클레임이 포함된 경우 사용
+                            .userName(appleSignUpRequestDto.getUserName()) // appleLoginRequestDto에서 닉네임 가져오기
                             //.provider(MemberProvider.APPLE) // 필요에 따라 설정
                             .appleSub(sub)
                             .loginType(LoginType.APPLE)
