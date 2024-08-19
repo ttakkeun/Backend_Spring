@@ -1,6 +1,7 @@
 package ttakkeun.ttakkeun_server.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,12 +17,16 @@ import ttakkeun.ttakkeun_server.entity.enums.Category;
 import ttakkeun.ttakkeun_server.service.DiagnoseService.DiagnoseChatGPTService;
 import ttakkeun.ttakkeun_server.service.DiagnoseService.DiagnoseNaverProductService;
 import ttakkeun.ttakkeun_server.service.DiagnoseService.DiagnoseService;
+import ttakkeun.ttakkeun_server.service.DiagnoseService.UseChatGPTService;
 //import ttakkeun.ttakkeun_server.dto.UpdateProductsDTO;
 
+import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 import static ttakkeun.ttakkeun_server.apiPayLoad.code.status.ErrorStatus.PET_ID_NOT_AVAILABLE;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/diagnose")
@@ -34,6 +39,8 @@ public class DiagnoseController {
 
     @Autowired
     private DiagnoseChatGPTService diagnoseChatGPTService;
+    @Autowired
+    private UseChatGPTService useChatGPTService;
 
     // 진단 버튼 클릭시 사용자의 포인트를 조회하는 API
     @Operation(summary = "사용자 포인트 조회 API")
@@ -174,5 +181,30 @@ public class DiagnoseController {
             ApiResponse<GetMyDiagnoseResponseDTO> response = ApiResponse.ofFailure(ErrorStatus._INTERNAL_SERVER_ERROR, null);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
+    }
+
+    // 사용 가능한 ChatGPT 모델 확인
+    @Operation(summary = "사용 가능한 ChatGPT 모델 확인")
+    @GetMapping("/modelList")
+    public ResponseEntity<List<Map<String, Object>>> selectModelList() {
+        List<Map<String, Object>> result = useChatGPTService.modelList();
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    // 사용하려는 ChatGPT 모델이 유효한 모델인지 확인
+    @Operation(summary = "유효한 ChatGPT 모델인지 확인")
+    @GetMapping("/model")
+    public ResponseEntity<Map<String, Object>> isValidModel(@RequestParam(name = "modelName") String modelName) {
+        Map<String, Object> result = useChatGPTService.isValidModel(modelName);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    // GPT 명령어 직접 수행, 테스트용
+    @Operation(summary = "ChatGPT 통신 테스트용")
+    @PostMapping("/prompt")
+    public ResponseEntity<Map<String, Object>> selectPrompt(@RequestBody ChatGPTRequestDTO chatGPTRequestDTO) {
+        log.debug("param :: " + chatGPTRequestDTO.toString());
+        Map<String, Object> result = useChatGPTService.prompt(chatGPTRequestDTO);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

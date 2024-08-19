@@ -11,7 +11,7 @@ import org.springframework.web.client.RestTemplate;
 public class ChatGPTConfig {
     // ChatGPT를 호출하는 config
 
-    @Value("${openai.secret-key}")
+    @Value("${OPENAI_KEY}")
     private String secretKey;
 
     @Bean
