@@ -20,7 +20,7 @@ public class Point {
 
     private Integer points;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @MapsId // 'memberId'를 'Member' 엔티티의 PK와 매핑
     @JoinColumn(name = "member_id")
     private Member member;

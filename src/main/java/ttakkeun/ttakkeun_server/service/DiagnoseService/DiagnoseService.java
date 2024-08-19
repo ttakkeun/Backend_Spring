@@ -1,5 +1,6 @@
 package ttakkeun.ttakkeun_server.service.DiagnoseService;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -8,15 +9,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ttakkeun.ttakkeun_server.dto.diagnose.*;
-import ttakkeun.ttakkeun_server.entity.Pet;
-import ttakkeun.ttakkeun_server.entity.Product;
-import ttakkeun.ttakkeun_server.entity.Result;
+import ttakkeun.ttakkeun_server.entity.*;
 import ttakkeun.ttakkeun_server.entity.enums.Category;
-import ttakkeun.ttakkeun_server.repository.PetRepository;
-import ttakkeun.ttakkeun_server.repository.PointRepository;
-import ttakkeun.ttakkeun_server.entity.Point;
-import ttakkeun.ttakkeun_server.repository.ProductRepository;
-import ttakkeun.ttakkeun_server.repository.ResultRepository;
+import ttakkeun.ttakkeun_server.repository.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -32,26 +27,46 @@ public class DiagnoseService {
     private final ResultRepository resultRepository;
     private final ProductRepository productRepository;
     private final PetRepository petRepository;
+    private final MemberRepository memberRepository;
 
     @Autowired
-    public DiagnoseService(PointRepository pointRepository, ResultRepository resultRepository, ProductRepository productRepository, PetRepository petRepository) {
+    public DiagnoseService(PointRepository pointRepository, ResultRepository resultRepository, ProductRepository productRepository,
+                           PetRepository petRepository, MemberRepository memberRepository) {
         this.pointRepository = pointRepository;
         this.resultRepository = resultRepository;
         this.productRepository = productRepository;
         this.petRepository = petRepository;
+        this.memberRepository = memberRepository;
     }
 
     // 사용자 포인트 조회
     public Integer getPointsByMember(Long memberId) throws Exception {
         Optional<Point> pointOpt = pointRepository.findByMemberId(memberId);
+        Member managedMember = memberRepository.findById(memberId)
+                .orElseThrow(() -> new EntityNotFoundException("Member not found"));
+
+
+        Point point;
 
         if (!pointOpt.isPresent()) {
-            // Optional 객체에서 값이 비어있는 경우 예외를 던짐
-            // 0 반환에서 오류 발생하도록 수정함
-            throw new NoSuchElementException("Member with ID " + memberId + " has no point");
+//            // Optional 객체에서 값이 비어있는 경우 예외를 던짐
+//            // 0 반환에서 오류 발생하도록 수정함
+//            throw new NoSuchElementException("Member with ID " + memberId + " has no point");
+
+
+            // 포인트 객체가 없을 경우 객체를 생성함
+            point = Point.builder()
+                    .member(managedMember)
+                    .points(10)
+                    .updatedAt(LocalDateTime.now())
+                    .build();
+
+            pointRepository.save(point);
+
+        } else {
+            point = pointOpt.get(); // Optinal 객체에서 point를 가져옴
         }
 
-        Point point = pointOpt.get(); // Optinal 객체에서 point를 가져옴
         Integer points = point.getPoints();
         LocalDateTime updatedAt = point.getUpdatedAt();
 

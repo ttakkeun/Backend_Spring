@@ -13,11 +13,13 @@ import ttakkeun.ttakkeun_server.apiPayLoad.code.status.SuccessStatus;
 import ttakkeun.ttakkeun_server.dto.diagnose.*;
 import ttakkeun.ttakkeun_server.entity.Member;
 import ttakkeun.ttakkeun_server.entity.enums.Category;
+import ttakkeun.ttakkeun_server.repository.MemberRepository;
 import ttakkeun.ttakkeun_server.service.DiagnoseService.DiagnoseChatGPTService;
 import ttakkeun.ttakkeun_server.service.DiagnoseService.DiagnoseService;
 //import ttakkeun.ttakkeun_server.dto.UpdateProductsDTO;
 
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import static ttakkeun.ttakkeun_server.apiPayLoad.code.status.ErrorStatus.PET_ID_NOT_AVAILABLE;
 import static ttakkeun.ttakkeun_server.apiPayLoad.code.status.ErrorStatus.RECORD_NOT_FOUND;
@@ -31,6 +33,8 @@ public class DiagnoseTestController {
 
     @Autowired
     private DiagnoseChatGPTService diagnoseChatGPTService;
+
+    private MemberRepository memberRepository;
 
     // 진단 버튼 클릭시 사용자의 포인트를 조회하는 API
     @Operation(summary = "사용자 포인트 조회 테스트 API")
