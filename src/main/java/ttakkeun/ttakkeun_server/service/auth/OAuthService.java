@@ -94,6 +94,7 @@ public class OAuthService {
         Claims claims = jwtService.getTokenClaims(appleLoginRequestDto.getIdentityToken(), publicKey);
 
         // 3. 클레임에서 subject 추출
+        String email = claims.get("email", String.class);
         String sub = claims.getSubject();
 
         // 4. 유저가 등록되어 있는지 확인
