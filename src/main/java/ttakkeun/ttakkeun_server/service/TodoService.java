@@ -136,8 +136,8 @@ public class TodoService {
         Todo todo = todoRepository.findById(todoId)
                 .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 Todo ID입니다."));
 
-        if (todo.getTodoStatus() != TodoStatus.DONE) {
-            throw new IllegalStateException("투두 항목이 완료되지 않았습니다.");
+        if (todo.getTodoStatus() == TodoStatus.DONE) {
+            throw new IllegalStateException("투두 항목이 이미 완료된 상태입니다.");
         }
 
         LocalDateTime newDate = requestDto.getNewDate();
