@@ -21,10 +21,7 @@ import ttakkeun.ttakkeun_server.repository.ProductRepository;
 import ttakkeun.ttakkeun_server.repository.ResultProductRepository;
 import ttakkeun.ttakkeun_server.repository.ResultRepository;
 
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Transactional
@@ -136,21 +133,31 @@ public class DiagnoseNaverProductService {
                 return null;
             }
 
-            JSONObject itemJson = items.getJSONObject(0); // 유사도가 가장 높은 제품, 즉 첫 번째 제품을 사용
-            System.out.println("itemJson : " + itemJson);
-            String productIdStr = itemJson.getString("productId");
+            // 유사도가 가장 높은 제품, 즉 첫 번째 제품을 사용
+            // 단, 카테고리가 정한 범위 내에서 일치해야 함
+            JSONObject filteredItemJson = getFilteredItems(items);
+            System.out.println("itemJson : " + filteredItemJson);
+
+            if (filteredItemJson == null) {
+                // 카테고리에 맞지 않는 아이템일 경우 null 리턴
+                return null;
+            }
+
+            String productIdStr = filteredItemJson.getString("productId");
             Long productId = Long.parseLong(productIdStr);
-            String title = itemJson.getString("title");
-            String link = itemJson.getString("link");
-            String image = itemJson.getString("image");
-            String lpriceStr = itemJson.getString("lprice");
+
+            // 제품명은 </b>를 제외하고 저장하도록 함
+            String title = filteredItemJson.getString("title").replaceAll("</?b>", "");
+            String link = filteredItemJson.getString("link");
+            String image = filteredItemJson.getString("image");
+            String lpriceStr = filteredItemJson.getString("lprice");
             Integer lprice = Integer.parseInt(lpriceStr);
-            String mall_name = itemJson.getString("mallName");
-            String brand = itemJson.getString("brand");
-            String category1 = itemJson.getString("category1");
-            String category2 = itemJson.getString("category2");
-            String category3 = itemJson.getString("category3");
-            String category4 = itemJson.getString("category4");
+            String mall_name = filteredItemJson.getString("mallName");
+            String brand = filteredItemJson.getString("brand");
+            String category1 = filteredItemJson.getString("category1");
+            String category2 = filteredItemJson.getString("category2");
+            String category3 = filteredItemJson.getString("category3");
+            String category4 = filteredItemJson.getString("category4");
 
             // Json에서 가져온 값으로 DTO build
             NaverProductDTO naverProductDTO = NaverProductDTO.builder()
@@ -217,4 +224,35 @@ public class DiagnoseNaverProductService {
         }
         return product;
     }
+
+    public JSONObject getFilteredItems(JSONArray items) {
+
+        for (int i = 0; i < items.length(); i++) {
+
+            // 반복문을 돌면서 조건을 충족하는 값이 나오면 바로 종료, 해당 item으로 저장함
+            JSONObject itemJson = items.getJSONObject(i);
+
+            String category3 = itemJson.getString("category3");
+            String category4 = itemJson.getString("category4");
+
+            List<String> validCategory3 = Arrays.asList(
+                    "미용/목욕", "강아지 건강/관리용품", "고양이 건강/관리용품"
+            );
+            List<String> validCategory4 = Arrays.asList(
+                    "브러시/빗", "에센스/향수/밤", "샴푸/린스/비누", "이발기", "발톱/발 관리",
+                    "드라이기/드라이룸", "미용가위", "타월/가운", "물티슈/크리너",
+                    "눈/귀 관리용품", "구강청결제", "칫솔", "치약", "구강티슈", "구강관리용품"
+            );
+
+            if (validCategory3.contains(category3) && validCategory4.contains(category4)) {
+                // 해당하는 카테고리값에 해당하는 제품이 나오면 즉시 반복문을 종료하고 해당 itemJson값을 리턴함
+                return itemJson;
+            }
+        }
+
+        return null;
+    }
+
+
+
 }
