@@ -19,7 +19,6 @@ import java.util.List;
 public class ProductConverter {
     private final LikeService likeService;
     private final ProductRepository productRepository;
-    private final ProductService productService;
 
     //Product를 ProductDTO로 convert
     public RecommendProductDTO toDTO(Product product, Long memberId) {
@@ -73,7 +72,7 @@ public class ProductConverter {
 
         return RecommendProductDTO.builder()
                 .product_id(productId)
-                .title(productService.removeSpecificHtmlTags(jsonObject.getString("title")))
+                .title(removeSpecificHtmlTags(jsonObject.getString("title")))
                 .image(jsonObject.getString("image"))
                 .price(Integer.valueOf(jsonObject.getString("lprice")))
                 .brand(jsonObject.getString("brand"))
@@ -116,6 +115,14 @@ public class ProductConverter {
 
         return validCategory3.contains(productDTO.getCategory3()) &&
                 validCategory4.contains(productDTO.getCategory4());
+    }
+
+    public String removeSpecificHtmlTags(String input) {
+        if (input == null) {
+            return null;
+        }
+        // <b>와 </b> 태그만 제거
+        return input.replaceAll("</?b>", "");
     }
 }
 
