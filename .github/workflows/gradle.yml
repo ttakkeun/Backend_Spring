@@ -9,9 +9,11 @@ name: ttakkeun ci/cd
 
 on:
   push:
-    branches: [ "develop" ]
+    branches:
+      - develop
   pull_request:
-    branches: [ "develop" ]
+    branches:
+      - develop
 
 permissions:
   contents: read
