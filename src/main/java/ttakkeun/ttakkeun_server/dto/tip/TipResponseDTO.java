@@ -22,4 +22,17 @@ public class TipResponseDTO {
     private LocalDateTime createdAt;
     private List<String> imageUrls;
     private String authorName;
+    private Boolean isLike;
+
+    public TipResponseDTO(Long tipId, Category category, String title, String content, Integer recommendCount,
+                          LocalDateTime createdAt, List<String> imageUrls, String authorName) {
+        this.tipId = tipId;
+        this.category = category;
+        this.title = title;
+        this.content = content;
+        this.recommendCount = recommendCount;
+        this.createdAt = createdAt;
+        this.imageUrls = imageUrls;
+        this.authorName = authorName;
+    }
 }
