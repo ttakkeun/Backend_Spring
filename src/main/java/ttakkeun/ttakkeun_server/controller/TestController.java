@@ -14,4 +14,10 @@ public class TestController {
         return "테스트";
     }
 
+    @GetMapping(value = "/test/hello")
+    @ResponseBody
+    public String helloRuckus1(Model model) {
+        return "테스트 ㅎㅇ";
+    }
+
 }
