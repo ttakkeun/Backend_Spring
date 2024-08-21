@@ -136,6 +136,8 @@ public class DiagnoseChatGPTService {
             // 결과 저장
             Result savedResult = resultRepository.save(result);
 
+            Long resultId = savedResult.getResultId();
+
             // DTO에 제품명 반환을 위해 products 리스트 구성
             List<String> products = new ArrayList<>();
             products.add(product1);
@@ -144,7 +146,7 @@ public class DiagnoseChatGPTService {
             products.add(product4);
             products.add(product5);
 
-            return new PostDiagnoseResponseDTO(score, detail, care, products);
+            return new PostDiagnoseResponseDTO(resultId, score, detail, care, products);
         } catch (NoSuchElementException e) {
             e.printStackTrace();
             log.error("데이터 조회에 실패했습니다." + e.getMessage(), e);
