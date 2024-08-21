@@ -133,7 +133,7 @@ public class OAuthService {
             member = memberRepository.save(
                     Member.builder()
                             //.email(claims.get("email", String.class)) // 애플 JWT에 이메일 클레임이 포함된 경우 사용
-                            .userName(appleSignUpRequestDto.getUserName()) // appleLoginRequestDto에서 닉네임 가져오기
+                            .username(appleSignUpRequestDto.getUserName()) // appleLoginRequestDto에서 닉네임 가져오기
                             //.provider(MemberProvider.APPLE) // 필요에 따라 설정
                             .appleSub(sub)
                             .loginType(LoginType.APPLE)

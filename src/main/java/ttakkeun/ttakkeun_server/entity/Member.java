@@ -25,7 +25,7 @@ public class Member extends BaseEntity implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long memberId;
 
-    private String userName;
+    private String username;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -62,11 +62,6 @@ public class Member extends BaseEntity implements UserDetails {
     @Override
     public String getPassword() {
         return "";
-    }
-
-    @Override
-    public String getUsername() {
-        return this.userName;
     }
 
     @Override
