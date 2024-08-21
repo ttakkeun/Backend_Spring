@@ -62,7 +62,10 @@ public enum ErrorStatus implements BaseErrorCode {
     // 투두 에러
     TODO_ID_NOT_AVAILABLE(HttpStatus.BAD_REQUEST, "TODO4000", "유효하지 않은 Todo ID입니다."),
     TODO_STATUS_IS_DONE(HttpStatus.BAD_REQUEST, "TODO4001", "투두 항목이 이미 완료된 상태입니다."),
-    TODO_STATUS_IS_ONPROGRESS(HttpStatus.BAD_REQUEST, "TODO4002", "투두 항목이 완료되지 않았습니다.");
+    TODO_STATUS_IS_ONPROGRESS(HttpStatus.BAD_REQUEST, "TODO4002", "투두 항목이 완료되지 않았습니다."),
+
+    // Tip 에러
+    TIP_ID_NOT_AVAILABLE(HttpStatus.BAD_REQUEST, "TIP4000", "유효하지 않은 Tip ID입니다.");
 
 
     private final HttpStatus httpStatus;
