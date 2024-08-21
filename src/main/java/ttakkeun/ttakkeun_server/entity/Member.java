@@ -66,7 +66,7 @@ public class Member extends BaseEntity implements UserDetails {
 
     @Override
     public String getUsername() {
-        return "";
+        return this.userName;
     }
 
     @Override
