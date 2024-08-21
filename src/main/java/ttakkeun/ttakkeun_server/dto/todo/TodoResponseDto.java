@@ -13,5 +13,6 @@ import java.time.LocalDate;
 public class TodoResponseDto {
     private Long todoId;
     private LocalDate todoDate;
+    private boolean todoStatus;
 
 }

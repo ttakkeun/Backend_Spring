@@ -8,6 +8,8 @@ import ttakkeun.ttakkeun_server.entity.Todo;
 import ttakkeun.ttakkeun_server.entity.enums.Category;
 import ttakkeun.ttakkeun_server.repository.PetRepository;
 import ttakkeun.ttakkeun_server.repository.TodoRepository;
+import ttakkeun.ttakkeun_server.entity.enums.TodoStatus;
+
 
 import java.time.LocalDate;
 import java.util.List;
@@ -46,11 +48,15 @@ public class CalendarService {
         );
     }
 
+    private boolean convertStatusToBoolean(TodoStatus status) {
+        return status == TodoStatus.DONE;
+    }
+
     private List<TodoDto> convertToDto(List<Todo> todos) {
         return todos.stream().map(todo -> new TodoDto(
                 todo.getTodoId(),
                 todo.getTodoName(),
-                todo.getTodoStatus()
+                convertStatusToBoolean(todo.getTodoStatus())
         )).collect(Collectors.toList());
     }
 
@@ -60,7 +66,7 @@ public class CalendarService {
                 .map(todo -> new TodoDto(
                         todo.getTodoId(),
                         todo.getTodoName(),
-                        todo.getTodoStatus()
+                        convertStatusToBoolean(todo.getTodoStatus())
                 ))
                 .collect(Collectors.toList());
     }
