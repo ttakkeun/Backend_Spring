@@ -19,4 +19,6 @@ public interface LikeTipRepository extends JpaRepository<LikeTip, Long> {
     int countByTip(Tip tip);
 
     boolean existsByTipAndMember(Tip tip, Member member);
+
+    //boolean existsIsLike(Tip tip, Member member);
 }

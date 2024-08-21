@@ -16,6 +16,7 @@ import ttakkeun.ttakkeun_server.entity.Tip;
 
 import ttakkeun.ttakkeun_server.entity.TipImage;
 import ttakkeun.ttakkeun_server.entity.enums.Category;
+import ttakkeun.ttakkeun_server.repository.LikeTipRepository;
 import ttakkeun.ttakkeun_server.repository.MemberRepository;
 import ttakkeun.ttakkeun_server.repository.TipRepository;
 
@@ -31,6 +32,7 @@ public class TipService {
     private final MemberService memberService;
     private final S3ImageService s3ImageService;
     private final MemberRepository memberRepository;
+    private final LikeTipRepository likeTipRepository;
 
     // 팁 생성
     @Transactional
@@ -59,8 +61,25 @@ public class TipService {
                 tip.getImages().stream()
                         .map(TipImage::getTipImageUrl)
                         .collect(Collectors.toList()),
-                member.getUsername()
+                tip.getMember().getUsername(),
+                false,
+                tip.isPopular()
         );
+    }
+
+    // 베스트 팁 업데이트
+    @Transactional
+    public void updateBestTips() {
+        // 기존 베스트 팁들을 모두 일반 팁으로 변경
+        List<Tip> currentBestTips = tipRepository.findByIsPopularTrue();
+        currentBestTips.forEach(tip -> tip.setPopular(false));
+
+        // 최신 10개의 팁을 베스트 팁으로 설정
+        List<Tip> latestTips = tipRepository.findTop10ByOrderByCreatedAt();
+        latestTips.forEach(tip -> tip.setPopular(true));
+
+        tipRepository.saveAll(currentBestTips);
+        tipRepository.saveAll(latestTips);
     }
 
 
@@ -95,7 +114,7 @@ public class TipService {
 
     // 카테고리별 팁 조회
     @Transactional(readOnly = true)
-    public List<TipResponseDTO> getTipsByCategory(Category category, int page, int size) {
+    public List<TipResponseDTO> getTipsByCategory(Category category, int page, int size, Member member) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         Page<Tip> tipsPage = tipRepository.findByCategory(category, pageable);
 
@@ -108,7 +127,9 @@ public class TipService {
                         tip.getRecommendCount(),
                         tip.getCreatedAt(),
                         tip.getImages().stream().map(TipImage::getTipImageUrl).collect(Collectors.toList()),
-                        tip.getMember().getUsername()
+                        tip.getMember().getUsername(),
+                        likeTipRepository.existsByTipAndMember(tip, member),
+                        tip.isPopular()
                 ))
                 .collect(Collectors.toList());
     }
@@ -116,7 +137,7 @@ public class TipService {
 
     // 전체 카테고리 조회
     @Transactional(readOnly = true)
-    public List<TipResponseDTO> getAllTips(int page, int size) {
+    public List<TipResponseDTO> getAllTips(int page, int size, Member member) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         Page<Tip> tipsPage = tipRepository.findAll(pageable);
 
@@ -129,7 +150,9 @@ public class TipService {
                         tip.getRecommendCount(),
                         tip.getCreatedAt(),
                         tip.getImages().stream().map(TipImage::getTipImageUrl).collect(Collectors.toList()),
-                        tip.getMember().getUsername()
+                        tip.getMember().getUsername(),
+                        likeTipRepository.existsByTipAndMember(tip, member),
+                        tip.isPopular()
                 ))
                 .collect(Collectors.toList());
     }
@@ -137,7 +160,7 @@ public class TipService {
 
     // Best 카테고리 조회
     @Transactional(readOnly = true)
-    public List<TipResponseDTO> getBestTips() {
+    public List<TipResponseDTO> getBestTips(Member member) {
         List<Tip> topTips = tipRepository.findByIsPopularTrue();
 
         return topTips.stream()
@@ -149,7 +172,9 @@ public class TipService {
                         tip.getRecommendCount(),
                         tip.getCreatedAt(),
                         tip.getImages().stream().map(TipImage::getTipImageUrl).collect(Collectors.toList()),
-                        tip.getMember().getUsername()
+                        tip.getMember().getUsername(),
+                        likeTipRepository.existsByTipAndMember(tip, member),
+                        tip.isPopular()
                 ))
                 .collect(Collectors.toList());
     }

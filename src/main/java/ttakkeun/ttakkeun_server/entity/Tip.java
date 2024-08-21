@@ -47,6 +47,9 @@ public class Tip extends BaseEntity {
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    @Builder.Default
+    private boolean isPopular = false;
+
     public void addImage(TipImage image) {
         image.setTip(this);
         this.images.add(image);

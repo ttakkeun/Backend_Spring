@@ -31,12 +31,13 @@ public class TodoService {
                 .todoName(request.getTodoName())
                 .todoCategory(request.getTodoCategory())
                 .todoDate(LocalDate.now())
+                .todoStatus(TodoStatus.ONPROGRESS)
                 .pet(pet)
                 .build();
 
         todoRepository.save(todo);
 
-        return new TodoResponseDto(todo.getTodoId(), todo.getTodoDate());
+        return new TodoResponseDto(todo.getTodoId(), todo.getTodoDate(),convertStatusToBoolean(todo.getTodoStatus()));
     }
 
     @Transactional
@@ -52,7 +53,7 @@ public class TodoService {
 
         todoRepository.save(todo);
 
-        return new TodoResponseDto(todo.getTodoId(), todo.getTodoDate());
+        return new TodoResponseDto(todo.getTodoId(), todo.getTodoDate(), convertStatusToBoolean(todo.getTodoStatus()));
     }
 
     @Transactional
@@ -65,7 +66,11 @@ public class TodoService {
         todo.setTodoStatus(request.getTodoStatus());
         todoRepository.save(todo);
 
-        return new TodoResponseDto(todo.getTodoId(), todo.getTodoDate());
+        return new TodoResponseDto(todo.getTodoId(), todo.getTodoDate(), convertStatusToBoolean(todo.getTodoStatus()));
+    }
+
+    private boolean convertStatusToBoolean(TodoStatus status) {
+        return status == TodoStatus.DONE;
     }
 
     @Transactional
@@ -97,7 +102,7 @@ public class TodoService {
 
         todoRepository.save(newTodo);
 
-        return new TodoResponseDto(newTodo.getTodoId(), newTodo.getTodoDate());
+        return new TodoResponseDto(newTodo.getTodoId(), newTodo.getTodoDate(), convertStatusToBoolean(newTodo.getTodoStatus()));
     }
 
     @Transactional
@@ -113,7 +118,7 @@ public class TodoService {
 
         todoRepository.save(todo);
 
-        return new TodoResponseDto(todo.getTodoId(), todo.getTodoDate());
+        return new TodoResponseDto(todo.getTodoId(), todo.getTodoDate(), convertStatusToBoolean(todo.getTodoStatus()));
     }
 
     @Transactional
@@ -137,7 +142,7 @@ public class TodoService {
 
         todoRepository.save(newTodo);
 
-        return new TodoResponseDto(newTodo.getTodoId(), newTodo.getTodoDate());
+        return new TodoResponseDto(newTodo.getTodoId(), newTodo.getTodoDate(), convertStatusToBoolean(newTodo.getTodoStatus()));
     }
 
     @Transactional
@@ -153,6 +158,6 @@ public class TodoService {
         todo.setTodoDate(newDate);
         todoRepository.save(todo);
 
-        return new TodoResponseDto(todo.getTodoId(), todo.getTodoDate());
+        return new TodoResponseDto(todo.getTodoId(), todo.getTodoDate(), convertStatusToBoolean(todo.getTodoStatus()));
     }
 }

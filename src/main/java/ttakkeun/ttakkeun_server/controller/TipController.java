@@ -61,10 +61,11 @@ public class TipController {
     @Operation(summary = "팁 조회 API")
     @GetMapping
     public ApiResponse<List<TipResponseDTO>> getTips(
+            @AuthenticationPrincipal Member member,
             @RequestParam("category") Category category,
             @RequestParam(name = "page", defaultValue = "0") int page) {
 
-        List<TipResponseDTO> result = tipService.getTipsByCategory(category, page, 21);
+        List<TipResponseDTO> result = tipService.getTipsByCategory(category, page, 21, member);
         return ApiResponse.onSuccess(result);
     }
 
@@ -72,17 +73,19 @@ public class TipController {
     @Operation(summary = "전체 팁 조회 API")
     @GetMapping("/all")
     public ApiResponse<List<TipResponseDTO>> getAllTips(
+            @AuthenticationPrincipal Member member,
             @RequestParam(name = "page", defaultValue = "0") int page) {
 
-        List<TipResponseDTO> result = tipService.getAllTips(page, 21);
+        List<TipResponseDTO> result = tipService.getAllTips(page, 21, member);
         return ApiResponse.onSuccess(result);
     }
 
     @Operation(summary = "Best 팁 조회 API")
     @GetMapping("/best")
     public ApiResponse<List<TipResponseDTO>> getBestTips(
+            @AuthenticationPrincipal Member member
     ) {
-        List<TipResponseDTO> result = tipService.getBestTips();
+        List<TipResponseDTO> result = tipService.getBestTips(member);
         return ApiResponse.onSuccess(result);
 }
 }
