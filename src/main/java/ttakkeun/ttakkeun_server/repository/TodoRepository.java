@@ -12,7 +12,7 @@ import java.util.List;
 
 @Repository
 public interface TodoRepository extends JpaRepository<Todo, Long> {
-    List<Todo> findByTodoDate(LocalDate selectDate);
+    List<Todo> findByTodoDateAndPet(LocalDate selectDate, Pet pet);
 
     long countByTodoCategoryAndPet(Category todoCategory, Pet pet);
     long countByTodoCategoryAndPetAndTodoStatus(Category todoCategory, Pet pet, TodoStatus todoStatus);

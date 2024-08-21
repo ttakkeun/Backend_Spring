@@ -18,10 +18,11 @@ public class CalendarController {
     @GetMapping("/{year}/{month}/{date}")
     public ApiResponse<CalendarResponseDto> getCalendarData(
             // @RequestHeader("Authorization") String accessToken,
+            @PathVariable Long petId,
             @PathVariable int year,
             @PathVariable int month,
             @PathVariable int date) {
-        CalendarResponseDto result = calendarService.getCalendarData(year, month, date);
+        CalendarResponseDto result = calendarService.getCalendarData(petId, year, month, date);
         return ApiResponse.onSuccess(result);
     }
 }
