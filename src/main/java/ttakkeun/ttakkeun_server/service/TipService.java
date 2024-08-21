@@ -112,7 +112,7 @@ public class TipService {
                         tip.getCreatedAt(),
                         tip.getImages().stream().map(TipImage::getTipImageUrl).collect(Collectors.toList()),
                         tip.getMember().getUsername(),
-                        likeTipRepository.existsIsLike(tip, member)
+                        likeTipRepository.existsByTipAndMember(tip, member)
                 ))
                 .collect(Collectors.toList());
     }
@@ -134,7 +134,7 @@ public class TipService {
                         tip.getCreatedAt(),
                         tip.getImages().stream().map(TipImage::getTipImageUrl).collect(Collectors.toList()),
                         tip.getMember().getUsername(),
-                        likeTipRepository.existsIsLike(tip, member)
+                        likeTipRepository.existsByTipAndMember(tip, member)
                 ))
                 .collect(Collectors.toList());
     }
@@ -155,7 +155,7 @@ public class TipService {
                         tip.getCreatedAt(),
                         tip.getImages().stream().map(TipImage::getTipImageUrl).collect(Collectors.toList()),
                         tip.getMember().getUsername(),
-                        likeTipRepository.existsIsLike(tip, member)
+                        likeTipRepository.existsByTipAndMember(tip, member)
                 ))
                 .collect(Collectors.toList());
     }
