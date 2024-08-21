@@ -15,8 +15,11 @@ import java.util.List;
 public interface TipRepository extends JpaRepository<Tip, Long> {
     Page<Tip> findByCategory(Category category, Pageable pageable);
 
+
     @Query("SELECT t FROM Tip t WHERE t.recommendCount <> 0 ORDER BY t.recommendCount DESC, t.createdAt DESC LIMIT 10")
     List<Tip> findByIsPopularTrue();
 
+    // 최신 10개 팁 조회
+    List<Tip> findTop10ByOrderByCreatedAt();
 }
 

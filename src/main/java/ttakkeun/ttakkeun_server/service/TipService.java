@@ -61,9 +61,25 @@ public class TipService {
                 tip.getImages().stream()
                         .map(TipImage::getTipImageUrl)
                         .collect(Collectors.toList()),
-                member.getUsername(),
-                false
+                tip.getMember().getUsername(),
+                false,
+                tip.isPopular()
         );
+    }
+
+    // 베스트 팁 업데이트
+    @Transactional
+    public void updateBestTips() {
+        // 기존 베스트 팁들을 모두 일반 팁으로 변경
+        List<Tip> currentBestTips = tipRepository.findByIsPopularTrue();
+        currentBestTips.forEach(tip -> tip.setPopular(false));
+
+        // 최신 10개의 팁을 베스트 팁으로 설정
+        List<Tip> latestTips = tipRepository.findTop10ByOrderByCreatedAt();
+        latestTips.forEach(tip -> tip.setPopular(true));
+
+        tipRepository.saveAll(currentBestTips);
+        tipRepository.saveAll(latestTips);
     }
 
 
@@ -112,7 +128,8 @@ public class TipService {
                         tip.getCreatedAt(),
                         tip.getImages().stream().map(TipImage::getTipImageUrl).collect(Collectors.toList()),
                         tip.getMember().getUsername(),
-                        likeTipRepository.existsByTipAndMember(tip, member)
+                        likeTipRepository.existsByTipAndMember(tip, member),
+                        tip.isPopular()
                 ))
                 .collect(Collectors.toList());
     }
@@ -134,7 +151,8 @@ public class TipService {
                         tip.getCreatedAt(),
                         tip.getImages().stream().map(TipImage::getTipImageUrl).collect(Collectors.toList()),
                         tip.getMember().getUsername(),
-                        likeTipRepository.existsByTipAndMember(tip, member)
+                        likeTipRepository.existsByTipAndMember(tip, member),
+                        tip.isPopular()
                 ))
                 .collect(Collectors.toList());
     }
@@ -155,7 +173,8 @@ public class TipService {
                         tip.getCreatedAt(),
                         tip.getImages().stream().map(TipImage::getTipImageUrl).collect(Collectors.toList()),
                         tip.getMember().getUsername(),
-                        likeTipRepository.existsByTipAndMember(tip, member)
+                        likeTipRepository.existsByTipAndMember(tip, member),
+                        tip.isPopular()
                 ))
                 .collect(Collectors.toList());
     }
