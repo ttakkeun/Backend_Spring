@@ -136,6 +136,7 @@ public class DiagnoseChatGPTService {
             // 결과 저장
             Result savedResult = resultRepository.save(result);
 
+            // 저장된 result의 id를 가져옴
             Long resultId = savedResult.getResultId();
 
             // DTO에 제품명 반환을 위해 products 리스트 구성
