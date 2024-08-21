@@ -8,6 +8,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import ttakkeun.ttakkeun_server.apiPayLoad.ExceptionHandler;
 import ttakkeun.ttakkeun_server.dto.tip.TipCreateRequestDTO;
 import ttakkeun.ttakkeun_server.dto.tip.TipResponseDTO;
 
@@ -23,6 +24,8 @@ import ttakkeun.ttakkeun_server.repository.TipRepository;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static ttakkeun.ttakkeun_server.apiPayLoad.code.status.ErrorStatus.TIP_ID_NOT_AVAILABLE;
+
 
 @Service
 @RequiredArgsConstructor
@@ -36,7 +39,7 @@ public class TipService {
 
     // 팁 생성
     @Transactional
-    public TipResponseDTO createTip(TipCreateRequestDTO request, Long memberId, List<MultipartFile> imageFiles) {
+    public TipResponseDTO createTip(TipCreateRequestDTO request, Long memberId) {
         Member member = memberService.findMemberById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 사용자 ID입니다."));
 
@@ -177,6 +180,19 @@ public class TipService {
                         tip.isPopular()
                 ))
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void deleteTip(Long tipId) {
+        // 먼저 해당 팁이 존재하는지 확인
+        Tip tip = tipRepository.findById(tipId)
+                .orElseThrow(() -> new ExceptionHandler(TIP_ID_NOT_AVAILABLE));
+
+        // LikeTip 관련 데이터 삭제
+        likeTipRepository.deleteAllByTip(tip);
+
+        // 팁 삭제
+        tipRepository.delete(tip);
     }
 }
 

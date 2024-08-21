@@ -29,6 +29,11 @@ public class ApiResponse<T> {
         return new ApiResponse<>(true, code.getReasonHttpStatus().getCode() , code.getReasonHttpStatus().getMessage(), result);
     }
 
+    // 응답이 필요없을때
+    public static ApiResponse<Void> onSuccess() {
+        return new ApiResponse<>(true, SuccessStatus._OK.getCode(), SuccessStatus._OK.getMessage(), null);
+    }
+
     // 실패한 경우
     public static <T> ApiResponse<T> onFailure(String code, String message, T data) {
         return new ApiResponse<>(false, code, message, data);

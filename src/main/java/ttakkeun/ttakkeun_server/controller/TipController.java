@@ -34,7 +34,7 @@ public class TipController {
             @RequestParam("category") Category category) {
 
         TipCreateRequestDTO request = new TipCreateRequestDTO(title, content, category);
-        TipResponseDTO result = tipService.createTip(request, member.getMemberId(), null);
+        TipResponseDTO result = tipService.createTip(request, member.getMemberId());
         return ApiResponse.onSuccess(result);
     }
 
@@ -87,5 +87,14 @@ public class TipController {
     ) {
         List<TipResponseDTO> result = tipService.getBestTips(member);
         return ApiResponse.onSuccess(result);
-}
+    }
+
+    @Operation(summary = "팁 삭제 API")
+    @DeleteMapping("/{tip_id}")
+    public ApiResponse<Void> deleteTips(
+            @PathVariable("tip_id") Long tipId
+    ) {
+        tipService.deleteTip(tipId);
+        return ApiResponse.onSuccess();
+    }
 }
