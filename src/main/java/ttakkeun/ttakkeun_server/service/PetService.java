@@ -1,15 +1,19 @@
-package ttakkeun.ttakkeun_server.service.PetService;
+package ttakkeun.ttakkeun_server.service;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ttakkeun.ttakkeun_server.apiPayLoad.ExceptionHandler;
+import ttakkeun.ttakkeun_server.apiPayLoad.code.status.ErrorStatus;
+import ttakkeun.ttakkeun_server.apiPayLoad.exception.handler.TempHandler;
+import ttakkeun.ttakkeun_server.converter.PetConverter;
 import ttakkeun.ttakkeun_server.dto.pet.PetRequestDTO;
 import ttakkeun.ttakkeun_server.dto.pet.PetResponseDTO;
 import ttakkeun.ttakkeun_server.entity.Member;
@@ -121,5 +125,28 @@ public class PetService {
                 .neutralization(pet.getNeutralization().equals(NEUTRALIZATION))
                 .petType(pet.getPetType().equals(PetType.DOG) ? "DOG" : "CAT")
                 .build();
+    }
+
+    public PetResponseDTO.LoadResultDTO load(Long petId, Member member) {
+        Pet pet = petRepository.findById(petId)
+                .orElseThrow(() -> new TempHandler(ErrorStatus.PET_ID_NOT_AVAILABLE));
+
+        if (!pet.getMember().getMemberId().equals(member.getMemberId())) {
+            throw new TempHandler(ErrorStatus.PET_NOT_FOUND);
+        }
+
+        return PetResponseDTO.LoadResultDTO.builder()
+                .petName(pet.getPetName())
+                .petImageUrl(pet.getPetImageUrl())
+                .petType(pet.getPetType().name())
+                .petVariety(pet.getPetVariety())
+                .birth(pet.getBirth())
+                .neutralization(pet.getNeutralization() == Neutralization.NEUTRALIZATION)
+                .build();
+    }
+
+    public Pet add(PetRequestDTO.AddDTO request, Member member) {
+        Pet newPet = PetConverter.toPet(request, member);
+        return petRepository.save(newPet);
     }
 }

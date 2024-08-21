@@ -14,9 +14,7 @@ import ttakkeun.ttakkeun_server.dto.pet.PetRequestDTO;
 import ttakkeun.ttakkeun_server.dto.pet.PetResponseDTO;
 import ttakkeun.ttakkeun_server.entity.Member;
 import ttakkeun.ttakkeun_server.entity.Pet;
-import ttakkeun.ttakkeun_server.service.PetService.PetCommandService;
-import ttakkeun.ttakkeun_server.service.PetService.PetQueryService;
-import ttakkeun.ttakkeun_server.service.PetService.PetService;
+import ttakkeun.ttakkeun_server.service.PetService;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,8 +26,6 @@ import static ttakkeun.ttakkeun_server.apiPayLoad.code.status.ErrorStatus.*;
 @RequestMapping("/api/pet-profile")
 public class PetController {
 
-    private final PetCommandService petCommandService;
-    private final PetQueryService petQueryService;
     private final PetService petService;
 
     @Operation(summary = "반려동물 프로필 추가 API")
@@ -38,10 +34,10 @@ public class PetController {
             @AuthenticationPrincipal Member member,
             @RequestBody @Valid PetRequestDTO.AddDTO request
     ) {
-        Pet newPet = petCommandService.add(request, member);
-        PetResponseDTO.AddResultDTO resultDTO = PetConverter.toAddResultDTO(newPet);
+        Pet newPet = petService.add(request, member);
+        PetResponseDTO.AddResultDTO result = PetConverter.toAddResultDTO(newPet);
 
-        return ApiResponse.onSuccess(resultDTO);
+        return ApiResponse.onSuccess(result);
     }
 
 
@@ -52,7 +48,7 @@ public class PetController {
             @AuthenticationPrincipal Member member,
             @PathVariable("pet_id") Long petId
     ) {
-        PetResponseDTO.LoadResultDTO resultDTO = petQueryService.load(petId, member);
+        PetResponseDTO.LoadResultDTO resultDTO = petService.load(petId, member);
         return ApiResponse.onSuccess(resultDTO);
     }
 
