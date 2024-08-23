@@ -18,10 +18,13 @@ import ttakkeun.ttakkeun_server.dto.pet.PetRequestDTO;
 import ttakkeun.ttakkeun_server.dto.pet.PetResponseDTO;
 import ttakkeun.ttakkeun_server.entity.Member;
 import ttakkeun.ttakkeun_server.entity.Pet;
+import ttakkeun.ttakkeun_server.entity.Record;
 import ttakkeun.ttakkeun_server.entity.enums.Neutralization;
 import ttakkeun.ttakkeun_server.entity.enums.PetType;
 import ttakkeun.ttakkeun_server.repository.MemberRepository;
 import ttakkeun.ttakkeun_server.repository.PetRepository;
+import ttakkeun.ttakkeun_server.repository.RecordRepository;
+import ttakkeun.ttakkeun_server.repository.ResultRepository;
 
 import java.io.IOException;
 import java.util.List;
@@ -41,6 +44,8 @@ public class PetService {
     private final PetRepository petRepository;
     private final MemberRepository memberRepository;
     private final AmazonS3 amazonS3Client;
+    private final ResultRepository resultRepository;
+    private final RecordRepository recordRepository;
 
     public List<Pet> getPetsByMemberId(Long memberId) {
         memberRepository.findById(memberId)
@@ -148,5 +153,22 @@ public class PetService {
     public Pet add(PetRequestDTO.AddDTO request, Member member) {
         Pet newPet = PetConverter.toPet(request, member);
         return petRepository.save(newPet);
+    }
+
+    @Transactional
+    public void deletePet(Long petId) {
+        Pet pet = petRepository.findById(petId)
+                .orElseThrow(() -> new ExceptionHandler(PET_ID_NOT_AVAILABLE));
+
+        // 연관된 Record의 result 엔티티들 수동 삭제
+        for (Record record : pet.getRecordList()) {
+            resultRepository.deleteByRecord(record);
+        }
+
+        // 연관된 Record 삭제
+        recordRepository.deleteAll(pet.getRecordList());
+
+        // Pet 엔티티와 연결된 연관 엔티티들도 CascadeType.REMOVE를 통해 삭제됩니다.
+        petRepository.delete(pet);
     }
 }

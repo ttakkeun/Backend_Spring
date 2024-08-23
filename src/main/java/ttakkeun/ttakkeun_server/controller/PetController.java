@@ -110,4 +110,13 @@ public class PetController {
 
         return ApiResponse.onSuccess(resultDTO);
     }
+
+    @Operation(summary = "반려동물 프로필 삭제")
+    @DeleteMapping(value = "/{pet_id}")
+    public ApiResponse<Void> deletePet(
+            @PathVariable("pet_id") Long petId
+    ) {
+        petService.deletePet(petId);
+        return ApiResponse.onSuccess();
+    }
 }

@@ -4,6 +4,7 @@ import feign.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
+import ttakkeun.ttakkeun_server.entity.Record;
 import ttakkeun.ttakkeun_server.entity.enums.Category;
 import ttakkeun.ttakkeun_server.repository.custom.CustomResultRepository;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -11,7 +12,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import ttakkeun.ttakkeun_server.entity.Result;
 
-import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -25,4 +25,6 @@ public interface ResultRepository extends JpaRepository<Result, Long>, CustomRes
 
     @Query("SELECT r FROM Result r WHERE r.record.pet.petId = :petId AND r.resultCategory = :category")
     Page<Result> findByPetIdAndCategory(@Param("petId") Long petId, @Param("category") Category category, Pageable pageable);
+
+    void deleteByRecord(Record record);
 }
