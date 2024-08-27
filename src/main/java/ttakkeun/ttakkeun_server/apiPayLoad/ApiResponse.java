@@ -1,5 +1,6 @@
 package ttakkeun.ttakkeun_server.apiPayLoad;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import ttakkeun.ttakkeun_server.apiPayLoad.code.BaseCode;
 import ttakkeun.ttakkeun_server.apiPayLoad.code.BaseErrorCode;
 import ttakkeun.ttakkeun_server.apiPayLoad.code.status.SuccessStatus;
@@ -13,11 +14,13 @@ import lombok.Getter;
 @JsonPropertyOrder({"isSuccess", "code", "message", "result"})
 public class ApiResponse<T> {
 
-    @JsonPropertyOrder("isSuccess")
+    @JsonProperty("isSuccess")
     private final Boolean isSuccess;
+
     private final String code;
     private final String message;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)  //result값이 null이 아닌 경우에만 포함
     private T result;
 
     // 성공한 경우
