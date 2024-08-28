@@ -1,7 +1,6 @@
-package ttakkeun.ttakkeun_server.apiPayLoad;
+package ttakkeun.ttakkeun_server.apiPayLoad.exception;
 
 import ttakkeun.ttakkeun_server.apiPayLoad.code.BaseErrorCode;
-import ttakkeun.ttakkeun_server.apiPayLoad.exception.GeneralException;
 
 public class ExceptionHandler extends GeneralException {
     public ExceptionHandler(BaseErrorCode code) {

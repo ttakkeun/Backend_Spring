@@ -2,17 +2,14 @@ package ttakkeun.ttakkeun_server.service;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import ttakkeun.ttakkeun_server.apiPayLoad.ExceptionHandler;
+import ttakkeun.ttakkeun_server.apiPayLoad.exception.ExceptionHandler;
 import ttakkeun.ttakkeun_server.apiPayLoad.code.status.ErrorStatus;
-import ttakkeun.ttakkeun_server.apiPayLoad.exception.handler.TempHandler;
 import ttakkeun.ttakkeun_server.converter.PetConverter;
 import ttakkeun.ttakkeun_server.dto.pet.PetRequestDTO;
 import ttakkeun.ttakkeun_server.dto.pet.PetResponseDTO;
@@ -134,10 +131,10 @@ public class PetService {
 
     public PetResponseDTO.LoadResultDTO load(Long petId, Member member) {
         Pet pet = petRepository.findById(petId)
-                .orElseThrow(() -> new TempHandler(ErrorStatus.PET_ID_NOT_AVAILABLE));
+                .orElseThrow(() -> new ExceptionHandler(ErrorStatus.PET_ID_NOT_AVAILABLE));
 
         if (!pet.getMember().getMemberId().equals(member.getMemberId())) {
-            throw new TempHandler(ErrorStatus.PET_NOT_FOUND);
+            throw new ExceptionHandler(ErrorStatus.PET_NOT_FOUND);
         }
 
         return PetResponseDTO.LoadResultDTO.builder()

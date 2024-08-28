@@ -3,7 +3,7 @@ package ttakkeun.ttakkeun_server.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ttakkeun.ttakkeun_server.apiPayLoad.ExceptionHandler;
+import ttakkeun.ttakkeun_server.apiPayLoad.exception.ExceptionHandler;
 import ttakkeun.ttakkeun_server.dto.todo.*;
 import ttakkeun.ttakkeun_server.entity.Todo;
 import ttakkeun.ttakkeun_server.entity.Pet;

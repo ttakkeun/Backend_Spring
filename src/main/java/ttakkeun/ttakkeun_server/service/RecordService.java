@@ -9,7 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import ttakkeun.ttakkeun_server.apiPayLoad.ExceptionHandler;
+import ttakkeun.ttakkeun_server.apiPayLoad.exception.ExceptionHandler;
 import ttakkeun.ttakkeun_server.dto.record.RecordListResponseDto;
 import ttakkeun.ttakkeun_server.dto.record.RecordRequestDTO;
 import ttakkeun.ttakkeun_server.dto.record.RecordResponseDTO;

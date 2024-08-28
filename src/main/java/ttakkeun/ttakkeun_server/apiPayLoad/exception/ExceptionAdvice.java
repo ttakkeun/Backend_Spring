@@ -27,6 +27,7 @@ import java.util.Optional;
 @RestControllerAdvice(annotations = {RestController.class})
 public class ExceptionAdvice extends ResponseEntityExceptionHandler{
 
+    //유효성 검사에서 제약 조건이 위반되었을 때 발생하는 예외
     @org.springframework.web.bind.annotation.ExceptionHandler
     public ResponseEntity<Object> validation(ConstraintViolationException e, WebRequest request) {
         String errorMessage = e.getConstraintViolations().stream()
@@ -37,6 +38,7 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler{
         return handleExceptionInternalConstraint(e, ErrorStatus.valueOf(errorMessage), HttpHeaders.EMPTY,request);
     }
 
+    //메서드 인자가 유효하지 않을 때 발생
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
             MethodArgumentNotValidException e, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
@@ -53,6 +55,7 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler{
         return handleExceptionInternalArgs(e,HttpHeaders.EMPTY,ErrorStatus.valueOf("_BAD_REQUEST"),request,errors);
     }
 
+    //일반적인 예외 처리
     @org.springframework.web.bind.annotation.ExceptionHandler
     public ResponseEntity<Object> exception(Exception e, WebRequest request) {
         e.printStackTrace();
@@ -66,11 +69,11 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler{
         return handleExceptionInternal(generalException,errorReasonHttpStatus,null,request);
     }
 
+    //예외 처리 기본 로직
     private ResponseEntity<Object> handleExceptionInternal(Exception e, ErrorReasonDTO reason,
                                                            HttpHeaders headers, HttpServletRequest request) {
 
         ApiResponse<Object> body = ApiResponse.onFailure(reason.getCode(),reason.getMessage(),null);
-//        e.printStackTrace();
 
         WebRequest webRequest = new ServletWebRequest(request);
         return super.handleExceptionInternal(
