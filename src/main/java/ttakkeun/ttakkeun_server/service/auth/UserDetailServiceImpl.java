@@ -6,7 +6,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import ttakkeun.ttakkeun_server.apiPayLoad.ExceptionHandler;
+import ttakkeun.ttakkeun_server.apiPayLoad.exception.ExceptionHandler;
 import ttakkeun.ttakkeun_server.apiPayLoad.code.status.ErrorStatus;
 import ttakkeun.ttakkeun_server.repository.MemberRepository;
 

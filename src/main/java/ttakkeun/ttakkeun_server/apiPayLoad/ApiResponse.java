@@ -25,6 +25,7 @@ public class ApiResponse<T> {
         return new ApiResponse<>(true, SuccessStatus._OK.getCode(), SuccessStatus._OK.getMessage(), result);
     }
 
+    //특정 성공 상태 코드가 필요할 때
     public static <T> ApiResponse<T> of(BaseCode code, T result){
         return new ApiResponse<>(true, code.getReasonHttpStatus().getCode() , code.getReasonHttpStatus().getMessage(), result);
     }
@@ -35,8 +36,8 @@ public class ApiResponse<T> {
     }
 
     // 실패한 경우
-    public static <T> ApiResponse<T> onFailure(String code, String message, T data) {
-        return new ApiResponse<>(false, code, message, data);
+    public static <T> ApiResponse<T> onFailure(String code, String message, T result) {
+        return new ApiResponse<>(false, code, message, result);
     }
 
     public static <T> ApiResponse<T> ofFailure(BaseErrorCode code, T result) {

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ttakkeun.ttakkeun_server.apiPayLoad.ApiResponse;
-import ttakkeun.ttakkeun_server.apiPayLoad.ExceptionHandler;
+import ttakkeun.ttakkeun_server.apiPayLoad.exception.ExceptionHandler;
 import ttakkeun.ttakkeun_server.dto.auth.LoginResponseDto;
 import ttakkeun.ttakkeun_server.dto.auth.apple.AppleLoginRequestDto;
 import ttakkeun.ttakkeun_server.dto.auth.apple.AppleSignUpRequestDto;

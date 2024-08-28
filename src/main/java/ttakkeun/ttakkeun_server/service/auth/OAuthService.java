@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ttakkeun.ttakkeun_server.apiPayLoad.ExceptionHandler;
+import ttakkeun.ttakkeun_server.apiPayLoad.exception.ExceptionHandler;
 import ttakkeun.ttakkeun_server.dto.auth.LoginResponseDto;
 import ttakkeun.ttakkeun_server.dto.auth.apple.AppleAuthClient;
 import ttakkeun.ttakkeun_server.dto.auth.apple.AppleLoginRequestDto;

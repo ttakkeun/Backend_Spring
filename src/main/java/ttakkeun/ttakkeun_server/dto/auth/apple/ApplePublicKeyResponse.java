@@ -1,7 +1,7 @@
 package ttakkeun.ttakkeun_server.dto.auth.apple;
 
 import lombok.Getter;
-import ttakkeun.ttakkeun_server.apiPayLoad.ExceptionHandler;
+import ttakkeun.ttakkeun_server.apiPayLoad.exception.ExceptionHandler;
 import ttakkeun.ttakkeun_server.apiPayLoad.code.status.ErrorStatus;
 
 import java.util.List;
