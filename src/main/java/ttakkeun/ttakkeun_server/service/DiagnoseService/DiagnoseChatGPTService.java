@@ -82,31 +82,18 @@ public class DiagnoseChatGPTService {
             System.out.println("question is : " + questionString);
 
             // ChatGPT 진단
-            // String diagnoseResponse = diagnoseByChatGPT(questionString);
+             String diagnoseResponse = diagnoseByChatGPT(questionString);
 
-            // System.out.println("diagnoseResponse is : " + diagnoseResponse);
+             System.out.println("diagnoseResponse is : " + diagnoseResponse);
 
             // 이후 ChatGPT의 답변에서 필요한 값을 추출하고 DB에 POST해야 함
-
-            String wrongExample = "위 기록의 점수는 [score=70]점입니다.  \n" +
-                    "[detail=세부설명]강아지의 눈물이 적어서 눈이 뻑뻑해 보인다는 점과 눈물이 많아졌다는 점이 확인되었습니다. 이는 눈 건강에 문제가 있을 가능성이 있습니다. 다만 눈이 붉어지거나 눈을 잘 뜨지 못하는 등의 심각한 증상은 없으므로 비교적 점수가 높습니다.  \n" +
-                    "[care=추후관리법]눈물의 변화를 지속적으로 관찰하고, 필요시 동물 병원을 방문하여 정밀 검사를 받는 것이 중요합니다. 심한 경우 결막염 등의 질환일 수 있어 조기 진단이 중요합니다. 또한, 눈 주변을 깨끗하게 닦아주는 것도 도움이 될 수 있습니다.  \n" +
-                    "추천 제품은 다음과 같습니다.  \n" +
-                    "[product1=젠틀 아이 클렌저 by Pet MD]  \n" +
-                    "[product2=리프레쉬 테아 바이오 플러스 눈 건강 보조제]  \n" +
-                    "[product3=내츄럴 브랜즈 티어 스테인 리무버]  \n" +
-                    "[product4=하피 아이드롭 for Dogs]  \n" +
-                    "[product5=닥터 골드의 눈물 얼룩 제거 패드]\n" +
-                    "\n" +
-                    "이 제품들은 강아지의 눈 건강을 유지하고 눈물 얼룩을 제거하는 데 도움을 줄 수 있습니다. 항상 사용 전에 수의사와 상담하는 것을 권장드립니다.";
 
             // 값을 저장할 HashMap
             Map<String, String> extractedValues = new HashMap<>();
 
             // 받은 답변에서 대괄호 안의 등호 오른쪽 값을 추출해냄
             Pattern pattern = Pattern.compile("\\[(\\w+)=(.*?)\\]");
-//            Matcher matcher = pattern.matcher(diagnoseResponse);
-            Matcher matcher = pattern.matcher(wrongExample);
+            Matcher matcher = pattern.matcher(diagnoseResponse);
 
             // 모든 일치 항목 찾기
             while (matcher.find()) {
@@ -122,18 +109,21 @@ public class DiagnoseChatGPTService {
             String product4 = extractedValues.get("product4");
             String product5 = extractedValues.get("product5");
 
-            // detail과 care의 내용이 올바르게 들어왔는지 확인
-            // 가끔 지정한 형식대로 [detail=(실제 세부 설명)] [care=(실제 추후 관리법)]이 아니라
-            // [detail=세부설명] (실제 세부 설명) [care=추후관리법] (실제 추후 관리법)과 같이 잘못된 답변 형식을 받아올 때가 있음
-            // 이로 인해 실제 세부 설명과 실제 추후 관리법이 아니라, "세부설명" "추후관리법"이라는 글자만 반환하는 문제 발생
-            // 이 부분을 해결하기 위해 detail과 care값이 "세부설명", "추후관리법"이 아니라 제대로 받아와졌는지 확인하고,
-            // 만약 "세부설명", "추후관리법"이 받아와졌다면 괄호 뒤의 내용을 저장하도록 수정함
+             /*
+             detail과 care의 내용이 올바르게 들어왔는지 확인
+             가끔 지정한 형식대로 [detail=(실제 세부 설명)] [care=(실제 추후 관리법)]이 아니라
+             [detail=세부설명] (실제 세부 설명) [care=추후관리법] (실제 추후 관리법)과 같이 잘못된 답변 형식을 받아올 때가 있음
+             이로 인해 실제 세부 설명과 실제 추후 관리법이 아니라, "세부설명" "추후관리법"이라는 글자만 반환하는 문제 발생
+             이 부분을 해결하기 위해 detail과 care값이 "세부설명", "추후관리법"이 아니라 제대로 받아와졌는지 확인하고,
+             만약 "세부설명", "추후관리법"이 받아와졌다면 괄호 뒤의 내용을 저장하도록 수정함
+             */
 
             // detail 값이 잘못 저장되었을 경우
             if (detail.equals("세부설명")) {
                 // 잘못된 형식의 세부 설명 다시 추출
                 Pattern incorrectDetailPattern = Pattern.compile("\\[detail=세부설명\\]\\s*(.+?)\\s*(?=\\[|$)", Pattern.DOTALL);
-                Matcher incorrectDetailMatcher = incorrectDetailPattern.matcher(wrongExample);
+                // [detail=세부설명] 뒤의 내용을 추출, [을 만나면 추출을 종료하게 됨
+                Matcher incorrectDetailMatcher = incorrectDetailPattern.matcher(diagnoseResponse);
                 if (incorrectDetailMatcher.find()) {
                     detail = incorrectDetailMatcher.group(1);
                 }
@@ -142,8 +132,12 @@ public class DiagnoseChatGPTService {
             // care 값이 잘못 저장되었을 경우
             if (care.equals("추후관리법")) {
                 // 잘못된 형식의 추후 관리법 다시 추출
-                Pattern incorrectCarePattern = Pattern.compile("\\[care=추후관리법\\]\\s*(.+?)\\s*(?=\\[|$)", Pattern.DOTALL);
-                Matcher incorrectCareMatcher = incorrectCarePattern.matcher(wrongExample);
+                // Pattern incorrectCarePattern = Pattern.compile("\\[care=추후관리법\\]\\s*(.+?)\\s*(?=\\[|$)", Pattern.DOTALL);
+                Pattern incorrectCarePattern = Pattern.compile("\\[care=추후관리법\\]\\s*(.+?)\\s*(?=추천 제품은 다음과 같습니다\\.|$)", Pattern.DOTALL);
+                // [care=추후관리법] 뒤의 내용을 추출, '추천 제품은 다음과 같습니다.'라는 문구를 만나면 추출을 종료하게 됨
+                // 만약 세부설명처럼 [을 만났을 때 추출을 종료하도록 하면 "추천 제품은 다음과 같습니다."도 care에 같이 저장되는 문제가 발생함.
+                // 추후관리법 뒤에는 추천제품 내용이 오므로 해당 문구를 만나면 종료하도록 하였음
+                Matcher incorrectCareMatcher = incorrectCarePattern.matcher(diagnoseResponse);
                 if (incorrectCareMatcher.find()) {
                     care = incorrectCareMatcher.group(1);
                 }
