@@ -82,7 +82,9 @@ public class DiagnoseChatGPTService {
             System.out.println("question is : " + questionString);
 
             // ChatGPT 진단
-            String chatGPTRequestDTO = diagnoseByChatGPT(questionString);
+             String diagnoseResponse = diagnoseByChatGPT(questionString);
+
+             System.out.println("diagnoseResponse is : " + diagnoseResponse);
 
             // 이후 ChatGPT의 답변에서 필요한 값을 추출하고 DB에 POST해야 함
 
@@ -91,7 +93,7 @@ public class DiagnoseChatGPTService {
 
             // 받은 답변에서 대괄호 안의 등호 오른쪽 값을 추출해냄
             Pattern pattern = Pattern.compile("\\[(\\w+)=(.*?)\\]");
-            Matcher matcher = pattern.matcher(chatGPTRequestDTO);
+            Matcher matcher = pattern.matcher(diagnoseResponse);
 
             // 모든 일치 항목 찾기
             while (matcher.find()) {
@@ -106,6 +108,44 @@ public class DiagnoseChatGPTService {
             String product3 = extractedValues.get("product3");
             String product4 = extractedValues.get("product4");
             String product5 = extractedValues.get("product5");
+
+             /*
+             detail과 care의 내용이 올바르게 들어왔는지 확인
+             가끔 지정한 형식대로 [detail=(실제 세부 설명)] [care=(실제 추후 관리법)]이 아니라
+             [detail=세부설명] (실제 세부 설명) [care=추후관리법] (실제 추후 관리법)과 같이 잘못된 답변 형식을 받아올 때가 있음
+             이로 인해 실제 세부 설명과 실제 추후 관리법이 아니라, "세부설명" "추후관리법"이라는 글자만 반환하는 문제 발생
+             이 부분을 해결하기 위해 detail과 care값이 "세부설명", "추후관리법"이 아니라 제대로 받아와졌는지 확인하고,
+             만약 "세부설명", "추후관리법"이 받아와졌다면 괄호 뒤의 내용을 저장하도록 수정함
+             */
+
+            // detail 값이 잘못 저장되었을 경우
+            if (detail.equals("세부설명")) {
+                // 잘못된 형식의 세부 설명 다시 추출
+                Pattern incorrectDetailPattern = Pattern.compile("\\[detail=세부설명\\]\\s*(.+?)\\s*(?=\\[|$)", Pattern.DOTALL);
+                // [detail=세부설명] 뒤의 내용을 추출, [을 만나면 추출을 종료하게 됨
+                Matcher incorrectDetailMatcher = incorrectDetailPattern.matcher(diagnoseResponse);
+                if (incorrectDetailMatcher.find()) {
+                    detail = incorrectDetailMatcher.group(1);
+                }
+            }
+
+            // care 값이 잘못 저장되었을 경우
+            if (care.equals("추후관리법")) {
+                // 잘못된 형식의 추후 관리법 다시 추출
+                // Pattern incorrectCarePattern = Pattern.compile("\\[care=추후관리법\\]\\s*(.+?)\\s*(?=\\[|$)", Pattern.DOTALL);
+                Pattern incorrectCarePattern = Pattern.compile("\\[care=추후관리법\\]\\s*(.+?)\\s*(?=추천 제품은 다음과 같습니다\\.|$)", Pattern.DOTALL);
+                // [care=추후관리법] 뒤의 내용을 추출, '추천 제품은 다음과 같습니다.'라는 문구를 만나면 추출을 종료하게 됨
+                // 만약 세부설명처럼 [을 만났을 때 추출을 종료하도록 하면 "추천 제품은 다음과 같습니다."도 care에 같이 저장되는 문제가 발생함.
+                // 추후관리법 뒤에는 추천제품 내용이 오므로 해당 문구를 만나면 종료하도록 하였음
+                Matcher incorrectCareMatcher = incorrectCarePattern.matcher(diagnoseResponse);
+                if (incorrectCareMatcher.find()) {
+                    care = incorrectCareMatcher.group(1);
+                }
+            }
+
+
+            System.out.println("detail is : " + detail);
+            System.out.println("care is : " + care);
 
 
             Long recordId = postDiagnoseRequestDTO.records().get(0).record_id();
@@ -191,7 +231,7 @@ public class DiagnoseChatGPTService {
             // 질문을 구성하기 위해 일지 관련해서 필요한 것 : category, etc, questionText, descriptionText, answerText, imageUrl
 
             Long recordId = record_by_list.record_id(); // 선택된 일지의 id를 가져옴
-            System.out.println("recordId is : " + recordId);
+            // System.out.println("recordId is : " + recordId);
 
             Optional<Record> recordOpt = recordRepository.findByRecordId(recordId);
 
@@ -262,8 +302,7 @@ public class DiagnoseChatGPTService {
     public String makeQuestionString(ChatGPTQuestionDTO chatGPTQuestionDTO) {
         try {
 
-            // 여기에 지금 answerDTO 값이 null로 들어옴!!!!
-            System.out.println("make Question String에 들어온 chatGptQuestionDTO는 : " + chatGPTQuestionDTO);
+            // System.out.println("make Question String에 들어온 chatGptQuestionDTO는 : " + chatGPTQuestionDTO);
 
 
             String petType = switch (chatGPTQuestionDTO.petType()) {
@@ -342,9 +381,9 @@ public class DiagnoseChatGPTService {
 
             return question;
         } catch (NullPointerException e) {
-          e.printStackTrace();
-          log.error("데이터 조회 오류가 발생했습니다." + e.getMessage(), e);
-          throw new NullPointerException("데이터 조회 오류가 발생했습니다. 서버 관리자에게 문의해주세요" + e.getMessage());
+            e.printStackTrace();
+            log.error("데이터 조회 오류가 발생했습니다." + e.getMessage(), e);
+            throw new NullPointerException("데이터 조회 오류가 발생했습니다. 서버 관리자에게 문의해주세요" + e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
             log.error("알 수 없는 오류가 발생했습니다." + e.getMessage(), e);
@@ -369,7 +408,7 @@ public class DiagnoseChatGPTService {
 
             // String으로 받아온 questions를 DTO에 넣어서 DTO 구성
             ChatGPTRequestDTO chatGPTRequestDTO = new ChatGPTRequestDTO("gpt-4o", List.of(chatGPTCompletionDTO));
-            System.out.println("chatGPTRequestDTO is  : " + chatGPTRequestDTO);
+            // System.out.println("chatGPTRequestDTO is  : " + chatGPTRequestDTO);
 
             // ObjectMapper를 사용하여 DTO를 JSON 문자열로 변환
             // ChatGPT api를 사용하려면 JSON 형태로 통신해야 함
@@ -378,16 +417,15 @@ public class DiagnoseChatGPTService {
 
             // 통신을 위한 RestTemplate 구성
             HttpEntity<String> requestEntity = new HttpEntity<>(jsonPayload, headers);
-            System.out.println("Request URL: " + promptUrl);
-            System.out.println("Request Headers: " + headers);
-            System.out.println("Request Body: " + jsonPayload);
+//            System.out.println("Request URL: " + promptUrl);
+//            System.out.println("Request Headers: " + headers);
+//            System.out.println("Request Body: " + jsonPayload);
 
-            // 여기에서 오류 발생
             ResponseEntity<String> response = chatGPTConfig.restTemplate()
                     .exchange(promptUrl, HttpMethod.POST, requestEntity, String.class);
 
-            System.out.println("Response Status: " + response.getStatusCode());
-            System.out.println("Response Body: " + response.getBody());
+//            System.out.println("Response Status: " + response.getStatusCode());
+//            System.out.println("Response Body: " + response.getBody());
 
 
             // String -> HashMap 역직렬화
@@ -416,4 +454,5 @@ public class DiagnoseChatGPTService {
             throw new RuntimeException("알 수 없는 오류가 발생했습니다. 서버 관리자에게 문의해주세요" + e.getMessage());
         }
     }
+
 }
