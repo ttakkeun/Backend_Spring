@@ -36,10 +36,6 @@ public class Todo extends BaseEntity {
     @JoinColumn(name = "pet_id")
     private Pet pet;
 
-    @Builder.Default
-    @OneToMany(mappedBy = "todo", cascade = CascadeType.ALL)
-    private List<History> HistoryList = new ArrayList<>();
-
     private LocalDate todoDate;
 
     public Todo(String todoName, Category todoCategory, TodoStatus todoStatus, Pet pet) {
