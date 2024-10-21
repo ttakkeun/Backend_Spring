@@ -2,14 +2,12 @@ package ttakkeun.ttakkeun_server.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.relational.core.sql.Like;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import ttakkeun.ttakkeun_server.entity.common.BaseEntity;
 import ttakkeun.ttakkeun_server.entity.enums.LoginType;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -39,14 +37,6 @@ public class Member extends BaseEntity implements UserDetails {
 
     @Column(nullable = false)
     private LocalDateTime refreshTokenExpiresAt;    //토큰 만료 일자
-
-    @Builder.Default
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
-    private List<Pet> petList = new ArrayList<>();
-
-    @Builder.Default
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
-    private List<LikeProduct> likeProductList = new ArrayList<>();
 
     // refreshToken 재발급
     public void updateRefreshToken(String refreshToken) {
