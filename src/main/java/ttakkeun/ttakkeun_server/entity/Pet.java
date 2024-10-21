@@ -40,6 +40,10 @@ public class Pet extends BaseEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @Builder.Default
+    @OneToMany(mappedBy = "pet", cascade = CascadeType.ALL)
+    private List<Record> RecordList = new ArrayList<>();
+
     public void updateImage(String imageUrl) {
         this.petImageUrl = imageUrl;
     }
