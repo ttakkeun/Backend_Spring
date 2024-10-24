@@ -40,7 +40,8 @@ public class SecurityConfig {
                         "/api/diagnose/result/**", "/test/diagnose/**", "/api/ChatGPT/**");
     }
 
-    @Bean AuthenticationManager authenticationManager(AuthenticationConfiguration authConfiguration) throws Exception
+    @Bean
+    AuthenticationManager authenticationManager(AuthenticationConfiguration authConfiguration) throws Exception
     { return authConfiguration.getAuthenticationManager(); }
 
     @Bean

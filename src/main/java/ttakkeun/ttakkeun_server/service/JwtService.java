@@ -41,12 +41,14 @@ public class JwtService {
     @Value("${jwt.secretKey}")    //application.yml에 저장된 시크릿키
     private String JWT_SECRET;
 
+    public static final String AUTHORIZATION_HEADER = "Authorization";
+
+
     private final UserDetailServiceImpl userDetailService;
     private static final String IDENTITY_TOKEN_VALUE_DELIMITER = "\\.";
     private static final int HEADER_INDEX = 0;
 
     private final ObjectMapper objectMapper;
-    //private final UserDetailServiceImpl userDetailService;
 
     private Long accesstokenValidTime = 1000L * 60 * 60 * 24; // 1d
     private Long refreshTokenValidTime = 1000L * 60 * 60 * 24 * 7; // 7d
@@ -65,15 +67,15 @@ public class JwtService {
     // access token 생성
     public String generateAccessToken(Long memberId) {
         Date now = new Date();
-        String base64EncodedSecretKey = encodeBase64SecretKey("" + JWT_SECRET);
-        Key key = getKeyFromBase64EncodedKey(base64EncodedSecretKey);
+        String base64EncodedSecretKey = encodeBase64SecretKey("" + JWT_SECRET);  //사용자 설정 secret 키 인코딩
+        Key key = getKeyFromBase64EncodedKey(base64EncodedSecretKey);            //JWT 서명에 사용할 키 생성
 
         return Jwts.builder()
                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE)   // JWT 헤더 설정, "typ" : "JWT"
                 .setIssuer("ttakkeun")  // 발행자 설정
                 .setIssuedAt(now)       // JWT 발행 일자 설정
-                .setSubject(String.valueOf(memberId))  // JWT 제목 설정
-                .setExpiration(new Date(now.getTime() + accesstokenValidTime))  // JWT 만료 일자 설정
+                .setSubject(String.valueOf(memberId))  // JWT sub 설정
+                .setExpiration(new Date(now.getTime() + accesstokenValidTime))  // JWT 만료 일자 설정(1d)
                 .claim("memberId", memberId)  // 커스텀 클레임 설정
                 .signWith(key)          // 서명을 위한 Key 객체 설정
                 .compact();             // JWT 생성 및 직렬화
@@ -89,7 +91,7 @@ public class JwtService {
                 .setIssuedAt(now)
                 .setSubject(memberId.toString())
                 .setExpiration(new Date(now.getTime() + refreshTokenValidTime))
-                .claim("memberId", memberId) //payload에 들어갈 내용
+                .claim("memberId", memberId)
                 .signWith(key)
                 .compact();
     }
@@ -111,9 +113,9 @@ public class JwtService {
         }
     }
 
-    // Autorization : Bearer에서 token 추출 (refreshToken, accessToken 포함)
+    // token 추출
     public String resolveToken(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
+        String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7);
         }
@@ -141,8 +143,6 @@ public class JwtService {
 
     //JWT 토큰 인증 정보 조회 (토큰 복호화)
     public Authentication getAuthentication(String token) {
-        System.out.println(this.getMemberIdFromJwtToken(token));
-
         UserDetails userDetails = userDetailService.loadUserByUsername(this.getMemberIdFromJwtToken(token).toString());
         return new UsernamePasswordAuthenticationToken(userDetails, token, userDetails.getAuthorities());
     }
@@ -153,7 +153,7 @@ public class JwtService {
             final String decodedHeader = new String(Base64.getUrlDecoder().decode(encodedHeader));
             return objectMapper.readValue(decodedHeader, Map.class);
         } catch (JsonMappingException e) {
-            throw new RuntimeException("appleToken 값이 jwt 형식인지, 값이 정상적인지 확인해주세요.");
+            throw new RuntimeException("apple token 값이 jwt 형식인지, 값이 정상적인지 확인해주세요.");
         } catch (JsonProcessingException e) {
             throw new ExceptionHandler(ErrorStatus.INVALID_APPLE_ID_TOKEN);
         }
