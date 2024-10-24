@@ -23,12 +23,11 @@ spring:
     provider:
       apple:
         redirect-uri: https://ttakkeun.app.com/apple/callback/
-        grant-type: authorization_code
-        client-id: ttakkeun.app.com
-        key-id: ${apple_key_id}
-        team-id: ${apple_team_id}
+        client-id: ${APPLE_CLIENT_ID}
+        key-id: ${APPLE_KEY_ID}
+        team-id: ${APPLE_TEAM_ID}
         audience: https://appleid.apple.com
-        private-key: ${APPLE_Secret}
+        private-key: ${APPLE_SECRET}
   servlet:
     multipart:
       max-file-size: 50MB
@@ -37,7 +36,7 @@ spring:
   jackson:
     time-zone: Asia/Seoul
 jwt:
-  secretKey: ${JWT_Secret}
+  secretKey: ${JWT_SECRET}
 
 server:
   port: 8080
@@ -49,8 +48,8 @@ naverApi:
 cloud:
   aws:
     credentials:
-      access-key: ${aws_access}
-      secret-key: ${aws_secret}
+      access-key: ${AWS_ACCESS}
+      secret-key: ${AWS_SECRET}
     region:
       static: ap-northeast-2
       # 리전 서울로 설정
