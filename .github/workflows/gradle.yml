@@ -62,12 +62,13 @@ jobs:
           export DB_PASSWORD=${{ secrets.DB_PASSWORD }}
           export NAVER_ClientID=${{ secrets.NAVER_ClientID }}
           export NAVER_ClientSecret=${{ secrets.NAVER_ClientSecret }}
-          export APPLE_Secret=${{ secrets.APPLE_Secret }}
-          export apple_key_id=${{ secrets.apple_key_id }}
-          export apple_team_id=${{ secrets.apple_team_id }}
-          export JWT_Secret=${{ secrets.JWT_Secret }}
-          export aws_access=${{ secrets.aws_access }}
-          export aws_secret=${{ secrets.aws_secret }}
+          export APPLE_SECRET=${{ secrets.APPLE_SECRET }}
+          export APPLE_KEY_ID=${{ secrets.APPLE_KEY_ID }}
+          export APPLE_CLIENT_ID=${{ secrets.APPLE_CLIENT_ID }}
+          export APPLE_TEAM_ID=${{ secrets.APPLE_TEAM_ID }}
+          export JWT_SECRET=${{ secrets.JWT_SECRET }}
+          export AWS_ACCESS=${{ secrets.AWS_ACCESS }}
+          export AWS_SECRET=${{ secrets.AWS_SECRET }}
           export OPENAI_KEY=${{ secrets.OPENAI_KEY }}
         
           ## Docker 작업
@@ -77,9 +78,9 @@ jobs:
           sudo docker pull ${{ secrets.DOCKER_USERNAME }}/ttakkeun
           sudo docker run -e DB_URL=${DB_URL} -e DB_USERNAME=${DB_USERNAME} -e DB_PASSWORD=${DB_PASSWORD} \
                            -e NAVER_ClientID=${NAVER_ClientID} -e NAVER_ClientSecret=${NAVER_ClientSecret} \
-                           -e APPLE_Secret=${APPLE_Secret} -e apple_key_id=${apple_key_id} \
-                           -e apple_team_id=${apple_team_id} -e JWT_Secret=${JWT_Secret} \
-                           -e aws_access=${aws_access} -e aws_secret=${aws_secret} \
+                           -e APPLE_SECRET=${APPLE_SECRET} -e APPLE_KEY_ID=${APPLE_KEY_ID} -e APPLE_CLIENT_ID=${APPLE_CLIENT_ID} \
+                           -e APPLE_TEAM_ID=${APPLE_TEAM_ID} -e JWT_SECRET=${JWT_SECRET} \
+                           -e AWS_ACCESS=${AWS_ACCESS} -e AWS_SECRET=${AWS_SECRET} \
                            -e OPENAI_KEY=${OPENAI_KEY} \
                            -e TZ=Asia/Seoul \
                            -d -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/ttakkeun
