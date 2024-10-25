@@ -3,9 +3,8 @@ package ttakkeun.ttakkeun_server.utils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import ttakkeun.ttakkeun_server.dto.auth.apple.ApplePublicKey;
 import ttakkeun.ttakkeun_server.dto.auth.apple.ApplePublicKeyResponse;
-
-import javax.naming.AuthenticationException;
 import java.math.BigInteger;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
@@ -18,28 +17,27 @@ import java.util.Map;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-
 public class ApplePublicKeyGenerator {
     public PublicKey generatePublicKey(Map<String, String> tokenHeaders,
-                                       ApplePublicKeyResponse applePublicKeys)
-            throws AuthenticationException, NoSuchAlgorithmException, InvalidKeySpecException {
-        ApplePublicKeyResponse.ApplePublicKey publicKey = applePublicKeys.getMatchedKeyBy(tokenHeaders.get("kid"),
+                                       ApplePublicKeyResponse applePublicKeys) {
+        ApplePublicKey publicKey = applePublicKeys.getMatchedKeyBy(tokenHeaders.get("kid"),
                 tokenHeaders.get("alg"));
 
         return getPublicKey(publicKey);
     }
 
-    private PublicKey getPublicKey(ApplePublicKeyResponse.ApplePublicKey publicKey)
-            throws NoSuchAlgorithmException, InvalidKeySpecException {
+    private PublicKey getPublicKey(ApplePublicKey publicKey) {
         byte[] nBytes = Base64.getUrlDecoder().decode(publicKey.getN());
         byte[] eBytes = Base64.getUrlDecoder().decode(publicKey.getE());
 
         RSAPublicKeySpec publicKeySpec = new RSAPublicKeySpec(new BigInteger(1, nBytes),
                 new BigInteger(1, eBytes));
 
-
-        KeyFactory keyFactory = KeyFactory.getInstance(publicKey.getKty());
-        return keyFactory.generatePublic(publicKeySpec);
+        try {
+            KeyFactory keyFactory = KeyFactory.getInstance(publicKey.getKty());
+            return keyFactory.generatePublic(publicKeySpec);
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException exception) {
+            throw new IllegalStateException("Apple OAuth 로그인 중 public key 생성에 문제가 발생했습니다.");
+        }
     }
-
 }
