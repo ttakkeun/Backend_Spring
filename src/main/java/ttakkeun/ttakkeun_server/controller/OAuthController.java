@@ -45,7 +45,7 @@ public class OAuthController {
 
     @Operation(summary = "애플 로그인 API")
     @PostMapping("/apple/login")
-    public ApiResponse<LoginResponseDto> appleLogin(@RequestBody @Validated AppleLoginRequestDto appleReqDto) throws Exception {
+    public ApiResponse<LoginResponseDto> appleLogin(@RequestBody @Validated AppleLoginRequestDto appleReqDto) {
         if (appleReqDto.getIdentityToken() == null)
             throw new ExceptionHandler(APPLE_ID_TOKEN_EMPTY);
         return ApiResponse.onSuccess(oAuthService.appleLogin(appleReqDto));
@@ -53,7 +53,7 @@ public class OAuthController {
 
     @Operation(summary = "애플 회원가입 API")
     @PostMapping("/apple/signup")
-    public ApiResponse<LoginResponseDto> appleSignUp(@RequestBody @Validated AppleSignUpRequestDto appleSignUpReqDto) throws Exception{
+    public ApiResponse<LoginResponseDto> appleSignUp(@RequestBody @Validated AppleSignUpRequestDto appleSignUpReqDto) {
         if (appleSignUpReqDto.getIdentityToken() == null)
             throw new ExceptionHandler(APPLE_ID_TOKEN_EMPTY);
         return ApiResponse.onSuccess(oAuthService.appleSignUp(appleSignUpReqDto));
