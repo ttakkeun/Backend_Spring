@@ -59,18 +59,18 @@ public class OAuthService {
 //        if(jwtService.validateTokenBoolean(accessToken))  // access token 유효성 검사
 //            throw new ExceptionHandler(ACCESS_TOKEN_UNAUTHORIZED);
 
-        if(!jwtService.validateTokenBoolean(refreshToken))  // refresh token 유효성 검사
+        if (!jwtService.validateTokenBoolean(refreshToken))  // refresh token 유효성 검사
             throw new ExceptionHandler(REFRESH_TOKEN_UNAUTHORIZED);
 
         Long memberId = jwtService.getMemberIdFromJwtToken(refreshToken);
         log.info("memberId : " + memberId);
 
         Optional<Member> getMember = memberRepository.findById(memberId);
-        if(getMember.isEmpty())
+        if (getMember.isEmpty())
             throw new ExceptionHandler(MEMBER_NOT_FOUND);
 
         Member member = getMember.get();
-        if(!refreshToken.equals(member.getRefreshToken()))
+        if (!refreshToken.equals(member.getRefreshToken()))
             throw new ExceptionHandler(REFRESH_TOKEN_UNAUTHORIZED);
 
         String newRefreshToken = jwtService.generateRefreshToken(memberId);
@@ -84,8 +84,9 @@ public class OAuthService {
         return new LoginResponseDto(newAccessToken, newRefreshToken);
     }
 
+    //애플 로그인
     @Transactional
-    public LoginResponseDto appleLogin(AppleLoginRequestDto appleLoginRequestDto) throws Exception {
+    public LoginResponseDto appleLogin(AppleLoginRequestDto appleLoginRequestDto) {
         log.info("Current time is {}", LocalDateTime.now());
         // 1. 애플 공개 키 가져오기
         Map<String, String> headers = jwtService.parseHeader(appleLoginRequestDto.getIdentityToken());
@@ -95,7 +96,6 @@ public class OAuthService {
         Claims claims = jwtService.getTokenClaims(appleLoginRequestDto.getIdentityToken(), publicKey);
 
         // 3. 클레임에서 subject 추출
-        String email = claims.get("email", String.class);
         String sub = claims.getSubject();
 
         // 4. 유저가 등록되어 있는지 확인
@@ -111,9 +111,9 @@ public class OAuthService {
         return createToken(member);
     }
 
-    // 애플 로그인 (회원가입 해야하는 경우)
+    // 애플 회원가입
     @Transactional
-    public LoginResponseDto appleSignUp(AppleSignUpRequestDto appleSignUpRequestDto) throws Exception{
+    public LoginResponseDto appleSignUp(AppleSignUpRequestDto appleSignUpRequestDto) {
 
         // 1. 애플 공개 키 가져오기
         Map<String, String> headers = jwtService.parseHeader(appleSignUpRequestDto.getIdentityToken());
@@ -123,6 +123,7 @@ public class OAuthService {
         Claims claims = jwtService.getTokenClaims(appleSignUpRequestDto.getIdentityToken(), publicKey);
 
         // 3. 클레임에서 subject 추출
+        String email = claims.get("email", String.class);
         String sub = claims.getSubject();
 
         // 4. 유저가 등록되어 있는지 확인
@@ -132,9 +133,8 @@ public class OAuthService {
             // 등록된 유저가 아닌 경우 회원가입 로직
             member = memberRepository.save(
                     Member.builder()
-                            //.email(claims.get("email", String.class)) // 애플 JWT에 이메일 클레임이 포함된 경우 사용
+                            .email(email)
                             .username(appleSignUpRequestDto.getUserName()) // appleLoginRequestDto에서 닉네임 가져오기
-                            //.provider(MemberProvider.APPLE) // 필요에 따라 설정
                             .appleSub(sub)
                             .loginType(LoginType.APPLE)
                             .refreshToken("") // 초기 빈 값 설정
@@ -146,15 +146,4 @@ public class OAuthService {
         // 5. 토큰 생성 및 반환
         return createToken(member);
     }
-
-
-//    public String getAppleAccountId(String identityToken)
-//            throws JsonProcessingException, AuthenticationException, NoSuchAlgorithmException,
-//            InvalidKeySpecException {
-//        Map<String, String> headers = jwtService.parseIdentityToken(identityToken);
-//        PublicKey publicKey = applePublicKeyGenerator.generatePublicKey(headers,
-//                appleAuthClient.getAppleAuthPublicKey());
-//
-//        return jwtService.getTokenClaims(identityToken, publicKey).getSubject();
-//    }
 }

@@ -48,7 +48,7 @@ public class JwtService {
     private static final String IDENTITY_TOKEN_VALUE_DELIMITER = "\\.";
     private static final int HEADER_INDEX = 0;
 
-    private final ObjectMapper objectMapper;
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     private Long accesstokenValidTime = 1000L * 60 * 60 * 24; // 1d
     private Long refreshTokenValidTime = 1000L * 60 * 60 * 24 * 7; // 7d
@@ -160,10 +160,13 @@ public class JwtService {
     }
 
     public Claims getTokenClaims(final String token, final PublicKey publicKey) {
-
-        return Jwts.parser()
-                .setSigningKey(publicKey)
-                .parseClaimsJws(token)
-                .getBody();
+        try {
+            return Jwts.parser()
+                    .setSigningKey(publicKey)
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (UnsupportedJwtException | MalformedJwtException | SignatureException | IllegalArgumentException e) {
+            throw new ExceptionHandler(ErrorStatus.INVALID_APPLE_ID_TOKEN);
+        }
     }
 }
