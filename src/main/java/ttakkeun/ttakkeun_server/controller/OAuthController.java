@@ -1,19 +1,19 @@
 package ttakkeun.ttakkeun_server.controller;
 
+import io.micrometer.common.lang.Nullable;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ttakkeun.ttakkeun_server.apiPayLoad.ApiResponse;
 import ttakkeun.ttakkeun_server.apiPayLoad.exception.ExceptionHandler;
 import ttakkeun.ttakkeun_server.dto.auth.LoginResponseDto;
 import ttakkeun.ttakkeun_server.dto.auth.apple.AppleLoginRequestDto;
 import ttakkeun.ttakkeun_server.dto.auth.apple.AppleSignUpRequestDto;
+import ttakkeun.ttakkeun_server.entity.Member;
 import ttakkeun.ttakkeun_server.service.auth.OAuthService;
 
 import static ttakkeun.ttakkeun_server.apiPayLoad.code.status.ErrorStatus.APPLE_ID_TOKEN_EMPTY;
@@ -57,5 +57,14 @@ public class OAuthController {
         if (appleSignUpReqDto.getIdentityToken() == null)
             throw new ExceptionHandler(APPLE_ID_TOKEN_EMPTY);
         return ApiResponse.onSuccess(oAuthService.appleSignUp(appleSignUpReqDto));
+    }
+
+    @Operation(summary = "애플 탈퇴 API")
+    @DeleteMapping("/apple/delete")
+    public ApiResponse<String> withdraw(@AuthenticationPrincipal Member member,
+                                @Nullable @RequestHeader("authorization-code") final String code){
+        oAuthService.appleDelete(member, code);
+
+        return ApiResponse.onSuccess("apple delete success");
     }
 }
