@@ -45,6 +45,10 @@ public class Member extends BaseEntity implements UserDetails {
         this.refreshToken = refreshToken;
         this.refreshTokenExpiresAt = LocalDateTime.now().plusDays(7);
     }
+    public void refreshTokenExpires() {
+        this.refreshToken = "";
+        this.refreshTokenExpiresAt = LocalDateTime.now();
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

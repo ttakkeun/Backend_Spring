@@ -32,8 +32,6 @@ public class OAuthController {
     public ApiResponse<LoginResponseDto> regenerateAccessToken(HttpServletRequest request) {
         //String accessToken = request.getHeader("Authorization");
         String refreshToken = request.getHeader("RefreshToken");
-
-        //System.out.println("Access Token: " + accessToken.substring(7));
         System.out.println("Refresh Token: " + refreshToken.substring(7));
 
         if (StringUtils.hasText(refreshToken) && refreshToken.startsWith("Bearer ")) {
@@ -66,5 +64,17 @@ public class OAuthController {
         oAuthService.appleDelete(member, code);
 
         return ApiResponse.onSuccess("apple delete success");
+    }
+
+    @Operation(summary = "회원 로그아웃 API")
+    @PostMapping("/logout")
+    public ApiResponse<String> logout(@AuthenticationPrincipal Member member) {
+        String token = member.getRefreshToken();
+
+        if (StringUtils.hasText(token)) {
+            oAuthService.logout(token);
+            return ApiResponse.onSuccess("LOGOUT SUCCESS");
+        } else
+            throw new ExceptionHandler(TOKEN_EMPTY);
     }
 }

@@ -159,6 +159,18 @@ public class OAuthService {
     }
 
     @Transactional
+    public void logout(String refreshToken) {
+        if (!jwtService.validateTokenBoolean(refreshToken))  // refresh token 유효성 검사
+            throw new ExceptionHandler(REFRESH_TOKEN_UNAUTHORIZED);
+
+        Member member = memberRepository.findByRefreshToken(refreshToken)
+                .orElseThrow(() -> new ExceptionHandler(MEMBER_NOT_FOUND)); // 예외처리
+
+        member.refreshTokenExpires();
+        memberRepository.save(member);
+    }
+
+    @Transactional
     public void appleDelete(Member member, String code) {
 
         try {
