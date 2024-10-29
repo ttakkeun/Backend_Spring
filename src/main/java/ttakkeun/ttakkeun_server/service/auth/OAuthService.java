@@ -5,16 +5,23 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import ttakkeun.ttakkeun_server.apiPayLoad.exception.ExceptionHandler;
 import ttakkeun.ttakkeun_server.dto.auth.LoginResponseDto;
 import ttakkeun.ttakkeun_server.dto.auth.apple.AppleAuthClient;
 import ttakkeun.ttakkeun_server.dto.auth.apple.AppleLoginRequestDto;
+import ttakkeun.ttakkeun_server.dto.auth.apple.AppleRevokeRequest;
 import ttakkeun.ttakkeun_server.dto.auth.apple.AppleSignUpRequestDto;
 import ttakkeun.ttakkeun_server.entity.Member;
 import ttakkeun.ttakkeun_server.entity.enums.LoginType;
 import ttakkeun.ttakkeun_server.repository.MemberRepository;
 import ttakkeun.ttakkeun_server.service.JwtService;
+import ttakkeun.ttakkeun_server.service.MemberService;
+import ttakkeun.ttakkeun_server.service.PetService;
+import ttakkeun.ttakkeun_server.utils.AppleClientSecretGenerator;
+import ttakkeun.ttakkeun_server.utils.AppleOAuthProvider;
 import ttakkeun.ttakkeun_server.utils.ApplePublicKeyGenerator;
 
 import java.security.PublicKey;
@@ -32,8 +39,14 @@ public class OAuthService {
     @Autowired
     private final AppleAuthClient appleAuthClient;
     private final ApplePublicKeyGenerator applePublicKeyGenerator;
+    private final AppleClientSecretGenerator appleClientSecretGenerator;
+    private final AppleOAuthProvider appleOAuthProvider;
     private final JwtService jwtService;
+    private final MemberService memberService;
     private final MemberRepository memberRepository;
+
+    @Value("${spring.social-login.provider.apple.client-id}")
+    private String clientId;
 
     //accessToken, refreshToken 발급
     @Transactional
@@ -56,8 +69,6 @@ public class OAuthService {
     // refreshToken으로 accessToken 발급하기
     @Transactional
     public LoginResponseDto regenerateAccessToken(String refreshToken) {
-//        if(jwtService.validateTokenBoolean(accessToken))  // access token 유효성 검사
-//            throw new ExceptionHandler(ACCESS_TOKEN_UNAUTHORIZED);
 
         if (!jwtService.validateTokenBoolean(refreshToken))  // refresh token 유효성 검사
             throw new ExceptionHandler(REFRESH_TOKEN_UNAUTHORIZED);
@@ -145,5 +156,30 @@ public class OAuthService {
 
         // 5. 토큰 생성 및 반환
         return createToken(member);
+    }
+
+    @Transactional
+    public void appleDelete(Member member, String code) {
+
+        try {
+            String clientSecret = appleClientSecretGenerator.createClientSecret();
+            String refreshToken = appleOAuthProvider.getAppleRefreshToken(code, clientSecret);
+
+            AppleRevokeRequest appleRevokeRequest = AppleRevokeRequest.builder()
+                    .client_id(clientId)
+                    .refresh_token(refreshToken)
+                    .client_secret(clientSecret)
+                    .token_type("REFRESH_TOKEN")
+                    .build();
+            appleAuthClient.revoke(appleRevokeRequest);
+        } catch (HttpClientErrorException e) {
+            throw new RuntimeException("Apple Revoke Error");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        log.info("애플 탈퇴 성공");
+        log.info("member id :: " + member.getMemberId());
+
+        memberService.deleteMember(member);
     }
 }
