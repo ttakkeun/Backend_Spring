@@ -43,6 +43,9 @@ public class RecordResponseDTO {
     @AllArgsConstructor
     public static class RegisterResultDTO {
         private Long recordId;
+        private String category;
+        private List<QuestionAnswerDTO> answers;
+        private String etc;
     }
 
     @Builder

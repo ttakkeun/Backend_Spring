@@ -3,6 +3,7 @@ package ttakkeun.ttakkeun_server.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,6 +18,7 @@ import ttakkeun.ttakkeun_server.entity.enums.Category;
 import ttakkeun.ttakkeun_server.service.RecordService;
 
 import java.util.List;
+import java.util.Map;
 
 import static ttakkeun.ttakkeun_server.apiPayLoad.code.status.SuccessStatus.IMAGE_SUCCESS;
 
@@ -54,29 +56,38 @@ public class RecordController {
         return ApiResponse.onSuccess(result);
     }
 
-    @Operation(summary = "일지 답변 저장 API (일지 생성)")
-    @PostMapping("/register/{pet_id}")
-    public ApiResponse<RecordResponseDTO.RegisterResultDTO> registerRecord(
+//    @Operation(summary = "일지 답변 저장 API (일지 생성)")
+//    @PostMapping("/register/{pet_id}")
+//    public ApiResponse<RecordResponseDTO.RegisterResultDTO> registerRecord(
+//            @PathVariable("pet_id") Long petId,
+//            @RequestBody RecordRequestDTO.RecordRegisterDTO requestDTO
+//    ) {
+//        RecordResponseDTO.RegisterResultDTO responseDTO = recordService.registerRecord(petId, requestDTO);
+//        return ApiResponse.onSuccess(responseDTO);
+//    }
+
+//    @Operation(summary = "일지 사진 저장 API")
+//    @PostMapping(value = "/register/image/{recordId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+//            produces = MediaType.APPLICATION_JSON_VALUE)
+//    public ApiResponse<List<RecordRequestDTO.RecordImageDTO>> uploadImages(
+//            @PathVariable(name = "recordId") Long recordId,
+//            @RequestParam("question_id") Long questionId,
+//            @RequestParam("images") List<MultipartFile> images
+//            //@RequestPart RecordRequestDTO.RecordImageDTO recordImageDTO
+//    )
+//    {
+//        List<RecordRequestDTO.RecordImageDTO> result = recordService.uploadImages(recordId,questionId,images);
+//        return ApiResponse.of(IMAGE_SUCCESS,result);
+//    }
+
+    @Operation(summary = "일지 생성")
+    @PostMapping(value = "/create/{pet_id}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ApiResponse<RecordResponseDTO.RegisterResultDTO> createRecord(
             @PathVariable("pet_id") Long petId,
-            @RequestBody RecordRequestDTO.RecordRegisterDTO requestDTO
-    ) {
-        RecordResponseDTO.RegisterResultDTO responseDTO = recordService.registerRecord(petId, requestDTO);
+            @ModelAttribute RecordRequestDTO.RecordRegisterDTO requestDTOs) {
+
+        RecordResponseDTO.RegisterResultDTO responseDTO = recordService.createRecord(petId, requestDTOs);
         return ApiResponse.onSuccess(responseDTO);
-    }
-
-
-    @Operation(summary = "일지 사진 저장 API")
-    @PostMapping(value = "/register/image/{recordId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public ApiResponse<List<RecordRequestDTO.RecordImageDTO>> uploadImages(
-            @PathVariable(name = "recordId") Long recordId,
-            @RequestParam("question_id") Long questionId,
-            @RequestParam("images") List<MultipartFile> images
-            //@RequestPart RecordRequestDTO.RecordImageDTO recordImageDTO
-    )
-    {
-        List<RecordRequestDTO.RecordImageDTO> result = recordService.uploadImages(recordId,questionId,images);
-        return ApiResponse.of(IMAGE_SUCCESS,result);
     }
 
     @Operation(summary = "일지 상세 내용 조회 API")
