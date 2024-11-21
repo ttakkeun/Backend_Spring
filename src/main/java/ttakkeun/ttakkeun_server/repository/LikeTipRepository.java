@@ -22,5 +22,7 @@ public interface LikeTipRepository extends JpaRepository<LikeTip, Long> {
 
     void deleteAllByTip(Tip tip);
 
+    void deleteByMember(Member member);
+
     //boolean existsIsLike(Tip tip, Member member);
 }

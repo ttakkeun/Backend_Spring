@@ -61,4 +61,8 @@ public class LikeService {
 
         return LikeProductConverter.toDTO(totalLike, isLike);
     }
+
+    public void deleteAllByMember(Member member) {
+        likeRepository.deleteByMember(member);
+    }
 }

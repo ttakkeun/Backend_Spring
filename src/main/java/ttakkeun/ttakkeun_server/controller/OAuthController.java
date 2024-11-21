@@ -14,6 +14,7 @@ import ttakkeun.ttakkeun_server.dto.auth.LoginResponseDto;
 import ttakkeun.ttakkeun_server.dto.auth.apple.AppleLoginRequestDto;
 import ttakkeun.ttakkeun_server.dto.auth.apple.AppleSignUpRequestDto;
 import ttakkeun.ttakkeun_server.entity.Member;
+import ttakkeun.ttakkeun_server.service.MemberService;
 import ttakkeun.ttakkeun_server.service.auth.OAuthService;
 
 import static ttakkeun.ttakkeun_server.apiPayLoad.code.status.ErrorStatus.APPLE_ID_TOKEN_EMPTY;
@@ -26,6 +27,7 @@ import static ttakkeun.ttakkeun_server.apiPayLoad.code.status.ErrorStatus.TOKEN_
 public class OAuthController {
 
     private final OAuthService oAuthService;
+    private final MemberService memberService;
 
     @Operation(summary = "토큰 재발급 API")
     @PostMapping("/refresh")
