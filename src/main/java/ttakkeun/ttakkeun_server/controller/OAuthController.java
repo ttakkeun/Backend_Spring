@@ -79,18 +79,4 @@ public class OAuthController {
         } else
             throw new ExceptionHandler(TOKEN_EMPTY);
     }
-
-    @Operation(summary = "좋아요 누른 상품 삭제")
-    @DeleteMapping("/deleteLike")
-    public ApiResponse<String> deleteLike(@AuthenticationPrincipal Member member){
-        memberService.deleteLikeProduct(member);
-        return ApiResponse.onSuccess("좋아요 누른 상품 삭제 성공");
-    }
-
-    @Operation(summary = "작성자 알수없음으로 변경")
-    @DeleteMapping("/removeAuthor")
-    public ApiResponse<String> removeAuthor(@AuthenticationPrincipal Member member){
-        memberService.removeTipAuthor(member);
-        return ApiResponse.onSuccess("작성자 알수없음 변경 성공");
-    }
 }
