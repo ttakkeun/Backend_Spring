@@ -7,11 +7,13 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ttakkeun.ttakkeun_server.apiPayLoad.ApiResponse;
+import ttakkeun.ttakkeun_server.dto.tip.ScrapTipResponseDTO;
 import ttakkeun.ttakkeun_server.dto.tip.TipCreateRequestDTO;
 import ttakkeun.ttakkeun_server.dto.tip.TipResponseDTO;
 import ttakkeun.ttakkeun_server.entity.Member;
 import ttakkeun.ttakkeun_server.entity.TipImage;
 import ttakkeun.ttakkeun_server.entity.enums.Category;
+import ttakkeun.ttakkeun_server.service.ScrapTipService;
 import ttakkeun.ttakkeun_server.service.TipService;
 
 
@@ -24,6 +26,7 @@ import java.util.stream.Collectors;
 public class TipController {
 
     private final TipService tipService;
+    private final ScrapTipService scrapTipService;
 
     @Operation(summary = "팁 생성 API")
     @PostMapping("/add")
@@ -96,5 +99,17 @@ public class TipController {
     ) {
         tipService.deleteTip(tipId);
         return ApiResponse.onSuccess();
+    }
+
+    @Operation(summary = "팁 스크랩/취소 토글 기능")
+    @PatchMapping("/scrap/{tip_id}")
+    public ApiResponse<ScrapTipResponseDTO> scrapTips(
+            @AuthenticationPrincipal Member member,
+            @PathVariable("tip_id") Long tipId
+    ) {
+        scrapTipService.toggleScrapTip(tipId, member);
+        ScrapTipResponseDTO result = scrapTipService.getScrapStatus(tipId, member);
+
+        return ApiResponse.onSuccess(result);
     }
 }
