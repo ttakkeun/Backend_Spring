@@ -14,6 +14,7 @@ import ttakkeun.ttakkeun_server.dto.auth.LoginResponseDto;
 import ttakkeun.ttakkeun_server.dto.auth.apple.AppleLoginRequestDto;
 import ttakkeun.ttakkeun_server.dto.auth.apple.AppleSignUpRequestDto;
 import ttakkeun.ttakkeun_server.entity.Member;
+import ttakkeun.ttakkeun_server.service.MemberService;
 import ttakkeun.ttakkeun_server.service.auth.OAuthService;
 
 import static ttakkeun.ttakkeun_server.apiPayLoad.code.status.ErrorStatus.APPLE_ID_TOKEN_EMPTY;
@@ -26,6 +27,7 @@ import static ttakkeun.ttakkeun_server.apiPayLoad.code.status.ErrorStatus.TOKEN_
 public class OAuthController {
 
     private final OAuthService oAuthService;
+    private final MemberService memberService;
 
     @Operation(summary = "토큰 재발급 API")
     @PostMapping("/refresh")
@@ -76,5 +78,19 @@ public class OAuthController {
             return ApiResponse.onSuccess("LOGOUT SUCCESS");
         } else
             throw new ExceptionHandler(TOKEN_EMPTY);
+    }
+
+    @Operation(summary = "좋아요 누른 상품 삭제")
+    @DeleteMapping("/deleteLike")
+    public ApiResponse<String> deleteLike(@AuthenticationPrincipal Member member){
+        memberService.deleteLikeProduct(member);
+        return ApiResponse.onSuccess("좋아요 누른 상품 삭제 성공");
+    }
+
+    @Operation(summary = "작성자 알수없음으로 변경")
+    @DeleteMapping("/removeAuthor")
+    public ApiResponse<String> removeAuthor(@AuthenticationPrincipal Member member){
+        memberService.removeTipAuthor(member);
+        return ApiResponse.onSuccess("작성자 알수없음 변경 성공");
     }
 }

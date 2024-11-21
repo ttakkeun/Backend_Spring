@@ -85,7 +85,6 @@ public class TipService {
         tipRepository.saveAll(latestTips);
     }
 
-
     // 팁 생성시 이미지 업로드
     @Transactional
     public List<TipImage> uploadTipImages(Long tipId, Long memberId, List<MultipartFile> images) {
@@ -114,7 +113,6 @@ public class TipService {
         return tipImages;
     }
 
-
     // 카테고리별 팁 조회
     @Transactional(readOnly = true)
     public List<TipResponseDTO> getTipsByCategory(Category category, int page, int size, Member member) {
@@ -130,13 +128,12 @@ public class TipService {
                         tip.getRecommendCount(),
                         tip.getCreatedAt(),
                         tip.getImages().stream().map(TipImage::getTipImageUrl).collect(Collectors.toList()),
-                        tip.getMember().getUsername(),
+                        tip.getMember() != null ? tip.getMember().getUsername() : "알수없음",
                         likeTipRepository.existsByTipAndMember(tip, member),
                         tip.isPopular()
                 ))
                 .collect(Collectors.toList());
     }
-
 
     // 전체 카테고리 조회
     @Transactional(readOnly = true)
@@ -159,7 +156,6 @@ public class TipService {
                 ))
                 .collect(Collectors.toList());
     }
-
 
     // Best 카테고리 조회
     @Transactional(readOnly = true)
