@@ -53,4 +53,8 @@ public class LikeTipService {
                 .orElseThrow(() -> new IllegalArgumentException("Member not found with id: " + memberId));
         return likeTipRepository.existsByTipAndMember(tip, member);
     }
+
+    public void deleteAllByMember(Member member) {
+        likeTipRepository.deleteByMember(member);
+    }
 }
