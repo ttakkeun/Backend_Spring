@@ -23,5 +23,8 @@ public interface TipRepository extends JpaRepository<Tip, Long> {
     List<Tip> findTop10ByOrderByCreatedAt();
 
     List<Tip> findByMember(Member member);
+
+    //페이징을 이용해 10개 단위로 작성한 팁 가져오기
+    Page<Tip> findByMember(Member member, Pageable pageable);
 }
 
