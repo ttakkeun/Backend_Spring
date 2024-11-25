@@ -13,12 +13,14 @@ import ttakkeun.ttakkeun_server.dto.tip.TipCreateRequestDTO;
 import ttakkeun.ttakkeun_server.dto.tip.TipResponseDTO;
 
 import ttakkeun.ttakkeun_server.entity.Member;
+import ttakkeun.ttakkeun_server.entity.ScrapTip;
 import ttakkeun.ttakkeun_server.entity.Tip;
 
 import ttakkeun.ttakkeun_server.entity.TipImage;
 import ttakkeun.ttakkeun_server.entity.enums.Category;
 import ttakkeun.ttakkeun_server.repository.LikeTipRepository;
 import ttakkeun.ttakkeun_server.repository.MemberRepository;
+import ttakkeun.ttakkeun_server.repository.ScrapTipRepository;
 import ttakkeun.ttakkeun_server.repository.TipRepository;
 
 import java.util.List;
@@ -36,6 +38,8 @@ public class TipService {
     private final S3ImageService s3ImageService;
     private final MemberRepository memberRepository;
     private final LikeTipRepository likeTipRepository;
+    private final ScrapTipService scrapTipService;
+    private final ScrapTipRepository scrapTipRepository;
 
     // 팁 생성
     @Transactional
@@ -189,6 +193,50 @@ public class TipService {
 
         // 팁 삭제
         tipRepository.delete(tip);
+    }
+
+    //내가 작성한 팁 가져오기 (페이지 당 10개)
+    @Transactional
+    public List<TipResponseDTO> getMyTips(Member member, int page) {
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "createdAt"));
+        List<Tip> myTips = tipRepository.findByMember(member, pageable).getContent();
+
+        return myTips.stream()
+                .map(tip -> new TipResponseDTO(
+                        tip.getTipId(),
+                        tip.getCategory(),
+                        tip.getTitle(),
+                        tip.getContent(),
+                        tip.getRecommendCount(),
+                        tip.getCreatedAt(),
+                        tip.getImages().stream().map(TipImage::getTipImageUrl).collect(Collectors.toList()),
+                        tip.getMember().getUsername(),
+                        likeTipRepository.existsByTipAndMember(tip, member),
+                        tip.isPopular()
+                ))
+                .collect(Collectors.toList());
+    }
+
+    //스크랩 한 팁 가져오기 (페이지 당 10개)
+    public List<TipResponseDTO> getScrapTips(Member member, int page) {
+        Pageable pageable = PageRequest.of(page, 10);
+        List<ScrapTip> ScrapTips = scrapTipRepository.findByMember(member, pageable).getContent();
+        List<Tip> Tips = ScrapTips.stream().map(ScrapTip::getTip).toList();
+
+        return Tips.stream()
+                .map(tip -> new TipResponseDTO(
+                        tip.getTipId(),
+                        tip.getCategory(),
+                        tip.getTitle(),
+                        tip.getContent(),
+                        tip.getRecommendCount(),
+                        tip.getCreatedAt(),
+                        tip.getImages().stream().map(TipImage::getTipImageUrl).collect(Collectors.toList()),
+                        tip.getMember().getUsername(),
+                        likeTipRepository.existsByTipAndMember(tip, member),
+                        tip.isPopular()
+                ))
+                .collect(Collectors.toList());
     }
 }
 

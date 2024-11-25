@@ -61,7 +61,7 @@ public class TipController {
         return ApiResponse.onSuccess(imageUrls);
     }
 
-    @Operation(summary = "팁 조회 API")
+    @Operation(summary = "부위 별 팁 조회 API")
     @GetMapping
     public ApiResponse<List<TipResponseDTO>> getTips(
             @AuthenticationPrincipal Member member,
@@ -103,12 +103,34 @@ public class TipController {
 
     @Operation(summary = "팁 스크랩/취소 토글 기능")
     @PatchMapping("/scrap/{tip_id}")
-    public ApiResponse<ScrapTipResponseDTO> scrapTips(
+    public ApiResponse<ScrapTipResponseDTO> toggleScrapTips(
             @AuthenticationPrincipal Member member,
             @PathVariable("tip_id") Long tipId
     ) {
         scrapTipService.toggleScrapTip(tipId, member);
         ScrapTipResponseDTO result = scrapTipService.getScrapStatus(tipId, member);
+
+        return ApiResponse.onSuccess(result);
+    }
+
+    @Operation(summary = "내가 작성한 팁 조회 API")
+    @GetMapping("/myTips")
+    public ApiResponse<List<TipResponseDTO>> getMyTips(
+            @AuthenticationPrincipal Member member,
+            @RequestParam(name = "page", defaultValue = "0") int page
+    ) {
+        List<TipResponseDTO> result = tipService.getMyTips(member, page);
+
+        return ApiResponse.onSuccess(result);
+    }
+
+    @Operation(summary = "내가 스크랩한 팁 조회 API")
+    @GetMapping("/myScraps")
+    public ApiResponse<List<TipResponseDTO>> getScrapTips(
+            @AuthenticationPrincipal Member member,
+            @RequestParam(name = "page", defaultValue = "0") int page
+    ) {
+        List<TipResponseDTO> result = tipService.getScrapTips(member, page);
 
         return ApiResponse.onSuccess(result);
     }
