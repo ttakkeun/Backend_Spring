@@ -36,7 +36,6 @@ import static ttakkeun.ttakkeun_server.apiPayLoad.code.status.ErrorStatus.*;
 @RequiredArgsConstructor
 public class OAuthService {
 
-    @Autowired
     private final AppleAuthClient appleAuthClient;
     private final ApplePublicKeyGenerator applePublicKeyGenerator;
     private final AppleClientSecretGenerator appleClientSecretGenerator;
