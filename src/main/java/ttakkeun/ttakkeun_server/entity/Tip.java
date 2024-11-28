@@ -41,7 +41,7 @@ public class Tip extends BaseEntity {
     private Member member;
 
     @Builder.Default
-    @OneToMany(mappedBy = "tip", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "tip", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TipImage> images = new ArrayList<>();
 
     @Builder.Default

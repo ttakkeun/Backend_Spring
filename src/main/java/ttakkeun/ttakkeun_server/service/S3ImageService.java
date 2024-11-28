@@ -27,6 +27,12 @@ import static ttakkeun.ttakkeun_server.apiPayLoad.code.status.ErrorStatus.*;
 public class S3ImageService {
 
     private final AmazonS3 amazonS3;
+    private final String bucketName;
+
+//    public S3ImageService(AmazonS3 amazonS3, @Value("${cloud.aws.s3.bucket}") String bucketName) {
+//        this.amazonS3 = amazonS3;
+//        this.bucketName = bucketName;
+//    }
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
@@ -96,5 +102,11 @@ public class S3ImageService {
         is.close();
 
         return amazonS3.getUrl(bucket, "images/" + s3FileName).toString();
+    }
+
+
+    public void delete(String imageUrl) {
+        String key = imageUrl.substring(imageUrl.lastIndexOf("/") + 1); // URL에서 파일명 추출
+        amazonS3.deleteObject(bucketName, key); // S3에서 객체 삭제
     }
 }

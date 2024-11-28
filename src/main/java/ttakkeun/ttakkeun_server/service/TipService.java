@@ -184,6 +184,9 @@ public class TipService {
         Tip tip = tipRepository.findById(tipId)
                 .orElseThrow(() -> new ExceptionHandler(TIP_ID_NOT_AVAILABLE));
 
+        // S3 이미지 삭제
+        tip.getImages().forEach(image -> s3ImageService.delete(image.getTipImageUrl()));
+
         // LikeTip 관련 데이터 삭제
         likeTipRepository.deleteAllByTip(tip);
 
