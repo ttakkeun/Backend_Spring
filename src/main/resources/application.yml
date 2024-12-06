@@ -29,7 +29,6 @@ spring:
         audience: https://appleid.apple.com
         private-key: ${APPLE_SECRET}
       kakao:
-        client-id: ${KAKAO_CLIENT_ID}
         redirect-uri: http://ttakkeun.com:8080/oauth/kakao/callback
   servlet:
     multipart:
