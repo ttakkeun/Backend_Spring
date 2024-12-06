@@ -1,26 +1,19 @@
 package ttakkeun.ttakkeun_server.jwt;
 
 import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.xml.bind.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.web.filter.GenericFilterBean;
-import ttakkeun.ttakkeun_server.service.JwtService;
+import ttakkeun.ttakkeun_server.service.auth.JwtService;
 
 import java.io.IOException;
-import java.rmi.server.ExportException;
 
 // Jwt 토큰으로 인증하는 필터입니다.
 
