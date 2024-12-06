@@ -4,28 +4,29 @@ import io.jsonwebtoken.Claims;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import ttakkeun.ttakkeun_server.apiPayLoad.exception.ExceptionHandler;
+import ttakkeun.ttakkeun_server.apiPayLoad.exception.MemberHandler;
+import ttakkeun.ttakkeun_server.converter.MemberConverter;
 import ttakkeun.ttakkeun_server.dto.auth.LoginResponseDto;
 import ttakkeun.ttakkeun_server.dto.auth.apple.AppleAuthClient;
 import ttakkeun.ttakkeun_server.dto.auth.apple.AppleLoginRequestDto;
 import ttakkeun.ttakkeun_server.dto.auth.apple.AppleRevokeRequest;
 import ttakkeun.ttakkeun_server.dto.auth.apple.AppleSignUpRequestDto;
+import ttakkeun.ttakkeun_server.dto.auth.kakao.KakaoLoginRequestDTO;
+import ttakkeun.ttakkeun_server.dto.auth.kakao.KakaoSignUpRequestDTO;
+import ttakkeun.ttakkeun_server.dto.auth.kakao.KakaoUserDTO;
 import ttakkeun.ttakkeun_server.entity.Member;
 import ttakkeun.ttakkeun_server.entity.enums.LoginType;
 import ttakkeun.ttakkeun_server.repository.MemberRepository;
-import ttakkeun.ttakkeun_server.service.JwtService;
 import ttakkeun.ttakkeun_server.service.MemberService;
-import ttakkeun.ttakkeun_server.service.PetService;
 import ttakkeun.ttakkeun_server.utils.AppleClientSecretGenerator;
 import ttakkeun.ttakkeun_server.utils.AppleOAuthProvider;
 import ttakkeun.ttakkeun_server.utils.ApplePublicKeyGenerator;
 
 import java.security.PublicKey;
-import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
 
@@ -43,6 +44,7 @@ public class OAuthService {
     private final JwtService jwtService;
     private final MemberService memberService;
     private final MemberRepository memberRepository;
+    private final KakaoService kakaoService;
 
     @Value("${spring.social-login.provider.apple.client-id}")
     private String clientId;
@@ -53,14 +55,9 @@ public class OAuthService {
         String newAccessToken = jwtService.generateAccessToken(member.getMemberId());
         String newRefreshToken = jwtService.generateRefreshToken(member.getMemberId());
 
-        System.out.println("newAccessToken : " + newAccessToken);
-        System.out.println("newRefreshToken : " + newRefreshToken);
-
         // DB에 refreshToken 저장
         member.updateRefreshToken(newRefreshToken);
         memberRepository.save(member);
-
-        System.out.println("member nickname : " + member.getUsername());
 
         return new LoginResponseDto(newAccessToken, newRefreshToken);
     }
@@ -73,7 +70,6 @@ public class OAuthService {
             throw new ExceptionHandler(REFRESH_TOKEN_UNAUTHORIZED);
 
         Long memberId = jwtService.getMemberIdFromJwtToken(refreshToken);
-        log.info("memberId : " + memberId);
 
         Optional<Member> getMember = memberRepository.findById(memberId);
         if (getMember.isEmpty())
@@ -89,15 +85,12 @@ public class OAuthService {
         member.updateRefreshToken(newRefreshToken);
         memberRepository.save(member);
 
-        System.out.println("member nickname : " + member.getUsername());
-
         return new LoginResponseDto(newAccessToken, newRefreshToken);
     }
 
     //애플 로그인
     @Transactional
     public LoginResponseDto appleLogin(AppleLoginRequestDto appleLoginRequestDto) {
-        log.info("Current time is {}", LocalDateTime.now());
         // 1. 애플 공개 키 가져오기
         Map<String, String> headers = jwtService.parseHeader(appleLoginRequestDto.getIdentityToken());
         PublicKey publicKey = applePublicKeyGenerator.generatePublicKey(headers, appleAuthClient.getAppleAuthPublicKey());
@@ -140,16 +133,9 @@ public class OAuthService {
         Member member = memberRepository.findByAppleSub(sub).orElse(null);
 
         if (member == null) {
-            // 등록된 유저가 아닌 경우 회원가입 로직
+            // 등록된 유저가 아닌 경우 회원가입
             member = memberRepository.save(
-                    Member.builder()
-                            .email(email)
-                            .username(appleSignUpRequestDto.getUserName()) // appleLoginRequestDto에서 닉네임 가져오기
-                            .appleSub(sub)
-                            .loginType(LoginType.APPLE)
-                            .refreshToken("") // 초기 빈 값 설정
-                            .refreshTokenExpiresAt(LocalDateTime.now()) // 초기 시간 설정
-                            .build()
+                    MemberConverter.toAppleMember(sub, appleSignUpRequestDto)
             );
         }
 
@@ -158,20 +144,7 @@ public class OAuthService {
     }
 
     @Transactional
-    public void logout(String refreshToken) {
-        if (!jwtService.validateTokenBoolean(refreshToken))  // refresh token 유효성 검사
-            throw new ExceptionHandler(REFRESH_TOKEN_UNAUTHORIZED);
-
-        Member member = memberRepository.findByRefreshToken(refreshToken)
-                .orElseThrow(() -> new ExceptionHandler(MEMBER_NOT_FOUND)); // 예외처리
-
-        member.refreshTokenExpires();
-        memberRepository.save(member);
-    }
-
-    @Transactional
     public void appleDelete(Member member, String code) {
-
         try {
             String clientSecret = appleClientSecretGenerator.createClientSecret();
             String refreshToken = appleOAuthProvider.getAppleRefreshToken(code, clientSecret);
@@ -192,5 +165,68 @@ public class OAuthService {
         log.info("member id :: " + member.getMemberId());
 
         memberService.deleteMember(member);
+    }
+
+    @Transactional
+    public LoginResponseDto kakaoLogin(KakaoLoginRequestDTO kakaoReqDto) {
+        // 카카오 액세스 토큰 검증
+        KakaoUserDTO kakaoUser = kakaoService.validateKakaoToken(kakaoReqDto.getAccessToken());
+
+        Optional<Member> memberByEmail = memberRepository.findByEmail(kakaoReqDto.getEmail());
+
+        if (memberByEmail.isPresent()) {
+            Member member = memberByEmail.get();
+            // 이미 다른 소셜로 가입된 이메일인 경우
+            if (!member.getLoginType().equals(LoginType.KAKAO)) {
+                throw new MemberHandler(MEMBER_ALREADY_EXIST);
+            }
+            // 카카오로 가입된 이메일인 경우
+            if (!member.getKakaoUserId().equals(kakaoUser.getId())) {
+                    throw new MemberHandler(MEMBER_NOT_FOUND);
+                }
+                // 로그인
+                return createToken(member);
+            }
+        //등록된 이메일이 아닌 경우
+        throw new MemberHandler(MEMBER_NOT_REGISTERED);
+    }
+
+    @Transactional
+    public LoginResponseDto kakaoSignUp(KakaoSignUpRequestDTO kakaoSignUpReqDto) {
+
+        // 카카오 액세스 토큰 검증
+        KakaoUserDTO kakaoUser = kakaoService.validateKakaoToken(kakaoSignUpReqDto.getAccessToken());
+
+        Optional<Member> memberByEmail = memberRepository.findByEmail(kakaoSignUpReqDto.getEmail());
+
+        if (memberByEmail.isPresent()) {
+            Member member = memberByEmail.get();
+            // 이미 다른 소셜로 가입된 이메일인 경우
+            if (!member.getLoginType().equals(LoginType.KAKAO)) {
+                throw new MemberHandler(MEMBER_ALREADY_EXIST);
+            }
+            // 카카오로 가입된 이메일인 경우
+            throw new MemberHandler(MEMBER_ALREADY_EXIST);
+        }
+
+        //회원가입
+        Member signUpMember = memberRepository.save(MemberConverter.toKakaoMember(kakaoUser, kakaoSignUpReqDto));
+        return createToken(signUpMember);
+    }
+
+    public void kakaoDelete(Member member, String code) {
+        memberService.deleteMember(member);
+    }
+
+    @Transactional
+    public void logout(String refreshToken) {
+        if (!jwtService.validateTokenBoolean(refreshToken))  // refresh token 유효성 검사
+            throw new ExceptionHandler(REFRESH_TOKEN_UNAUTHORIZED);
+
+        Member member = memberRepository.findByRefreshToken(refreshToken)
+                .orElseThrow(() -> new ExceptionHandler(MEMBER_NOT_FOUND)); // 예외처리
+
+        member.refreshTokenExpires();
+        memberRepository.save(member);
     }
 }

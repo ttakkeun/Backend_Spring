@@ -12,7 +12,7 @@ public class AppleSignUpRequestDto {
     @NotEmpty
     private String identityToken;
     @NotEmpty
-    private String userName;
-    @NotEmpty
     private String email;
+    @NotEmpty
+    private String name;
 }

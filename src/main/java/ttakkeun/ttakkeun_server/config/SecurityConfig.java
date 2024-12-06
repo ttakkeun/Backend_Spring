@@ -18,8 +18,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import ttakkeun.ttakkeun_server.jwt.JwtAuthenticationFilter;
-import ttakkeun.ttakkeun_server.service.JwtService;
-import ttakkeun.ttakkeun_server.service.auth.UserDetailServiceImpl;
+import ttakkeun.ttakkeun_server.service.auth.JwtService;
 
 @Configuration
 @RequiredArgsConstructor
@@ -37,7 +36,7 @@ public class SecurityConfig {
         return web -> web.ignoring()
                 .requestMatchers("/swagger-ui/**", "/swagger/**", "/swagger-resources/**", "/swagger-ui.html", "/test",
                         "/configuration/ui",  "/v3/api-docs/**", "/api/auth/refresh", "/api/auth/apple/**", "/api/record/register/**", "/api/record/detail/**",
-                        "/api/diagnose/result/**", "/test/diagnose/**", "/api/ChatGPT/**", "/api/record/create/**");
+                        "/api/diagnose/result/**", "/test/diagnose/**", "/api/ChatGPT/**", "/api/record/create/**", "/api/auth/kakao/**");
     }
 
     @Bean
