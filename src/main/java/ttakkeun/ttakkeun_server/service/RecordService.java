@@ -40,6 +40,7 @@ public class RecordService {
     private final UserAnswerRepository userAnswerRepository;
     private final ImageRepository imageRepository;
     private final S3ImageService s3ImageService;
+    private final ResultRepository resultRepository;
 
     public List<RecordListResponseDto> getRecordsByCategory(Member member, Long petId, Category category, int page, int size) {
         if (member == null || member.getMemberId() == null) {
@@ -168,8 +169,18 @@ public class RecordService {
     }
 
     public RecordResponseDTO.DeleteResultDTO deleteRecord(Long recordId) {
-        Optional<Record> record = recordRepository.findById(recordId);
-        if (record.isPresent()) {
+        Optional<Record> recordOptional = recordRepository.findById(recordId);
+
+        if (recordOptional.isPresent()) {
+            Record record = recordOptional.get();
+
+            List<Result> results = resultRepository.findByRecord(record);
+
+            for (Result result : results) {
+                result.setRecord(null);
+                resultRepository.save(result);
+            }
+
             recordRepository.deleteById(recordId);
             return RecordResponseDTO.DeleteResultDTO.builder()
                     .message("일지 삭제에 성공하였습니다.")
