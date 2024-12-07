@@ -34,6 +34,9 @@ public class Member extends BaseEntity implements UserDetails {
     @Column(name = "apple_sub")
     private String appleSub;
 
+    @Column(name="kakao_user_id")
+    private Long kakaoUserId;
+
     @Column(nullable = false)
     private String refreshToken;
 
