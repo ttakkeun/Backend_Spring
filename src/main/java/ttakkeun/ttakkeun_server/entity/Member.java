@@ -13,7 +13,6 @@ import java.util.List;
 
 @Entity
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -35,9 +34,6 @@ public class Member extends BaseEntity implements UserDetails {
     @Column(name = "apple_sub")
     private String appleSub;
 
-    @Column(name="kakao_user_id")
-    private Long kakaoUserId;
-
     @Column(nullable = false)
     private String refreshToken;
 
@@ -52,6 +48,14 @@ public class Member extends BaseEntity implements UserDetails {
     public void refreshTokenExpires() {
         this.refreshToken = "";
         this.refreshTokenExpiresAt = LocalDateTime.now();
+    }
+
+    // 닉네임 변경 메서드
+    public void changeUsername(String newUsername) {
+        if (newUsername == null || newUsername.trim().isEmpty()) {
+            throw new IllegalArgumentException("닉네임은 비어 있을 수 없습니다.");
+        }
+        this.username = newUsername;
     }
 
     @Override
