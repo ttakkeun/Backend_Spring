@@ -72,4 +72,16 @@ public class MemberService {
     public void deleteLikeProduct(Member member) {
         likeService.deleteAllByMember(member);
     }
+
+
+    public Member getMemberInfo(Long memberId) {
+        return memberRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+    }
+
+    public void updateUsername(Long memberId, String newUsername) {
+        Member member = memberRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+        member.changeUsername(newUsername); // 엔티티의 닉네임 변경 메서드 호출
+    }
 }

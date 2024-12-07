@@ -28,10 +28,10 @@ public class S3ImageService {
     private final AmazonS3 amazonS3;
     private final String bucketName;
 
-   public S3ImageService(AmazonS3 amazonS3, @Value("${cloud.aws.s3.bucket}") String bucketName) {
-       this.amazonS3 = amazonS3;
-       this.bucketName = bucketName;
-   }
+    public S3ImageService(AmazonS3 amazonS3, @Value("${cloud.aws.s3.bucket}") String bucketName) {
+        this.amazonS3 = amazonS3;
+        this.bucketName = bucketName;
+    }
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
