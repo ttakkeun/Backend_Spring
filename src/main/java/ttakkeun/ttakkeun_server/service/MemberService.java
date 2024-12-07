@@ -25,6 +25,7 @@ public class MemberService {
     private final LikeTipService likeTipService;
     private final LikeService likeService;
     private final TipRepository tipRepository;
+    private final ScrapTipService scrapTipService;
 
     public Optional<Member> findMemberById(Long id) {
         return memberRepository.findById(id);
@@ -39,7 +40,7 @@ public class MemberService {
         deleteLikeProduct(member);
         //팁 작성자 알 수 없음으로 변경
         removeTipAuthor(member);
-        //스크랩한 팁 삭제(미완성)
+        //스크랩한 팁 삭제
         deleteScrapTip(member);
 
         //멤버 삭제
@@ -47,7 +48,7 @@ public class MemberService {
     }
 
     public void deletePet(Member member) {
-        List<Pet> petList = petRepository.findByMemberId(member.getMemberId());
+        List<Pet> petList = petRepository.findByMember(member);
         for (Pet pet : petList) {
             petService.deletePet(pet.getPetId());
         }
@@ -58,7 +59,7 @@ public class MemberService {
     }
 
     public void deleteScrapTip(Member member) {
-        //ScrapTipService.deleteAllByMember(member);
+        scrapTipService.deleteAllByMember(member);
     }
 
     public void removeTipAuthor(Member member) {
@@ -72,7 +73,6 @@ public class MemberService {
     public void deleteLikeProduct(Member member) {
         likeService.deleteAllByMember(member);
     }
-
 
     public Member getMemberInfo(Long memberId) {
         return memberRepository.findByMemberId(memberId)

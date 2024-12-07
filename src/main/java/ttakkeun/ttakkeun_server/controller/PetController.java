@@ -40,8 +40,6 @@ public class PetController {
         return ApiResponse.onSuccess(result);
     }
 
-
-
     @Operation(summary = "특정 반려동물 프로필 조회 API")
     @GetMapping("/{pet_id}")
     public ApiResponse<PetResponseDTO.LoadResultDTO> load(
@@ -51,7 +49,6 @@ public class PetController {
         PetResponseDTO.LoadResultDTO resultDTO = petService.load(petId, member);
         return ApiResponse.onSuccess(resultDTO);
     }
-
 
     @Operation(summary = "로그인한 사용자의 모든 반려동물 조회 API")
     @GetMapping("/select")

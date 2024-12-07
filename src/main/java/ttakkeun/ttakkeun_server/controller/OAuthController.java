@@ -17,8 +17,12 @@ import ttakkeun.ttakkeun_server.dto.auth.apple.AppleSignUpRequestDto;
 import ttakkeun.ttakkeun_server.dto.auth.kakao.KakaoLoginRequestDTO;
 import ttakkeun.ttakkeun_server.dto.auth.kakao.KakaoSignUpRequestDTO;
 import ttakkeun.ttakkeun_server.entity.Member;
+import ttakkeun.ttakkeun_server.repository.MemberRepository;
 import ttakkeun.ttakkeun_server.service.MemberService;
+import ttakkeun.ttakkeun_server.service.ScrapTipService;
 import ttakkeun.ttakkeun_server.service.auth.OAuthService;
+
+import java.util.Optional;
 
 import static ttakkeun.ttakkeun_server.apiPayLoad.code.status.ErrorStatus.*;
 
@@ -29,6 +33,9 @@ import static ttakkeun.ttakkeun_server.apiPayLoad.code.status.ErrorStatus.*;
 public class OAuthController {
 
     private final OAuthService oAuthService;
+    private final ScrapTipService scrapTipService;
+    private final MemberRepository memberRepository;
+    private final MemberService memberService;
 
     @Operation(summary = "토큰 재발급 API")
     @PostMapping("/refresh")
