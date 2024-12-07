@@ -1,6 +1,5 @@
 package ttakkeun.ttakkeun_server.service;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -8,8 +7,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 import ttakkeun.ttakkeun_server.apiPayLoad.exception.ExceptionHandler;
+import ttakkeun.ttakkeun_server.converter.ImageConverter;
+import ttakkeun.ttakkeun_server.converter.RecordConverter;
 import ttakkeun.ttakkeun_server.dto.record.RecordListResponseDto;
 import ttakkeun.ttakkeun_server.dto.record.RecordRequestDTO;
 import ttakkeun.ttakkeun_server.dto.record.RecordResponseDTO;
@@ -22,7 +22,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -46,8 +45,6 @@ public class RecordService {
         if (member == null || member.getMemberId() == null) {
             throw new ExceptionHandler(MEMBER_NOT_FOUND);
         }
-        System.out.println("Member ID: " + member.getMemberId());
-
         //memberId로 petId를 확인
         Pet pet = petRepository.findByPetIdAndMember(petId, member).orElseThrow(() -> new ExceptionHandler(PET_NOT_FOUND));
 
@@ -90,109 +87,25 @@ public class RecordService {
                 .collect(Collectors.toList());
     }
 
-//    @Transactional
-//    public RecordResponseDTO.RegisterResultDTO registerRecord(Long petId, RecordRequestDTO.RecordRegisterDTO request) {
-//        Pet pet = petRepository.findById(petId)
-//                .orElseThrow(() -> new ExceptionHandler(PET_ID_NOT_AVAILABLE));
-//
-//        Record record = Record.builder()
-//                .pet(pet)
-//                .category(request.getCategory())
-//                .etc(request.getEtc())
-//                .build();
-//
-//        List<UserAnswer> answerList = new ArrayList<>();
-//        for (RecordRequestDTO.AnswerDTO answerDTO : request.getAnswers()) {
-//            ChecklistQuestion question = checklistQuestionRepository.findById(answerDTO.getQuestionId())
-//                    .orElseThrow(() -> new ExceptionHandler(QUESTION_NOT_FOUND));
-//
-//            // UserAnswer를 여러 개 생성하지 않고, 하나의 UserAnswer에 모든 답변을 리스트로 저장
-//            UserAnswer answer = UserAnswer.builder()
-//                    .question(question)
-//                    .record(record)
-//                    .userAnswerText(answerDTO.getAnswerText()) // 리스트를 직접 저장
-//                    .build();
-//
-//            answerList.add(answer);
-//        }
-//
-//        record.getAnswerList().addAll(answerList);
-//        recordRepository.save(record);
-//        userAnswerRepository.saveAll(answerList);
-//
-//        return new RecordResponseDTO.RegisterResultDTO(record.getRecordId());
-//    }
-
-
-//    @Transactional
-//    public List<RecordRequestDTO.RecordImageDTO> uploadImages(Long recordId, Long questionId, List<MultipartFile> files) {
-//
-//        Record record = recordRepository.findById(recordId).orElseThrow(()-> new ExceptionHandler(RECORD_NOT_FOUND));
-//
-//        System.out.println("uploadImages");
-//        // ChecklistAnswer 조회 (recordId와 questionId로 조회)
-//        log.info("여기기기기기");
-//        UserAnswer answer = userAnswerRepository.findByRecord_recordIdAndQuestion_questionId(record.getRecordId(), questionId)
-//                .orElseThrow(() -> new ExceptionHandler(ANSWER_NOT_FOUND));
-//
-//        log.info("Number of images in RecordImageDTO: {}", files.size());
-//
-//        // MultipartFile 리스트를 Image 엔티티로 변환하여 저장
-//        List<Image> imageEntities = files.stream()
-//                .map(file -> {
-//                    log.info("Uploading image {}", file);
-//                    String imageUrl = s3ImageService.upload(file); // 파일 저장 로직
-//                    return Image.builder().imageUrl(imageUrl).build();
-//                })
-//                .collect(Collectors.toList());
-//
-//        // ChecklistAnswer에 이미지 추가
-//        log.info("Upload image {}", imageEntities);
-//        answer.addImages(imageEntities);
-//
-//        // 변경 사항 저장
-//        userAnswerRepository.save(answer);
-//
-//        return imageEntities.stream()
-//                .map(image -> RecordRequestDTO.RecordImageDTO.builder()
-//                        .imageId(image.getImageId()) // imageId를 설정합니다.
-//                        .imageUrl(image.getImageUrl())
-//                        .build())
-//                .collect(Collectors.toList());
-//    }
-
     public RecordResponseDTO.RegisterResultDTO createRecord(Long petId, RecordRequestDTO.RecordRegisterDTO request) {
         Pet pet = petRepository.findById(petId)
                 .orElseThrow(() -> new ExceptionHandler(PET_ID_NOT_AVAILABLE));
 
-        Record record = Record.builder()
-                .pet(pet)
-                .category(request.getCategory())
-                .etc(request.getEtc())
-                .build();
-
+        Record record = RecordConverter.toRecord(pet, request);
         recordRepository.save(record);
 
-        // 2. UserAnswer와 Image 엔티티 생성
         List<RecordResponseDTO.QuestionAnswerDTO> questionAnswerDTOs = request.getAnswers().stream().map(answerDTO -> {
             ChecklistQuestion question = checklistQuestionRepository.findById(answerDTO.getQuestionId())
                     .orElseThrow(() -> new ExceptionHandler(QUESTION_NOT_FOUND));
 
             // UserAnswer 엔티티 빌드
-            UserAnswer userAnswer = UserAnswer.builder()
-                    .question(question)
-                    .record(record)
-                    .userAnswerText(answerDTO.getAnswerText())
-                    .build();
+            UserAnswer userAnswer = RecordConverter.toUserAnswer(question, record, answerDTO);
             userAnswerRepository.save(userAnswer); // UserAnswer 저장
 
             // Image 엔티티 빌드 및 저장
             List<Image> images = answerDTO.getImages().stream().map(imageFile -> {
                 String imageUrl = s3ImageService.upload(imageFile); // S3에 이미지 업로드 후 URL 획득
-                return Image.builder()
-                        .imageUrl(imageUrl)
-                        .answer(userAnswer) // UserAnswer와 관계 설정
-                        .build();
+                return ImageConverter.toImage(imageUrl, userAnswer);
             }).collect(Collectors.toList());
 
             imageRepository.saveAll(images); // Image 엔티티들 저장
@@ -202,20 +115,10 @@ public class RecordService {
                     .collect(Collectors.toList());
 
             // QuestionAnswerDTO 생성
-            return new RecordResponseDTO.QuestionAnswerDTO(
-                    question.getQuestionText(),
-                    userAnswer.getUserAnswerText(),
-                    imageUrls
-            );
+            return RecordConverter.toQuestionAnswerDTO(question, userAnswer, imageUrls);
         }).toList();
 
-        // 저장된 Record 반환
-        return RecordResponseDTO.RegisterResultDTO.builder()
-                .recordId(record.getRecordId())
-                .category(record.getCategory().name())
-                .answers(questionAnswerDTOs)
-                .etc(record.getEtc())
-                .build();
+        return RecordConverter.toRecordResultDTO(record, questionAnswerDTOs);
     }
 
     public RecordResponseDTO.DetailResultDTO getRecordDetails(Long petId, Long recordId) {

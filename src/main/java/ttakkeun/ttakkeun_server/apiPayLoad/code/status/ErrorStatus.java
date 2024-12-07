@@ -27,13 +27,16 @@ public enum ErrorStatus implements BaseErrorCode {
     INVALID_APPLE_ID_TOKEN(HttpStatus.UNAUTHORIZED,"TOKEN403", "Apple OAuth Identity Token 값이 올바르지 않습니다."),
     INVALID_APPLE_ID_TOKEN_INFO(HttpStatus.UNAUTHORIZED,"TOKEN404", "Apple id_token 값의 alg, kid 정보가 올바르지 않습니다."),
     APPLE_ID_TOKEN_EMPTY(HttpStatus.BAD_REQUEST,"TOKEN405", "ID TOKEN값이 존재하지 않습니다."),
+    KAKAO_TOKEN_EMPTY(HttpStatus.BAD_REQUEST,"TOKEN406", "ID TOKEN값이 존재하지 않습니다."),
 
     //Member 에러
     MEMBER_NOT_FOUND(HttpStatus.BAD_REQUEST, "MEMBER4001", "해당하는 사용자를 찾을 수 없습니다."),
     MEMBER_NOT_REGISTERED(HttpStatus.BAD_REQUEST, "MEMBER4002", "등록된 사용자가 아닙니다."),
     MEMBER_NOT_HAVE_PET(HttpStatus.BAD_REQUEST, "MEMBER4003", "반려동물이 없는 사용자입니다."),
     MEMBER_ALREADY_LOGOUT(HttpStatus.BAD_REQUEST, "MEMBER4004", "이미 토큰이 만료된 사용자입니다."),
-
+    EMAIL_EMPTY(HttpStatus.BAD_REQUEST, "MEMBER4005", "이메일 값이 존재하지 않습니다."),
+    MEMBER_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "MEMBER4005", "이미 가입한 회원입니다."),
+    MEMBER_CONFLICT(HttpStatus.BAD_REQUEST, "MEMBER4005", "이메일과 멤버ID가 일치하지 않습니다."),
 
     //Record 에러
     RECORD_NOT_FOUND(HttpStatus.BAD_REQUEST, "RECORD4000", "해당하는 일지를 찾을 수 없습니다."),
