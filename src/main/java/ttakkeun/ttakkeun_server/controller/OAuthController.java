@@ -34,7 +34,6 @@ public class OAuthController {
     @PostMapping("/refresh")
     public ApiResponse<LoginResponseDto> regenerateAccessToken(HttpServletRequest request) {
         String refreshToken = request.getHeader("RefreshToken");
-        System.out.println("Refresh Token: " + refreshToken.substring(7));
 
         if (StringUtils.hasText(refreshToken) && refreshToken.startsWith("Bearer ")) {
             LoginResponseDto result = oAuthService.regenerateAccessToken(refreshToken.substring(7));
@@ -70,7 +69,7 @@ public class OAuthController {
 
     @Operation(summary = "카카오 로그인 API")
     @PostMapping("/kakao/login")
-    public ApiResponse<LoginResponseDto> kakoLogin(@RequestBody @Validated KakaoLoginRequestDTO kakaoReqDto) {
+    public ApiResponse<LoginResponseDto> kakaoLogin(@RequestBody @Validated KakaoLoginRequestDTO kakaoReqDto) {
         if (kakaoReqDto.getAccessToken() == null)
             throw new OAuthHandler(KAKAO_TOKEN_EMPTY);
         return ApiResponse.onSuccess(oAuthService.kakaoLogin(kakaoReqDto));
