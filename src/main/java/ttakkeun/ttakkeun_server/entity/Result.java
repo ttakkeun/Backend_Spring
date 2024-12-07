@@ -29,6 +29,10 @@ public class Result extends BaseEntity {
     @JoinColumn(name = "record_id")
     private Record record;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "pet_id")
+    private Pet pet;
+
     @Enumerated(EnumType.STRING)
     private Category resultCategory;
 
@@ -37,4 +41,8 @@ public class Result extends BaseEntity {
     private String resultDetail;
 
     private String resultCare;
+
+    public void setRecord(Record record) {
+        this.record = record;
+    }
 }

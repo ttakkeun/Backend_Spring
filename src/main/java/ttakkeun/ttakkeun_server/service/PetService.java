@@ -13,15 +13,11 @@ import ttakkeun.ttakkeun_server.apiPayLoad.code.status.ErrorStatus;
 import ttakkeun.ttakkeun_server.converter.PetConverter;
 import ttakkeun.ttakkeun_server.dto.pet.PetRequestDTO;
 import ttakkeun.ttakkeun_server.dto.pet.PetResponseDTO;
-import ttakkeun.ttakkeun_server.entity.Member;
-import ttakkeun.ttakkeun_server.entity.Pet;
+import ttakkeun.ttakkeun_server.entity.*;
 import ttakkeun.ttakkeun_server.entity.Record;
 import ttakkeun.ttakkeun_server.entity.enums.Neutralization;
 import ttakkeun.ttakkeun_server.entity.enums.PetType;
-import ttakkeun.ttakkeun_server.repository.MemberRepository;
-import ttakkeun.ttakkeun_server.repository.PetRepository;
-import ttakkeun.ttakkeun_server.repository.RecordRepository;
-import ttakkeun.ttakkeun_server.repository.ResultRepository;
+import ttakkeun.ttakkeun_server.repository.*;
 
 import java.io.IOException;
 import java.util.List;
@@ -43,6 +39,7 @@ public class PetService {
     private final AmazonS3 amazonS3Client;
     private final ResultRepository resultRepository;
     private final RecordRepository recordRepository;
+    private final ResultProductRepository resultProductRepository;
 
     public List<Pet> getPetsByMemberId(Long memberId) {
         memberRepository.findById(memberId)
@@ -159,7 +156,27 @@ public class PetService {
 
         // 연관된 Record의 result 엔티티들 수동 삭제
         for (Record record : pet.getRecordList()) {
-            resultRepository.deleteByRecord(record);
+            // 각 record에 대한 result 목록을 가져와서 각각 삭제
+            List<Result> results = resultRepository.findByRecord(record);
+            for (Result result : results) {
+                // ResultProduct 삭제 (명시적으로 삭제)
+                for (ResultProduct resultProduct : result.getProductList()) {
+                    resultProductRepository.delete(resultProduct);
+                }
+                // Result 삭제
+                resultRepository.delete(result);
+            }
+        }
+
+        // record가 null이고 해당 pet_id를 가진 result 엔티티들 수동 삭제
+        List<Result> resultsWithNullRecord = resultRepository.findByRecordIsNullAndPet(pet);
+        for (Result result : resultsWithNullRecord) {
+            // ResultProduct 삭제 (명시적으로 삭제)
+            for (ResultProduct resultProduct : result.getProductList()) {
+                resultProductRepository.delete(resultProduct);
+            }
+            // Result 삭제
+            resultRepository.delete(result);
         }
 
         // 연관된 Record 삭제
