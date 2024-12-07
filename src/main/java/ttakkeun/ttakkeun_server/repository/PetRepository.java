@@ -21,4 +21,6 @@ public interface PetRepository extends JpaRepository<Pet, Long> {
 
     @Query("SELECT p FROM Pet p WHERE p.member.memberId = :memberId")
     List<Pet> findByMemberId(@Param("memberId") Long memberId);
+
+    List<Pet> findByMember(Member member);
 }

@@ -74,15 +74,6 @@ public class OAuthController {
         return ApiResponse.onSuccess("apple delete success");
     }
 
-    @Operation(summary = "멤버 삭제 API")
-    @DeleteMapping("/delete/{member_id}")
-    public ApiResponse<String> deleteScrap(@PathVariable("member_id") Long memberId){
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new ExceptionHandler(MEMBER_NOT_FOUND)); // 값이 없으면 예외 발생
-        memberService.deleteMember(member);
-        return ApiResponse.onSuccess("member delete success");
-    }
-
     @Operation(summary = "카카오 로그인 API")
     @PostMapping("/kakao/login")
     public ApiResponse<LoginResponseDto> kakaoLogin(@RequestBody @Validated KakaoLoginRequestDTO kakaoReqDto) {
