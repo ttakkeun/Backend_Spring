@@ -25,25 +25,52 @@ public class MemberService {
     private final LikeTipService likeTipService;
     private final LikeService likeService;
     private final TipRepository tipRepository;
+    private final ScrapTipService scrapTipService;
 
     public Optional<Member> findMemberById(Long id) {
         return memberRepository.findById(id);
     }
 
-    public void deleteMember(Member member) {
-        //펫 삭제
-        deletePet(member);
-        //좋아요 누른 팁 삭제
-        deleteLikeTip(member);
-        //좋아요 누른 상품 삭제
-        deleteLikeProduct(member);
-        //팁 작성자 알 수 없음으로 변경
-        removeTipAuthor(member);
-        //스크랩한 팁 삭제(미완성)
-        deleteScrapTip(member);
+//    public void deleteMember(Member member) {
+//        //펫 삭제
+//        deletePet(member);
+//        //좋아요 누른 팁 삭제
+//        deleteLikeTip(member);
+//        //좋아요 누른 상품 삭제
+//        deleteLikeProduct(member);
+//        //팁 작성자 알 수 없음으로 변경
+//        removeTipAuthor(member);
+//        //스크랩한 팁 삭제
+//        deleteScrapTip(member);
+//
+//        //멤버 삭제
+//        memberRepository.deleteById(member.getMemberId());
+//    }
 
-        //멤버 삭제
-        memberRepository.deleteById(member.getMemberId());
+    public void deleteMember(Member member) {
+        try {
+            log.info("Deleting pet for member: {}", member.getMemberId());
+            deletePet(member);
+
+            log.info("Deleting liked tips for member: {}", member.getMemberId());
+            deleteLikeTip(member);
+
+            log.info("Deleting liked products for member: {}", member.getMemberId());
+            deleteLikeProduct(member);
+
+            log.info("Removing tip author for member: {}", member.getMemberId());
+            removeTipAuthor(member);
+
+            log.info("Deleting scrap tips for member: {}", member.getMemberId());
+            deleteScrapTip(member);
+
+            log.info("Deleting member: {}", member.getMemberId());
+            memberRepository.deleteById(member.getMemberId());
+
+        } catch (Exception e) {
+            log.error("Error deleting member: {}", member.getMemberId(), e);
+            throw e;  // 예외를 다시 던져서 처리할 수 있습니다.
+        }
     }
 
     public void deletePet(Member member) {
@@ -58,7 +85,7 @@ public class MemberService {
     }
 
     public void deleteScrapTip(Member member) {
-        //ScrapTipService.deleteAllByMember(member);
+        scrapTipService.deleteAllByMember(member);
     }
 
     public void removeTipAuthor(Member member) {

@@ -53,4 +53,8 @@ public class ScrapTipService {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("Member not found with id: " + memberId));
     }
+
+    public void deleteAllByMember(Member member) {
+        scrapTipRepository.deleteByMember(member);
+    }
 }

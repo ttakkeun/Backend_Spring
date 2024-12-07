@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 import ttakkeun.ttakkeun_server.entity.LikeTip;
 import ttakkeun.ttakkeun_server.entity.Member;
 import ttakkeun.ttakkeun_server.entity.ScrapTip;
@@ -12,6 +13,7 @@ import ttakkeun.ttakkeun_server.entity.Tip;
 
 import java.util.Optional;
 
+@Repository
 public interface ScrapTipRepository extends JpaRepository<ScrapTip, Integer> {
 
     Optional<ScrapTip> findByTipAndMember(Tip tip, Member member);
@@ -19,4 +21,6 @@ public interface ScrapTipRepository extends JpaRepository<ScrapTip, Integer> {
     boolean existsByTipAndMember(Tip tip, Member member);
 
     Page<ScrapTip> findByMember(Member member, Pageable pageable);
+
+    void deleteByMember(Member member);
 }

@@ -97,4 +97,6 @@ public class RecordController {
         RecordListResponse result = new RecordListResponse(category, records);
         return ApiResponse.onSuccess(result);
     }
+
+
 }
