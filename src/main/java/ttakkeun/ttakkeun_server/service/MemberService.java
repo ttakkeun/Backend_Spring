@@ -20,7 +20,6 @@ import java.util.Optional;
 public class MemberService {
     private final MemberRepository memberRepository;
     private final PetRepository petRepository;
-    private final PointRepository pointRepository;
 
     private final PetService petService;
     private final LikeTipService likeTipService;

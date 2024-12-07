@@ -35,6 +35,6 @@ public class Record extends BaseEntity {
     private List<UserAnswer> answerList = new ArrayList<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = "record")
+    @OneToMany(mappedBy = "record", cascade = CascadeType.ALL)
     private List<Result> results = new ArrayList<>();
 }

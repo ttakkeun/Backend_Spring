@@ -1,4 +1,4 @@
-package ttakkeun.ttakkeun_server.service;
+package ttakkeun.ttakkeun_server.service.auth;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -21,7 +21,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import ttakkeun.ttakkeun_server.apiPayLoad.exception.ExceptionHandler;
 import ttakkeun.ttakkeun_server.apiPayLoad.code.status.ErrorStatus;
-import ttakkeun.ttakkeun_server.service.auth.UserDetailServiceImpl;
 //import ttakkeun.ttakkeun_server.jwt.JwtAuthenticationFilter;
 //import ttakkeun.ttakkeun_server.service.auth.UserDetailServiceImpl;
 

@@ -42,7 +42,6 @@ public class RecordController {
         return ApiResponse.onSuccess(result);
     }
 
-
     @Operation(summary = "일지 질문 및 답변 조회 API")
     @GetMapping("/register/{category}")
     public ApiResponse<RecordResponseDTO.LoadQuestionResultDTO> loadquestion(
@@ -55,30 +54,6 @@ public class RecordController {
                 .build();
         return ApiResponse.onSuccess(result);
     }
-
-//    @Operation(summary = "일지 답변 저장 API (일지 생성)")
-//    @PostMapping("/register/{pet_id}")
-//    public ApiResponse<RecordResponseDTO.RegisterResultDTO> registerRecord(
-//            @PathVariable("pet_id") Long petId,
-//            @RequestBody RecordRequestDTO.RecordRegisterDTO requestDTO
-//    ) {
-//        RecordResponseDTO.RegisterResultDTO responseDTO = recordService.registerRecord(petId, requestDTO);
-//        return ApiResponse.onSuccess(responseDTO);
-//    }
-
-//    @Operation(summary = "일지 사진 저장 API")
-//    @PostMapping(value = "/register/image/{recordId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
-//            produces = MediaType.APPLICATION_JSON_VALUE)
-//    public ApiResponse<List<RecordRequestDTO.RecordImageDTO>> uploadImages(
-//            @PathVariable(name = "recordId") Long recordId,
-//            @RequestParam("question_id") Long questionId,
-//            @RequestParam("images") List<MultipartFile> images
-//            //@RequestPart RecordRequestDTO.RecordImageDTO recordImageDTO
-//    )
-//    {
-//        List<RecordRequestDTO.RecordImageDTO> result = recordService.uploadImages(recordId,questionId,images);
-//        return ApiResponse.of(IMAGE_SUCCESS,result);
-//    }
 
     @Operation(summary = "일지 생성")
     @PostMapping(value = "/create/{pet_id}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
@@ -100,7 +75,6 @@ public class RecordController {
         return ApiResponse.onSuccess(recordDetails);
     }
 
-
     @Operation(summary = "일지 삭제 API")
     @DeleteMapping("/{record_id}")
     public ApiResponse<RecordResponseDTO.DeleteResultDTO> deleteRecord(
@@ -109,7 +83,6 @@ public class RecordController {
         RecordResponseDTO.DeleteResultDTO deleteResultDTO = recordService.deleteRecord(record_id);
         return ApiResponse.onSuccess(deleteResultDTO);
     }
-
 
     @Operation(summary = "일지 기록 검색 API")
     @GetMapping("/search/{pet_id}/{category}")
