@@ -65,13 +65,11 @@ public class OAuthService {
     // refreshToken으로 accessToken 발급하기
     @Transactional
     public LoginResponseDto regenerateAccessToken(String refreshToken) {
-
-        if (!jwtService.validateTokenBoolean(refreshToken))  // refresh token 유효성 검사
+        // refresh token 유효성 검사
+        if (!jwtService.validateTokenBoolean(refreshToken))
             throw new ExceptionHandler(REFRESH_TOKEN_UNAUTHORIZED);
 
-        Long memberId = jwtService.getMemberIdFromJwtToken(refreshToken);
-
-        Optional<Member> getMember = memberRepository.findById(memberId);
+        Optional<Member> getMember = memberRepository.findByRefreshToken(refreshToken);
         if (getMember.isEmpty())
             throw new ExceptionHandler(MEMBER_NOT_FOUND);
 
@@ -79,8 +77,8 @@ public class OAuthService {
         if (!refreshToken.equals(member.getRefreshToken()))
             throw new ExceptionHandler(REFRESH_TOKEN_UNAUTHORIZED);
 
-        String newRefreshToken = jwtService.generateRefreshToken(memberId);
-        String newAccessToken = jwtService.generateAccessToken(memberId);
+        String newRefreshToken = jwtService.generateRefreshToken(member.getMemberId());
+        String newAccessToken = jwtService.generateAccessToken(member.getMemberId());
 
         member.updateRefreshToken(newRefreshToken);
         memberRepository.save(member);
@@ -178,7 +176,7 @@ public class OAuthService {
             Member member = memberByEmail.get();
             // 이미 다른 소셜로 가입된 이메일인 경우
             if (!member.getLoginType().equals(LoginType.KAKAO)) {
-                throw new MemberHandler(MEMBER_ALREADY_EXIST);
+                throw new MemberHandler(MEMBER_EXIST_IN_OTHER_SOCIAL);
             }
             // 카카오로 가입된 이메일인 경우
             if (!member.getKakaoUserId().equals(kakaoUser.getId())) {
@@ -203,7 +201,7 @@ public class OAuthService {
             Member member = memberByEmail.get();
             // 이미 다른 소셜로 가입된 이메일인 경우
             if (!member.getLoginType().equals(LoginType.KAKAO)) {
-                throw new MemberHandler(MEMBER_ALREADY_EXIST);
+                throw new MemberHandler(MEMBER_EXIST_IN_OTHER_SOCIAL);
             }
             // 카카오로 가입된 이메일인 경우
             throw new MemberHandler(MEMBER_ALREADY_EXIST);

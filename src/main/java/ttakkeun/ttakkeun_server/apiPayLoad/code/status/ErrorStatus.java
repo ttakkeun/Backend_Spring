@@ -35,8 +35,9 @@ public enum ErrorStatus implements BaseErrorCode {
     MEMBER_NOT_HAVE_PET(HttpStatus.BAD_REQUEST, "MEMBER4003", "반려동물이 없는 사용자입니다."),
     MEMBER_ALREADY_LOGOUT(HttpStatus.BAD_REQUEST, "MEMBER4004", "이미 토큰이 만료된 사용자입니다."),
     EMAIL_EMPTY(HttpStatus.BAD_REQUEST, "MEMBER4005", "이메일 값이 존재하지 않습니다."),
-    MEMBER_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "MEMBER4005", "이미 가입한 회원입니다."),
-    MEMBER_CONFLICT(HttpStatus.BAD_REQUEST, "MEMBER4005", "이메일과 멤버ID가 일치하지 않습니다."),
+    MEMBER_EXIST_IN_OTHER_SOCIAL(HttpStatus.BAD_REQUEST, "MEMBER4006", "다른 소셜로 가입한 회원입니다."),
+    MEMBER_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "MEMBER4007", "이미 가입한 회원입니다."),
+    MEMBER_CONFLICT(HttpStatus.BAD_REQUEST, "MEMBER4008", "이메일과 멤버ID가 일치하지 않습니다."),
 
     //Record 에러
     RECORD_NOT_FOUND(HttpStatus.BAD_REQUEST, "RECORD4000", "해당하는 일지를 찾을 수 없습니다."),

@@ -103,10 +103,13 @@ public class RecordService {
             userAnswerRepository.save(userAnswer); // UserAnswer 저장
 
             // Image 엔티티 빌드 및 저장
-            List<Image> images = answerDTO.getImages().stream().map(imageFile -> {
-                String imageUrl = s3ImageService.upload(imageFile); // S3에 이미지 업로드 후 URL 획득
-                return ImageConverter.toImage(imageUrl, userAnswer);
-            }).collect(Collectors.toList());
+            List<Image> images = answerDTO.getImages().stream()
+                    .filter(imageFile -> imageFile != null && !imageFile.isEmpty()) // 이미지가 비어있지 않은 경우만 처리
+                    .map(imageFile -> {
+                        String imageUrl = s3ImageService.upload(imageFile); // S3에 이미지 업로드 후 URL 획득
+                        return ImageConverter.toImage(imageUrl, userAnswer);
+                    })
+                    .collect(Collectors.toList());
 
             imageRepository.saveAll(images); // Image 엔티티들 저장
 
