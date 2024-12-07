@@ -170,6 +170,7 @@ public class DiagnoseChatGPTService {
                     .resultCare(care)
                     .record(record)
                     .resultCategory(category)
+                    .pet(pet)   // pet_id 저장
                     .build();
 
 
