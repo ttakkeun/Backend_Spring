@@ -25,7 +25,6 @@ public class Result extends BaseEntity {
     @OneToMany(mappedBy = "result", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<ResultProduct> ProductList = new ArrayList<>();
 
-    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "record_id")
     private Record record;
@@ -42,4 +41,8 @@ public class Result extends BaseEntity {
     private String resultDetail;
 
     private String resultCare;
+
+    public void setRecord(Record record) {
+        this.record = record;
+    }
 }
