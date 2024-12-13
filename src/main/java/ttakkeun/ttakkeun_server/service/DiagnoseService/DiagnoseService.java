@@ -28,15 +28,17 @@ public class DiagnoseService {
     private final ProductRepository productRepository;
     private final PetRepository petRepository;
     private final MemberRepository memberRepository;
+    private final ResultProductRepository resultProductRepository;
 
     @Autowired
     public DiagnoseService(PointRepository pointRepository, ResultRepository resultRepository, ProductRepository productRepository,
-                           PetRepository petRepository, MemberRepository memberRepository) {
+                           PetRepository petRepository, MemberRepository memberRepository, ResultProductRepository resultProductRepository) {
         this.pointRepository = pointRepository;
         this.resultRepository = resultRepository;
         this.productRepository = productRepository;
         this.petRepository = petRepository;
         this.memberRepository = memberRepository;
+        this.resultProductRepository = resultProductRepository;
     }
 
     // 사용자 포인트 조회
@@ -174,8 +176,9 @@ public class DiagnoseService {
 
         Result result = resultOpt.get(); // result 가져옴
 
-        boolean deletionResult = resultRepository.deleteResultByResultId(result.getResultId());
+        boolean diagnoseDeletionResult = resultRepository.deleteResultByResultId(result.getResultId());
+        boolean productDeletionResult = resultProductRepository.deleteResultProductByResultResultId(result.getResultId());
 
-        return deletionResult;
+        return diagnoseDeletionResult && productDeletionResult;
     }
 }
