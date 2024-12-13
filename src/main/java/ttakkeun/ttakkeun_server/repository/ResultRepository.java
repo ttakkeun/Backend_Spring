@@ -31,4 +31,7 @@ public interface ResultRepository extends JpaRepository<Result, Long>, CustomRes
     List<Result> findByRecordIsNullAndPet(Pet pet);
 
     List<Result> findByRecord(Record record);
+
+    // Result 객체 삭제, boolean으로 성공 여부 반환
+    boolean deleteResultByResultId(Long resultId);
 }

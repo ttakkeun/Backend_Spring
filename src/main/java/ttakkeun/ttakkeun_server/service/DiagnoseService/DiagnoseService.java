@@ -162,4 +162,20 @@ public class DiagnoseService {
                 .after_care(result.getResultCare())
                 .ai_products(productsDTO).build();
     }
+
+    // 진단 삭제
+    public boolean deleteDiagnose(Long diagnoseId) throws Exception {
+        Optional<Result> resultOpt = resultRepository.findByResultId(diagnoseId);
+
+        if (!resultOpt.isPresent()) {
+            // Optional 객체에서 값이 비어있는 경우 예외 발생
+            throw new NoSuchElementException("Result with ID " + diagnoseId + " not found");
+        }
+
+        Result result = resultOpt.get(); // result 가져옴
+
+        boolean deletionResult = resultRepository.deleteResultByResultId(result.getResultId());
+
+        return deletionResult;
+    }
 }

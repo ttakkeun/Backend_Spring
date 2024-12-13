@@ -207,4 +207,19 @@ public class DiagnoseController {
         }
     }
 
+    @Operation(summary = "진단 삭제 API")
+    @DeleteMapping("/result/{diagnose_id}")
+    public ResponseEntity<ApiResponse<Boolean>> deleteDiagnose(@PathVariable("diagnose_id") Long resultId) {
+        boolean deletionResult = false;
+        try {
+            // 성공적으로 삭제되었을 경우 try문에서 deletionResult값 true로 변경됨
+            deletionResult = diagnoseService.deleteDiagnose(resultId);
+            ApiResponse<Boolean> response = ApiResponse.of(SuccessStatus._OK, deletionResult);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            ApiResponse<Boolean> response = ApiResponse.ofFailure(ErrorStatus._INTERNAL_SERVER_ERROR, deletionResult);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
 }
