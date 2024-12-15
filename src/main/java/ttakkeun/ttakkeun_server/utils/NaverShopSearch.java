@@ -28,7 +28,9 @@ public class NaverShopSearch {
 
         String url = "https://openapi.naver.com/v1/search/shop.json?"
                 + "query=" + keyword
-                + "&start=" + start;
+                + "&sort=sim"
+                + "&start=" + start
+                + "exclude=cbshop";
 
         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
