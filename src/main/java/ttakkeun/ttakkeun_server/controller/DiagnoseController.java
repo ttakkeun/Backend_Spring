@@ -222,9 +222,11 @@ public class DiagnoseController {
 
             return ResponseEntity.ok(response);
         } catch (IllegalArgumentException e) {
+            e.printStackTrace();
             ApiResponse<deleteDiagnoseResponseDTO> response = ApiResponse.ofFailure(ErrorStatus.DIAGNOSE_DELETION_FAILURE, new deleteDiagnoseResponseDTO("진단 삭제에 실패했습니다. 다시 시도해주세요"));
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         } catch (Exception e) {
+            e.printStackTrace();
             ApiResponse<deleteDiagnoseResponseDTO> response = ApiResponse.ofFailure(ErrorStatus._INTERNAL_SERVER_ERROR, new deleteDiagnoseResponseDTO("진단 삭제에 실패했습니다. 다시 시도해주세요"));
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }

@@ -176,9 +176,6 @@ public class DiagnoseService {
 
         Result result = resultOpt.get(); // result 가져옴
 
-        boolean diagnoseDeletionResult = resultRepository.deleteResultByResultId(result.getResultId());
-        boolean productDeletionResult = resultProductRepository.deleteResultProductByResultResultId(result.getResultId());
-
-        return diagnoseDeletionResult && productDeletionResult;
+        return resultRepository.deleteResultByResultId(result.getResultId()) > 0;
     }
 }
