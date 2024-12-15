@@ -115,7 +115,6 @@ public class OAuthService {
     // 애플 회원가입
     @Transactional
     public LoginResponseDto appleSignUp(AppleSignUpRequestDto appleSignUpRequestDto) {
-
         Map<String, String> headers = jwtService.parseHeader(appleSignUpRequestDto.getIdentityToken());
         PublicKey publicKey = applePublicKeyGenerator.generatePublicKey(headers, appleAuthClient.getAppleAuthPublicKey());
 
