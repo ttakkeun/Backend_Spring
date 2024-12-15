@@ -8,6 +8,9 @@ import ttakkeun.ttakkeun_server.entity.enums.Category;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 @Entity
 @Getter
 @Builder
