@@ -116,28 +116,21 @@ public class OAuthService {
     @Transactional
     public LoginResponseDto appleSignUp(AppleSignUpRequestDto appleSignUpRequestDto) {
 
-        // 1. 애플 공개 키 가져오기
         Map<String, String> headers = jwtService.parseHeader(appleSignUpRequestDto.getIdentityToken());
         PublicKey publicKey = applePublicKeyGenerator.generatePublicKey(headers, appleAuthClient.getAppleAuthPublicKey());
 
-        // 2. JWT 검증 및 클레임 추출
         Claims claims = jwtService.getTokenClaims(appleSignUpRequestDto.getIdentityToken(), publicKey);
 
-        // 3. 클레임에서 subject 추출
         String email = claims.get("email", String.class);
         String sub = claims.getSubject();
 
-        // 4. 유저가 등록되어 있는지 확인
         Member member = memberRepository.findByAppleSub(sub).orElse(null);
 
         if (member == null) {
-            // 등록된 유저가 아닌 경우 회원가입
             member = memberRepository.save(
                     MemberConverter.toAppleMember(sub, appleSignUpRequestDto)
             );
         }
-
-        // 5. 토큰 생성 및 반환
         return createToken(member);
     }
 
