@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import ttakkeun.ttakkeun_server.apiPayLoad.exception.ExceptionHandler;
 import ttakkeun.ttakkeun_server.apiPayLoad.exception.MemberHandler;
+import ttakkeun.ttakkeun_server.client.KakaoUnlinkClient;
 import ttakkeun.ttakkeun_server.converter.MemberConverter;
 import ttakkeun.ttakkeun_server.dto.auth.LoginResponseDto;
 import ttakkeun.ttakkeun_server.dto.auth.apple.AppleAuthClient;
@@ -45,9 +46,13 @@ public class OAuthService {
     private final MemberService memberService;
     private final MemberRepository memberRepository;
     private final KakaoService kakaoService;
+    private final KakaoUnlinkClient kakaoUnlinkClient;
 
     @Value("${spring.social-login.provider.apple.client-id}")
     private String clientId;
+
+    @Value("${spring.social-login.provider.kakao.admin-key}")
+    private String kakaoAdminKey;
 
     //accessToken, refreshToken 발급
     @Transactional
@@ -212,7 +217,8 @@ public class OAuthService {
         return createToken(signUpMember);
     }
 
-    public void kakaoDelete(Member member, String code) {
+    public void kakaoDelete(Member member) {
+        kakaoUnlinkClient.unlinkUser("KakaoAK " + kakaoAdminKey, "user_id", member.getKakaoUserId());
         memberService.deleteMember(member);
     }
 

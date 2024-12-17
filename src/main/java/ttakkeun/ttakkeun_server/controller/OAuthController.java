@@ -85,9 +85,8 @@ public class OAuthController {
 
     @Operation(summary = "카카오 탈퇴 API(아직 구현 못함)")
     @DeleteMapping("/kakao/delete")
-    public ApiResponse<String> kakaoWithdraw(@AuthenticationPrincipal Member member,
-                                        @Nullable @RequestHeader("kakao-target-id") final String code){
-        oAuthService.kakaoDelete(member, code);
+    public ApiResponse<String> kakaoWithdraw(@AuthenticationPrincipal Member member){
+        oAuthService.kakaoDelete(member);
         return ApiResponse.onSuccess("kakao delete success");
     }
 
