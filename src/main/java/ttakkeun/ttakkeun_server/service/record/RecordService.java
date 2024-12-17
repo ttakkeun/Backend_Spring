@@ -1,4 +1,4 @@
-package ttakkeun.ttakkeun_server.service;
+package ttakkeun.ttakkeun_server.service.record;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +20,7 @@ import ttakkeun.ttakkeun_server.entity.*;
 import ttakkeun.ttakkeun_server.entity.Record;
 import ttakkeun.ttakkeun_server.entity.enums.Category;
 import ttakkeun.ttakkeun_server.repository.*;
+import ttakkeun.ttakkeun_server.service.S3ImageService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

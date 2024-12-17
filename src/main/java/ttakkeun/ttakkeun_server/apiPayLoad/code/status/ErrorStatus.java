@@ -72,8 +72,10 @@ public enum ErrorStatus implements BaseErrorCode {
     TODO_STATUS_IS_ONPROGRESS(HttpStatus.BAD_REQUEST, "TODO4002", "투두 항목이 완료되지 않았습니다."),
 
     // Tip 에러
-    TIP_ID_NOT_AVAILABLE(HttpStatus.BAD_REQUEST, "TIP4000", "유효하지 않은 Tip ID입니다.");
+    TIP_ID_NOT_AVAILABLE(HttpStatus.BAD_REQUEST, "TIP4000", "유효하지 않은 Tip ID입니다."),
 
+    // Discord 에러
+    INVALID_DISCORD_MESSAGE(HttpStatus.BAD_REQUEST, "DISCORD4000", "잘못된 discord 메세지입니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
