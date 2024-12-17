@@ -8,6 +8,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ttakkeun.ttakkeun_server.apiPayLoad.exception.ExceptionHandler;
+import ttakkeun.ttakkeun_server.apiPayLoad.exception.MemberHandler;
+import ttakkeun.ttakkeun_server.apiPayLoad.exception.PetHandler;
+import ttakkeun.ttakkeun_server.apiPayLoad.exception.RecordHandler;
 import ttakkeun.ttakkeun_server.converter.ImageConverter;
 import ttakkeun.ttakkeun_server.converter.RecordConverter;
 import ttakkeun.ttakkeun_server.dto.record.RecordListResponseDto;
@@ -41,24 +44,18 @@ public class RecordService {
     private final ImageRepository imageRepository;
     private final S3ImageService s3ImageService;
 
-    public List<RecordListResponseDto> getRecordsByCategory(Member member, Long petId, Category category, int page, int size) {
+    public List<RecordListResponseDto> getRecordsByCategory(Member member, Long petId, Category category) {
         if (member == null || member.getMemberId() == null) {
-            throw new ExceptionHandler(MEMBER_NOT_FOUND);
+            throw new MemberHandler(MEMBER_NOT_FOUND);
         }
         //memberId로 petId를 확인
-        Pet pet = petRepository.findByPetIdAndMember(petId, member).orElseThrow(() -> new ExceptionHandler(PET_NOT_FOUND));
+        Pet pet = petRepository.findByPetIdAndMember(petId, member).orElseThrow(() -> new PetHandler(PET_NOT_FOUND));
 
-        // 페이지 요청 생성 (createdAt 기준으로 정렬)
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-        Page<Record> recordPage = recordRepository.findByPet_PetIdAndCategory(pet.getPetId(), category, pageable);
+        List<Record> records = recordRepository.findByPet_PetIdAndCategory(pet.getPetId(), category);
 
         // DTO로 변환 및 정렬
-        return recordPage.stream()
-                .map(record -> new RecordListResponseDto(
-                        record.getRecordId(),
-                        record.getCreatedAt().toLocalDate(),  // LocalDate 추출
-                        record.getCreatedAt().toLocalTime()   // LocalTime 추출
-                ))
+        return records.stream()
+                .map(RecordConverter::t0RecordListResponseDto)
                 .sorted((r1, r2) -> {
                     int dateComparison = r2.getCreatedAtDate().compareTo(r1.getCreatedAtDate());
                     if (dateComparison != 0) {
@@ -89,7 +86,7 @@ public class RecordService {
 
     public RecordResponseDTO.RegisterResultDTO createRecord(Long petId, RecordRequestDTO.RecordRegisterDTO request) {
         Pet pet = petRepository.findById(petId)
-                .orElseThrow(() -> new ExceptionHandler(PET_ID_NOT_AVAILABLE));
+                .orElseThrow(() -> new PetHandler(PET_ID_NOT_AVAILABLE));
 
         Record record = RecordConverter.toRecord(pet, request);
         recordRepository.save(record);
@@ -124,7 +121,7 @@ public class RecordService {
     public RecordResponseDTO.DetailResultDTO getRecordDetails(Long petId, Long recordId) {
         // Record 조회
         Record record = recordRepository.findByPet_PetIdAndRecordId(petId, recordId)
-                .orElseThrow(() -> new ExceptionHandler(RECORD_NOT_FOUND));
+                .orElseThrow(() -> new RecordHandler(RECORD_NOT_FOUND));
 
         // UserAnswer 리스트를 question_id 기준으로 그룹화
         Map<Long, List<UserAnswer>> groupedAnswers = record.getAnswerList().stream()
@@ -175,7 +172,7 @@ public class RecordService {
                     .message("일지 삭제에 성공하였습니다.")
                     .build();
         } else {
-            throw new ExceptionHandler(RECORD_NOT_FOUND);
+            throw new RecordHandler(RECORD_NOT_FOUND);
         }
     }
 
