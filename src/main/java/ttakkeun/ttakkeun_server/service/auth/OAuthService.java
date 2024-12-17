@@ -89,55 +89,68 @@ public class OAuthService {
     //애플 로그인
     @Transactional
     public LoginResponseDto appleLogin(AppleLoginRequestDto appleLoginRequestDto) {
-        // 1. 애플 공개 키 가져오기
-        Map<String, String> headers = jwtService.parseHeader(appleLoginRequestDto.getIdentityToken());
-        PublicKey publicKey = applePublicKeyGenerator.generatePublicKey(headers, appleAuthClient.getAppleAuthPublicKey());
+        Optional<Member> memberByEmail = memberRepository.findByEmail(appleLoginRequestDto.getEmail());
 
-        // 2. JWT 검증 및 클레임 추출
-        Claims claims = jwtService.getTokenClaims(appleLoginRequestDto.getIdentityToken(), publicKey);
+        if (memberByEmail.isPresent()) {
+            Member member = memberByEmail.get();
+            // 이미 다른 소셜로 가입된 이메일인 경우
+            if (!member.getLoginType().equals(LoginType.APPLE)) {
+                throw new MemberHandler(MEMBER_EXIST_IN_OTHER_SOCIAL);
+            }
 
-        // 3. 클레임에서 subject 추출
-        String sub = claims.getSubject();
+            //애플 회원인 경우
+            // 1. 애플 공개 키 가져오기
+            Map<String, String> headers = jwtService.parseHeader(appleLoginRequestDto.getIdentityToken());
+            PublicKey publicKey = applePublicKeyGenerator.generatePublicKey(headers, appleAuthClient.getAppleAuthPublicKey());
 
-        // 4. 유저가 등록되어 있는지 확인
-        Member member = memberRepository.findByAppleSub(sub)
-                .orElse(null);
+            // 2. JWT 검증 및 클레임 추출
+            Claims claims = jwtService.getTokenClaims(appleLoginRequestDto.getIdentityToken(), publicKey);
 
-        if (member == null) {
-            // 등록된 유저가 아닌 경우 회원가입 로직
-            throw new ExceptionHandler(MEMBER_NOT_REGISTERED);
+            // 3. 클레임에서 subject 추출
+            String sub = claims.getSubject();
+
+            // 4. 유저가 등록되어 있는지 확인
+            Member findMember = memberRepository.findByAppleSub(sub)
+                    .orElse(null);
+
+            if (findMember == null) {
+                throw new MemberHandler(MEMBER_NOT_REGISTERED);  //회원가입
+            }
+
+            // 5. 토큰 생성 및 반환
+            return createToken(findMember);
         }
-
-        // 5. 토큰 생성 및 반환
-        return createToken(member);
+        throw new MemberHandler(MEMBER_NOT_REGISTERED);  //회원가입
     }
 
     // 애플 회원가입
     @Transactional
     public LoginResponseDto appleSignUp(AppleSignUpRequestDto appleSignUpRequestDto) {
+        Optional<Member> memberByEmail = memberRepository.findByEmail(appleSignUpRequestDto.getEmail());
 
-        // 1. 애플 공개 키 가져오기
+        if (memberByEmail.isPresent()) {
+            Member member = memberByEmail.get();
+            // 이미 다른 소셜로 가입된 이메일인 경우
+            if (!member.getLoginType().equals(LoginType.APPLE)) {
+                throw new MemberHandler(MEMBER_EXIST_IN_OTHER_SOCIAL);
+            }
+            // 애플로 가입된 이메일인 경우
+            throw new MemberHandler(MEMBER_ALREADY_EXIST);
+        }
+
         Map<String, String> headers = jwtService.parseHeader(appleSignUpRequestDto.getIdentityToken());
         PublicKey publicKey = applePublicKeyGenerator.generatePublicKey(headers, appleAuthClient.getAppleAuthPublicKey());
 
-        // 2. JWT 검증 및 클레임 추출
         Claims claims = jwtService.getTokenClaims(appleSignUpRequestDto.getIdentityToken(), publicKey);
-
-        // 3. 클레임에서 subject 추출
-        String email = claims.get("email", String.class);
         String sub = claims.getSubject();
 
-        // 4. 유저가 등록되어 있는지 확인
         Member member = memberRepository.findByAppleSub(sub).orElse(null);
 
         if (member == null) {
-            // 등록된 유저가 아닌 경우 회원가입
             member = memberRepository.save(
                     MemberConverter.toAppleMember(sub, appleSignUpRequestDto)
             );
         }
-
-        // 5. 토큰 생성 및 반환
         return createToken(member);
     }
 
