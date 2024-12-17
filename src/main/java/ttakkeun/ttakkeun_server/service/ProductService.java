@@ -118,7 +118,7 @@ public class ProductService {
             String naverString = naverShopSearch.search(keyword, page);
             JSONObject jsonObject = new JSONObject(naverString);
             JSONArray jsonArray = jsonObject.getJSONArray("items");
-            log.info(jsonArray.toString());
+//            log.info(jsonArray.toString());
 
 
             for (int i = 0; i < jsonArray.length(); i++) {
@@ -131,8 +131,27 @@ public class ProductService {
                 }
             }
         }
+
+        //검색 키워드 앞에 반려동물을 붙여서 검색 ex) 강아지 검색 -> 강아지 스킨케어 검색
+        //총 10개의 알맞은 제품을 가지고 오거나 총 100개의 제품까지 탐색했을 때까지 반복
+        for(int page = 0; productDTOs.size() < 10 && page < 5; page++) {
+            String naverString = naverShopSearch.search(keyword + "스킨케어", page);
+            JSONObject jsonObject = new JSONObject(naverString);
+            JSONArray jsonArray = jsonObject.getJSONArray("items");
+//            log.info(jsonArray.toString());
+
+
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject JSONProduct = (JSONObject) jsonArray.get(i);
+                RecommendProductDTO productDTO = productConverter.JSONToDTO(JSONProduct, memberId);
+
+                //제품이 알맞은 스킨케어 관련 카테고리를 가지고 있는지 확인
+                if (productDTOs.size() < 10 && productConverter.categoryFilter(productDTO)) {
+                    productDTOs.add(productDTO);
+                }
+            }
+        }
+
         return productDTOs;
     }
-
-
 }

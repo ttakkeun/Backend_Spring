@@ -3,7 +3,10 @@ package ttakkeun.ttakkeun_server.repository;
 import feign.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+
+import jakarta.transaction.Transactional;
 import ttakkeun.ttakkeun_server.entity.Pet;
 import ttakkeun.ttakkeun_server.entity.Record;
 import ttakkeun.ttakkeun_server.entity.enums.Category;
@@ -31,4 +34,11 @@ public interface ResultRepository extends JpaRepository<Result, Long>, CustomRes
     List<Result> findByRecordIsNullAndPet(Pet pet);
 
     List<Result> findByRecord(Record record);
+
+    // Result 객체 삭제, int로 삭제된 result 개수 반환
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM Result r WHERE r.resultId = :resultId")
+    int deleteResultByResultId(@Param("resultId") Long resultId);
+
 }

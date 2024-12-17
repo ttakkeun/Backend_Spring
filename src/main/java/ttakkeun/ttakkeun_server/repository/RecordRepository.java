@@ -16,7 +16,7 @@ import java.util.Optional;
 
 @Repository
 public interface RecordRepository extends JpaRepository<Record, Long> {
-    Page<Record> findByPet_PetIdAndCategory(Long petId, Category category, Pageable pageable);
+    List<Record> findByPet_PetIdAndCategory(Long petId, Category category);
 
     Optional<Record> findByPet_PetIdAndRecordId(Long petId, Long recordId);
 

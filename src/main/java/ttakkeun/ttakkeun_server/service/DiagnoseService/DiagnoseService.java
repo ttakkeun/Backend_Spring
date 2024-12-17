@@ -28,15 +28,17 @@ public class DiagnoseService {
     private final ProductRepository productRepository;
     private final PetRepository petRepository;
     private final MemberRepository memberRepository;
+    private final ResultProductRepository resultProductRepository;
 
     @Autowired
     public DiagnoseService(PointRepository pointRepository, ResultRepository resultRepository, ProductRepository productRepository,
-                           PetRepository petRepository, MemberRepository memberRepository) {
+                           PetRepository petRepository, MemberRepository memberRepository, ResultProductRepository resultProductRepository) {
         this.pointRepository = pointRepository;
         this.resultRepository = resultRepository;
         this.productRepository = productRepository;
         this.petRepository = petRepository;
         this.memberRepository = memberRepository;
+        this.resultProductRepository = resultProductRepository;
     }
 
     // 사용자 포인트 조회
@@ -161,5 +163,19 @@ public class DiagnoseService {
                 .result_detail(result.getResultDetail())
                 .after_care(result.getResultCare())
                 .ai_products(productsDTO).build();
+    }
+
+    // 진단 삭제
+    public boolean deleteDiagnose(Long diagnoseId) throws Exception {
+        Optional<Result> resultOpt = resultRepository.findByResultId(diagnoseId);
+
+        if (!resultOpt.isPresent()) {
+            // Optional 객체에서 값이 비어있는 경우 예외 발생
+            throw new NoSuchElementException("Result with ID " + diagnoseId + " not found");
+        }
+
+        Result result = resultOpt.get(); // result 가져옴
+
+        return resultRepository.deleteResultByResultId(result.getResultId()) > 0;
     }
 }

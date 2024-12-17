@@ -24,6 +24,7 @@ public class TipResponseDTO {
     private String authorName;
     private Boolean isLike;
     private Boolean isPopular;
+    private Boolean isScrap;
 
     public TipResponseDTO(Long tipId, Category category, String title, String content, Integer recommendCount,
                           LocalDateTime createdAt, List<String> imageUrls, String authorName, Boolean isPopular) {
