@@ -30,6 +30,7 @@ spring:
         private-key: ${APPLE_SECRET}
       kakao:
         redirect-uri: http://ttakkeun.com:8080/oauth/kakao/callback
+        admin-key: ${KAKAO_ADMIN_KEY}
   servlet:
     multipart:
       max-file-size: 50MB
