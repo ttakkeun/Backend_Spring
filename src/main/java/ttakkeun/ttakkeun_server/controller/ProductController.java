@@ -90,7 +90,7 @@ public class ProductController {
     }
 
     @Operation(summary = "좋아요/취소 토글 API")
-    @PatchMapping("/like/{product_id}")
+    @PutMapping("/like/{product_id}")
     public ApiResponse<LikeResponseDTO.Result> toggleLikeProduct(
             @PathVariable Long product_id,
             @AuthenticationPrincipal Member member,
