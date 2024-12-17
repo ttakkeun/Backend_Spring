@@ -66,7 +66,7 @@ public class OAuthController {
     }
 
     @Operation(summary = "애플 탈퇴 API")
-    @DeleteMapping("/apple/delete")
+    @DeleteMapping("/delete/apple")
     public ApiResponse<String> appleWithdraw(@AuthenticationPrincipal Member member,
                                 @Nullable @RequestHeader("authorization-code") final String code){
         oAuthService.appleDelete(member, code);
@@ -90,8 +90,8 @@ public class OAuthController {
         return ApiResponse.onSuccess(oAuthService.kakaoSignUp(kakaoSignUpReqDto));
     }
 
-    @Operation(summary = "카카오 탈퇴 API(아직 구현 못함)")
-    @DeleteMapping("/kakao/delete")
+    @Operation(summary = "카카오 탈퇴 API")
+    @DeleteMapping("/delete/kakao")
     public ApiResponse<String> kakaoWithdraw(@AuthenticationPrincipal Member member){
         oAuthService.kakaoDelete(member);
         return ApiResponse.onSuccess("kakao delete success");
