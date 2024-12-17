@@ -1,6 +1,7 @@
 package ttakkeun.ttakkeun_server.converter;
 
 import org.springframework.stereotype.Component;
+import ttakkeun.ttakkeun_server.dto.record.RecordListResponseDto;
 import ttakkeun.ttakkeun_server.dto.record.RecordRequestDTO;
 import ttakkeun.ttakkeun_server.dto.record.RecordResponseDTO;
 import ttakkeun.ttakkeun_server.entity.ChecklistQuestion;
@@ -45,5 +46,13 @@ public class RecordConverter {
                 .answers(questionAnswerDTOs)
                 .etc(record.getEtc())
                 .build();
+    }
+
+    public static RecordListResponseDto t0RecordListResponseDto(Record record) {
+        return new RecordListResponseDto(
+                record.getRecordId(),
+                record.getCreatedAt().toLocalDate(),
+                record.getCreatedAt().toLocalTime()
+        );
     }
 }
