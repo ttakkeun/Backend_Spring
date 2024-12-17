@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import ttakkeun.ttakkeun_server.dto.inquiry.InquiryRequestDTO;
+import ttakkeun.ttakkeun_server.dto.inquiry.InquiryResponseDTO;
 import ttakkeun.ttakkeun_server.entity.Inquiry;
 import ttakkeun.ttakkeun_server.entity.InquiryImage;
 import ttakkeun.ttakkeun_server.entity.Member;
@@ -52,5 +53,20 @@ public class InquiryConverter {
         }
 
         return inquiry;
+    }
+
+    public InquiryResponseDTO.getResultDTO toDTO(Inquiry inquiry) {
+        List<String> imageUrls = inquiry.getImages().stream()
+                .map(InquiryImage::getImageUrl)
+                .toList();
+
+        return InquiryResponseDTO.getResultDTO.builder()
+                .memberId(inquiry.getMember().getMemberId())
+                .contents(inquiry.getContents())
+                .email(inquiry.getEmail())
+                .created_at(inquiry.getCreatedAt())
+                .inquiryType(inquiry.getInquiryType().toString())
+                .imageUrl(imageUrls)
+                .build();
     }
 }
