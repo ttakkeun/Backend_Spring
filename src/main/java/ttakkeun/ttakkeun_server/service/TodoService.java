@@ -61,10 +61,7 @@ public class TodoService {
         Todo todo = todoRepository.findById(todoId)
                 .orElseThrow(() -> new ExceptionHandler(TODO_ID_NOT_AVAILABLE));
 
-        todo.setTodoCategory(request.getTodoCategory());
         todo.setTodoName(request.getTodoName());
-        todo.setTodoStatus(request.getTodoStatus());
-        todoRepository.save(todo);
 
         return new TodoResponseDto(todo.getTodoId(), todo.getTodoDate(), convertStatusToBoolean(todo.getTodoStatus()));
     }

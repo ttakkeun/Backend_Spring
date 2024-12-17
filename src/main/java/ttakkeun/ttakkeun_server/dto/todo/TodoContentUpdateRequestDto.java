@@ -8,7 +8,5 @@ import ttakkeun.ttakkeun_server.entity.enums.TodoStatus;
 @Getter
 @Setter
 public class TodoContentUpdateRequestDto {
-    private Category todoCategory;
     private String todoName;
-    private TodoStatus todoStatus;
 }
