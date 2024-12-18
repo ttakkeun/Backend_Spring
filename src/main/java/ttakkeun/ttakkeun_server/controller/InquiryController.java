@@ -22,17 +22,27 @@ public class InquiryController {
 
     private final InquiryService inquiryService;
 
-    @Operation(summary = "문의하기")
+    @Operation(summary = "문의하기 API")
     @PostMapping(value = "/add", consumes = "multipart/form-data")
     public ApiResponse<InquiryResponseDTO.AddResultDTO> add(
             @AuthenticationPrincipal Member member,
-            @RequestParam("type") InquiryType inquiryType,
+            @RequestParam InquiryType inquiryType,
             @RequestPart @Valid InquiryRequestDTO inquiryRequestDTO,
             @RequestPart(required = false) List<MultipartFile> multipartFile
     ) {
 
         InquiryResponseDTO.AddResultDTO resultDTO =  inquiryService.addInquiry(
                 inquiryRequestDTO,inquiryType, multipartFile, member);
+
+        return ApiResponse.onSuccess(resultDTO);
+    }
+
+    @Operation(summary = "문의 내용 조회하기 API")
+    @GetMapping(value = "/{inquiry_id}")
+    public ApiResponse<List<InquiryResponseDTO.getResultDTO>> getInquiry(
+            @AuthenticationPrincipal Member member
+    ) {
+        List<InquiryResponseDTO.getResultDTO> resultDTO = inquiryService.getInquiry(member);
 
         return ApiResponse.onSuccess(resultDTO);
     }
