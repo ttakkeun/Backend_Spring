@@ -16,4 +16,6 @@ public class InquiryRequestDTO {
     private String contents;
 
     private String email;
+
+    private InquiryType inquiryType;
 }

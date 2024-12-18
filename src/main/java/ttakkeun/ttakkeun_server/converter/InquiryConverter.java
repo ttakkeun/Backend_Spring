@@ -25,14 +25,13 @@ public class InquiryConverter {
 
     public Inquiry toInquiry(
             InquiryRequestDTO inquiryRequestDTO,
-            InquiryType inquiryType,
             List<MultipartFile> multipartFile,
             Member member
     ) {
         Inquiry inquiry = Inquiry.builder()
                 .contents(inquiryRequestDTO.getContents())
                 .email(inquiryRequestDTO.getEmail())
-                .inquiryType(inquiryType)
+                .inquiryType(inquiryRequestDTO.getInquiryType())
                 .member(member)
                 .build();
 

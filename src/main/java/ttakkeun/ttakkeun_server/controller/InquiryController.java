@@ -26,13 +26,12 @@ public class InquiryController {
     @PostMapping(value = "/add", consumes = "multipart/form-data")
     public ApiResponse<InquiryResponseDTO.AddResultDTO> add(
             @AuthenticationPrincipal Member member,
-            @RequestParam InquiryType inquiryType,
             @RequestPart @Valid InquiryRequestDTO inquiryRequestDTO,
             @RequestPart(required = false) List<MultipartFile> multipartFile
     ) {
 
         InquiryResponseDTO.AddResultDTO resultDTO =  inquiryService.addInquiry(
-                inquiryRequestDTO,inquiryType, multipartFile, member);
+                inquiryRequestDTO, multipartFile, member);
 
         return ApiResponse.onSuccess(resultDTO);
     }
