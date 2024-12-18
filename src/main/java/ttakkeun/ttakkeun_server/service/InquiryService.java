@@ -28,13 +28,11 @@ public class InquiryService {
 
     public InquiryResponseDTO.AddResultDTO addInquiry(
             InquiryRequestDTO inquiryRequestDTO,
-            InquiryType inquiryType,
             List<MultipartFile> multipartFile,
             Member member
     ) {
         Inquiry newInquiry = inquiryConverter.toInquiry(
                 inquiryRequestDTO,
-                inquiryType,
                 multipartFile,
                 member
                 );
