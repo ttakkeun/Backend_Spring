@@ -38,7 +38,7 @@ public class InquiryController {
     }
 
     @Operation(summary = "문의 내용 조회하기 API")
-    @GetMapping(value = "/{inquiry_id}")
+    @GetMapping(value = "/myInquiry")
     public ApiResponse<List<InquiryResponseDTO.getResultDTO>> getInquiry(
             @AuthenticationPrincipal Member member
     ) {
