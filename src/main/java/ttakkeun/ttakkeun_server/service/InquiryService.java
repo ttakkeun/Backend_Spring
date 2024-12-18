@@ -45,10 +45,11 @@ public class InquiryService {
                 .build();
     }
 
-    public InquiryResponseDTO.getResultDTO getInquiry(Long inquiryId) {
-        Inquiry findInquiry = inquiryRepository.findById(inquiryId)
-                .orElseThrow(() -> new ExceptionHandler(_NOT_FOUND));
+    public List<InquiryResponseDTO.getResultDTO> getInquiry(Member member) {
+        List<Inquiry> inquiries = inquiryRepository.findByMember(member);
 
-        return inquiryConverter.toDTO(findInquiry);
+        return inquiries.stream()
+                .map(inquiryConverter::toDTO)
+                .toList();
     }
 }

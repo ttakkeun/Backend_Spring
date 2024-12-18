@@ -39,11 +39,10 @@ public class InquiryController {
 
     @Operation(summary = "문의 내용 조회하기 API")
     @GetMapping(value = "/{inquiry_id}")
-    public ApiResponse<InquiryResponseDTO.getResultDTO> getInquiry(
-            @AuthenticationPrincipal Member member,
-            @RequestParam Long inquiry_id
+    public ApiResponse<List<InquiryResponseDTO.getResultDTO>> getInquiry(
+            @AuthenticationPrincipal Member member
     ) {
-        InquiryResponseDTO.getResultDTO resultDTO = inquiryService.getInquiry(inquiry_id);
+        List<InquiryResponseDTO.getResultDTO> resultDTO = inquiryService.getInquiry(member);
 
         return ApiResponse.onSuccess(resultDTO);
     }

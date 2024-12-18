@@ -61,7 +61,6 @@ public class InquiryConverter {
                 .toList();
 
         return InquiryResponseDTO.getResultDTO.builder()
-                .memberId(inquiry.getMember().getMemberId())
                 .contents(inquiry.getContents())
                 .email(inquiry.getEmail())
                 .created_at(inquiry.getCreatedAt())

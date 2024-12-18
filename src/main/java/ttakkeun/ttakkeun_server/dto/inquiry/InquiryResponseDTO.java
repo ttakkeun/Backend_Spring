@@ -22,7 +22,6 @@ public class InquiryResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class getResultDTO {
-        Long memberId;
         String contents;
         String email;
         String inquiryType;
