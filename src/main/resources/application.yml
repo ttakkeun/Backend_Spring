@@ -64,3 +64,10 @@ openai:
     model: "https://api.openai.com/v1/models"
     model-list: "https://api.openai.com/v1/models/"
     prompt: "https://api.openai.com/v1/chat/completions"
+
+# application.yml
+logging:
+  level:
+    root: INFO
+    org.springframework.web: TRACE
+    ttakkeun.ttakkeun_server: TRACE
