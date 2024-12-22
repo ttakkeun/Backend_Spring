@@ -3,24 +3,18 @@ package ttakkeun.ttakkeun_server.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import ttakkeun.ttakkeun_server.apiPayLoad.ApiResponse;
 import ttakkeun.ttakkeun_server.dto.record.RecordListResponse;
 import ttakkeun.ttakkeun_server.dto.record.RecordListResponseDto;
 import ttakkeun.ttakkeun_server.dto.record.RecordRequestDTO;
 import ttakkeun.ttakkeun_server.dto.record.RecordResponseDTO;
-import ttakkeun.ttakkeun_server.entity.Image;
 import ttakkeun.ttakkeun_server.entity.Member;
 import ttakkeun.ttakkeun_server.entity.enums.Category;
-import ttakkeun.ttakkeun_server.service.RecordService;
+import ttakkeun.ttakkeun_server.service.record.RecordService;
 
 import java.util.List;
-import java.util.Map;
-
-import static ttakkeun.ttakkeun_server.apiPayLoad.code.status.SuccessStatus.IMAGE_SUCCESS;
 
 @RestController
 @RequestMapping("/api/record")

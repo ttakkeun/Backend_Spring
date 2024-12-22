@@ -10,6 +10,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import ttakkeun.ttakkeun_server.apiPayLoad.exception.ExceptionHandler;
 import ttakkeun.ttakkeun_server.apiPayLoad.exception.MemberHandler;
 import ttakkeun.ttakkeun_server.client.KakaoUnlinkClient;
+import ttakkeun.ttakkeun_server.client.DiscordMessageProvider;
 import ttakkeun.ttakkeun_server.converter.MemberConverter;
 import ttakkeun.ttakkeun_server.dto.auth.LoginResponseDto;
 import ttakkeun.ttakkeun_server.dto.auth.apple.AppleAuthClient;
@@ -20,6 +21,7 @@ import ttakkeun.ttakkeun_server.dto.auth.kakao.KakaoLoginRequestDTO;
 import ttakkeun.ttakkeun_server.dto.auth.kakao.KakaoSignUpRequestDTO;
 import ttakkeun.ttakkeun_server.dto.auth.kakao.KakaoUserDTO;
 import ttakkeun.ttakkeun_server.entity.Member;
+import ttakkeun.ttakkeun_server.entity.enums.EventMessage;
 import ttakkeun.ttakkeun_server.entity.enums.LoginType;
 import ttakkeun.ttakkeun_server.repository.MemberRepository;
 import ttakkeun.ttakkeun_server.service.MemberService;
@@ -46,6 +48,7 @@ public class OAuthService {
     private final MemberService memberService;
     private final MemberRepository memberRepository;
     private final KakaoService kakaoService;
+    private final DiscordMessageProvider discordMessageProvider;
     private final KakaoUnlinkClient kakaoUnlinkClient;
 
     @Value("${spring.social-login.provider.apple.client-id}")
@@ -63,7 +66,6 @@ public class OAuthService {
         // DB에 refreshToken 저장
         member.updateRefreshToken(newRefreshToken);
         memberRepository.save(member);
-
         return new LoginResponseDto(newAccessToken, newRefreshToken);
     }
 
@@ -156,6 +158,8 @@ public class OAuthService {
                     MemberConverter.toAppleMember(sub, appleSignUpRequestDto)
             );
         }
+
+        discordMessageProvider.sendMessage(EventMessage.signUpMessage(member.getLoginType(), member.getMemberId(), member.getUsername()));
         return createToken(member);
     }
 
@@ -227,6 +231,7 @@ public class OAuthService {
 
         //회원가입
         Member signUpMember = memberRepository.save(MemberConverter.toKakaoMember(kakaoUser, kakaoSignUpReqDto));
+        discordMessageProvider.sendMessage(EventMessage.signUpMessage(signUpMember.getLoginType(), signUpMember.getMemberId(), signUpMember.getUsername()));
         return createToken(signUpMember);
     }
 
