@@ -200,9 +200,9 @@ public class OAuthService {
             if (!member.getKakaoUserId().equals(kakaoUser.getId())) {
                     throw new MemberHandler(MEMBER_NOT_FOUND);
                 }
-                // 로그인
-                return createToken(member);
-            }
+            // 로그인
+            return createToken(member);
+        }
         //등록된 이메일이 아닌 경우
         throw new MemberHandler(MEMBER_NOT_REGISTERED);
     }
