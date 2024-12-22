@@ -8,9 +8,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ttakkeun.ttakkeun_server.client.DiscordMessageProvider;
 import ttakkeun.ttakkeun_server.dto.diagnose.*;
 import ttakkeun.ttakkeun_server.entity.*;
 import ttakkeun.ttakkeun_server.entity.enums.Category;
+import ttakkeun.ttakkeun_server.entity.enums.EventMessage;
 import ttakkeun.ttakkeun_server.repository.*;
 
 import java.time.LocalDate;
@@ -29,16 +31,18 @@ public class DiagnoseService {
     private final PetRepository petRepository;
     private final MemberRepository memberRepository;
     private final ResultProductRepository resultProductRepository;
+    private final DiscordMessageProvider discordMessageProvider;
 
     @Autowired
     public DiagnoseService(PointRepository pointRepository, ResultRepository resultRepository, ProductRepository productRepository,
-                           PetRepository petRepository, MemberRepository memberRepository, ResultProductRepository resultProductRepository) {
+                           PetRepository petRepository, MemberRepository memberRepository, ResultProductRepository resultProductRepository, DiscordMessageProvider discordMessageProvider) {
         this.pointRepository = pointRepository;
         this.resultRepository = resultRepository;
         this.productRepository = productRepository;
         this.petRepository = petRepository;
         this.memberRepository = memberRepository;
         this.resultProductRepository = resultProductRepository;
+        this.discordMessageProvider = discordMessageProvider;
     }
 
     // 사용자 포인트 조회
@@ -119,6 +123,7 @@ public class DiagnoseService {
     // 사용자 포인트 차감 (-1)
     public Integer updatePointsByMember(Long memberId) throws Exception {
         Optional<Point> pointOpt = pointRepository.findByMemberId(memberId);
+        Optional<Member> member = memberRepository.findById(memberId);
 
         if (!pointOpt.isPresent()) {
             // Optional 객체에서 값이 비어있는 경우 예외를 던짐
@@ -132,6 +137,7 @@ public class DiagnoseService {
         point.setPoints(points-1);
         point.setUpdatedAt(LocalDateTime.now());
         pointRepository.save(point);
+        discordMessageProvider.sendMessage(EventMessage.pointMessage(member.get().getUsername(),1L, point.getPoints()));
         return point.getPoints();
     }
 
