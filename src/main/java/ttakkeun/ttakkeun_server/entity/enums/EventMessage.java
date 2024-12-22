@@ -17,5 +17,17 @@ public enum EventMessage {
     public static String signUpMessage(LoginType loginType, Long memberId, String userName) {
         return String.format("[신규회원] 따끈의 %s %d번째 유저 %s님이 가입했어요. 👶🏻", loginType, memberId, userName);
     }
+    public static String pointMessage(String userName, Long usedPoint, Long remainPoint) {
+        return String.format("[포인트] %s님이 %d포인트를 사용했습니다!\n" +
+                "남은 포인트: %d", userName, usedPoint, remainPoint);
+    }
+    public static String inquiryMessage(String userName, String inquiryText) {
+        return String.format("[문의하기] %s님이 문의를 남겼습니다.\n" +
+                "내용: %s", userName, inquiryText);
+    }
+    public static String reportMessage(LoginType loginType, Long memberId, String userName) {
+        return String.format("[신고하기] [신고자 닉네임]님이 [대상 닉네임]님을 신고했습니다.\n" +
+                "\uD83D\uDCDD 신고 사유: [신고 사유]", loginType, memberId, userName);
+    }
 }
 
