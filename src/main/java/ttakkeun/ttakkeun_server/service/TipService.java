@@ -10,10 +10,14 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import ttakkeun.ttakkeun_server.apiPayLoad.exception.ExceptionHandler;
 import ttakkeun.ttakkeun_server.converter.TipConverter;
+import ttakkeun.ttakkeun_server.dto.tip.PostTipReportRequestDTO;
+import ttakkeun.ttakkeun_server.dto.tip.PostTipReportResponseDTO;
 import ttakkeun.ttakkeun_server.dto.tip.TipCreateRequestDTO;
 import ttakkeun.ttakkeun_server.dto.tip.TipResponseDTO;
 
 import ttakkeun.ttakkeun_server.entity.Member;
+import ttakkeun.ttakkeun_server.entity.ReportImage;
+import ttakkeun.ttakkeun_server.entity.ReportTip;
 import ttakkeun.ttakkeun_server.entity.ScrapTip;
 import ttakkeun.ttakkeun_server.entity.Tip;
 
@@ -21,10 +25,15 @@ import ttakkeun.ttakkeun_server.entity.TipImage;
 import ttakkeun.ttakkeun_server.entity.enums.Category;
 import ttakkeun.ttakkeun_server.repository.LikeTipRepository;
 import ttakkeun.ttakkeun_server.repository.MemberRepository;
+import ttakkeun.ttakkeun_server.repository.ReportImageRepository;
+import ttakkeun.ttakkeun_server.repository.ReportTipRepository;
 import ttakkeun.ttakkeun_server.repository.ScrapTipRepository;
 import ttakkeun.ttakkeun_server.repository.TipRepository;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static ttakkeun.ttakkeun_server.apiPayLoad.code.status.ErrorStatus.TIP_ID_NOT_AVAILABLE;
@@ -42,6 +51,8 @@ public class TipService {
     private final ScrapTipService scrapTipService;
     private final ScrapTipRepository scrapTipRepository;
     private final TipConverter tipConverter;
+    private final ReportTipRepository reportTipRepository;
+    private final ReportImageRepository reportImageRepository;
 
     // 팁 생성
     @Transactional
@@ -250,6 +261,40 @@ public class TipService {
 //                ))
 //                .collect(Collectors.toList());
     }
+
+    // 팁 게시글 신고하기
+    public boolean postTipReport(Member member, PostTipReportRequestDTO postTipReportRequestDTO, List<MultipartFile> multipartFile) {
+        Long tipId = postTipReportRequestDTO.getTip_id();
+        Tip tip = tipRepository.findById(tipId)
+            .orElseThrow(() -> new NoSuchElementException("Tip with ID " + tipId + " not found"));
+
+        ReportTip reportTip = ReportTip.builder()
+            .tip(tip) // 신고 대상인 팁 게시글
+            .member(member) // 신고를 접수한 회원
+            .reportCategory(postTipReportRequestDTO.getReport_category())
+            .reportDetail(postTipReportRequestDTO.getReport_detail())
+            .build();
+
+        reportTipRepository.save(reportTip);
+
+        if (multipartFile != null && !multipartFile.isEmpty()) {
+            List<ReportImage> reportImages = multipartFile.stream()
+                .filter(image -> !image.isEmpty())
+                .map(image -> {
+                    String reportImageUrl = s3ImageService.upload(image);
+                    return ReportImage.builder()
+                        .imageUrl(reportImageUrl)
+                        .reportTip(reportTip)
+                        .build();
+                })
+                .collect(Collectors.toList());
+
+            reportImageRepository.saveAll(reportImages);
+        }
+
+        return true;
+    }
+
 }
 
 

@@ -72,7 +72,9 @@ public enum ErrorStatus implements BaseErrorCode {
     TODO_STATUS_IS_ONPROGRESS(HttpStatus.BAD_REQUEST, "TODO4002", "투두 항목이 완료되지 않았습니다."),
 
     // Tip 에러
-    TIP_ID_NOT_AVAILABLE(HttpStatus.BAD_REQUEST, "TIP4000", "유효하지 않은 Tip ID입니다.");
+    TIP_ID_NOT_AVAILABLE(HttpStatus.BAD_REQUEST, "TIP4000", "유효하지 않은 Tip ID입니다."),
+    TIP_REPORT_FAILURE(HttpStatus.BAD_REQUEST, "TIP4001", "게시글 신고에 실패했습니다. 다시 시도해주세요"),
+    UNSUPPORTED_MEDIA_TYPE(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "TIP4003", "지원되지 않는 미디어 타입입니다.");
 
 
     private final HttpStatus httpStatus;
