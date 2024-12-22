@@ -5,11 +5,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ttakkeun.ttakkeun_server.apiPayLoad.exception.ExceptionHandler;
+import ttakkeun.ttakkeun_server.client.DiscordMessageProvider;
 import ttakkeun.ttakkeun_server.converter.InquiryConverter;
 import ttakkeun.ttakkeun_server.dto.inquiry.InquiryRequestDTO;
 import ttakkeun.ttakkeun_server.dto.inquiry.InquiryResponseDTO;
 import ttakkeun.ttakkeun_server.entity.Inquiry;
 import ttakkeun.ttakkeun_server.entity.Member;
+import ttakkeun.ttakkeun_server.entity.enums.EventMessage;
 import ttakkeun.ttakkeun_server.entity.enums.InquiryType;
 import ttakkeun.ttakkeun_server.repository.InquiryRepository;
 
@@ -25,6 +27,7 @@ public class InquiryService {
 
     private final InquiryConverter inquiryConverter;
     private final InquiryRepository inquiryRepository;
+    private final DiscordMessageProvider discordMessageProvider;
 
     public InquiryResponseDTO.AddResultDTO addInquiry(
             InquiryRequestDTO inquiryRequestDTO,
@@ -38,6 +41,7 @@ public class InquiryService {
                 );
 
         inquiryRepository.save(newInquiry);
+        discordMessageProvider.sendMessage(EventMessage.inquiryMessage(member.getUsername(), inquiryRequestDTO.getContents()));
         return InquiryResponseDTO.AddResultDTO.builder()
                 .inquiryId(newInquiry.getInquiryId())
                 .build();

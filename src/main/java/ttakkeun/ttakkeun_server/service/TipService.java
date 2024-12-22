@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import ttakkeun.ttakkeun_server.apiPayLoad.exception.ExceptionHandler;
+import ttakkeun.ttakkeun_server.client.DiscordMessageProvider;
 import ttakkeun.ttakkeun_server.converter.TipConverter;
 import ttakkeun.ttakkeun_server.dto.tip.PostTipReportRequestDTO;
 import ttakkeun.ttakkeun_server.dto.tip.PostTipReportResponseDTO;
@@ -23,6 +24,7 @@ import ttakkeun.ttakkeun_server.entity.Tip;
 
 import ttakkeun.ttakkeun_server.entity.TipImage;
 import ttakkeun.ttakkeun_server.entity.enums.Category;
+import ttakkeun.ttakkeun_server.entity.enums.EventMessage;
 import ttakkeun.ttakkeun_server.repository.LikeTipRepository;
 import ttakkeun.ttakkeun_server.repository.MemberRepository;
 import ttakkeun.ttakkeun_server.repository.ReportImageRepository;
@@ -53,6 +55,7 @@ public class TipService {
     private final TipConverter tipConverter;
     private final ReportTipRepository reportTipRepository;
     private final ReportImageRepository reportImageRepository;
+    private final DiscordMessageProvider discordMessageProvider;
 
     // 팁 생성
     @Transactional
@@ -268,6 +271,7 @@ public class TipService {
         Tip tip = tipRepository.findById(tipId)
             .orElseThrow(() -> new NoSuchElementException("Tip with ID " + tipId + " not found"));
 
+        Optional<Member> reportMember = tipRepository.findMemberByTipId(tipId);
         ReportTip reportTip = ReportTip.builder()
             .tip(tip) // 신고 대상인 팁 게시글
             .member(member) // 신고를 접수한 회원
@@ -292,6 +296,7 @@ public class TipService {
             reportImageRepository.saveAll(reportImages);
         }
 
+        discordMessageProvider.sendMessage(EventMessage.reportMessage(member.getUsername(), reportMember.get().getUsername(), postTipReportRequestDTO.getTip_id(), postTipReportRequestDTO.getReport_detail()));
         return true;
     }
 

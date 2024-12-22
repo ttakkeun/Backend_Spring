@@ -25,9 +25,9 @@ public enum EventMessage {
         return String.format("[문의하기] %s님이 문의를 남겼습니다.\n" +
                 "내용: %s", userName, inquiryText);
     }
-    public static String reportMessage(String userName, String reportUser, String reportText) {
-        return String.format("[신고하기] %s님이 %s님을 신고했습니다.\n" +
-                "신고 사유: %s", userName, reportUser, reportText);
+    public static String reportMessage(String userName, String reportUser, Long tipId, String reportText) {
+        return String.format("[신고하기] %s님이 %s님의 게시글 %d를 신고했습니다.\n" +
+                "신고 사유: %s", userName, reportUser, tipId, reportText);
     }
 }
 

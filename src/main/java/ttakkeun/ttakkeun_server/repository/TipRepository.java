@@ -10,6 +10,7 @@ import ttakkeun.ttakkeun_server.entity.Tip;
 import ttakkeun.ttakkeun_server.entity.enums.Category;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Repository
@@ -26,5 +27,7 @@ public interface TipRepository extends JpaRepository<Tip, Long> {
 
     //페이징을 이용해 10개 단위로 작성한 팁 가져오기
     Page<Tip> findByMember(Member member, Pageable pageable);
+
+    Optional<Member> findMemberByTipId(Long tipId);
 }
 
