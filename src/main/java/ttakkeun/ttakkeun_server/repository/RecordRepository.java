@@ -16,11 +16,11 @@ import java.util.Optional;
 
 @Repository
 public interface RecordRepository extends JpaRepository<Record, Long> {
-    List<Record> findByPet_PetIdAndCategory(Long petId, Category category);
+    Page<Record> findByPet_PetIdAndCategory(Long petId, Category category, Pageable pageable);
 
     Optional<Record> findByPet_PetIdAndRecordId(Long petId, Long recordId);
 
-    Page<Record> findByPet_PetIdAndCategoryAndCreatedAtBetween(Long petId, Category category, LocalDateTime startOfDay, LocalDateTime endOfDay, Pageable pageable);
+    List<Record> findByPet_PetIdAndCategoryAndCreatedAtBetween(Long petId, Category category, LocalDateTime startOfDay, LocalDateTime endOfDay);
 
     Optional<Record> findByRecordId(Long recordId);
 

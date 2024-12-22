@@ -70,6 +70,7 @@ jobs:
           export AWS_ACCESS=${{ secrets.AWS_ACCESS }}
           export AWS_SECRET=${{ secrets.AWS_SECRET }}
           export OPENAI_KEY=${{ secrets.OPENAI_KEY }}
+          export KAKAO_ADMIN_KEY=${{ secrets.KAKAO_ADMIN_KEY }}
         
           ## Docker 작업
           sudo chmod 666 /var/run/docker.sock
@@ -81,7 +82,7 @@ jobs:
                            -e APPLE_SECRET=${APPLE_SECRET} -e APPLE_KEY_ID=${APPLE_KEY_ID} -e APPLE_CLIENT_ID=${APPLE_CLIENT_ID} \
                            -e APPLE_TEAM_ID=${APPLE_TEAM_ID} -e JWT_SECRET=${JWT_SECRET} \
                            -e AWS_ACCESS=${AWS_ACCESS} -e AWS_SECRET=${AWS_SECRET} \
-                           -e OPENAI_KEY=${OPENAI_KEY} \
+                           -e OPENAI_KEY=${OPENAI_KEY} -e KAKAO_ADMIN_KEY=${KAKAO_ADMIN_KEY} \
                            -e TZ=Asia/Seoul \
                            -d -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/ttakkeun
           sudo docker image prune -f

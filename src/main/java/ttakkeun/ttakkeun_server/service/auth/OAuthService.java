@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import ttakkeun.ttakkeun_server.apiPayLoad.exception.ExceptionHandler;
 import ttakkeun.ttakkeun_server.apiPayLoad.exception.MemberHandler;
+import ttakkeun.ttakkeun_server.client.KakaoUnlinkClient;
 import ttakkeun.ttakkeun_server.client.DiscordMessageProvider;
 import ttakkeun.ttakkeun_server.converter.MemberConverter;
 import ttakkeun.ttakkeun_server.dto.auth.LoginResponseDto;
@@ -48,9 +49,13 @@ public class OAuthService {
     private final MemberRepository memberRepository;
     private final KakaoService kakaoService;
     private final DiscordMessageProvider discordMessageProvider;
+    private final KakaoUnlinkClient kakaoUnlinkClient;
 
     @Value("${spring.social-login.provider.apple.client-id}")
     private String clientId;
+
+    @Value("${spring.social-login.provider.kakao.admin-key}")
+    private String kakaoAdminKey;
 
     //accessToken, refreshToken 발급
     @Transactional
@@ -199,9 +204,9 @@ public class OAuthService {
             if (!member.getKakaoUserId().equals(kakaoUser.getId())) {
                     throw new MemberHandler(MEMBER_NOT_FOUND);
                 }
-                // 로그인
-                return createToken(member);
-            }
+            // 로그인
+            return createToken(member);
+        }
         //등록된 이메일이 아닌 경우
         throw new MemberHandler(MEMBER_NOT_REGISTERED);
     }
@@ -230,7 +235,8 @@ public class OAuthService {
         return createToken(signUpMember);
     }
 
-    public void kakaoDelete(Member member, String code) {
+    public void kakaoDelete(Member member) {
+        kakaoUnlinkClient.unlinkUser("KakaoAK " + kakaoAdminKey, "user_id", member.getKakaoUserId());
         memberService.deleteMember(member);
     }
 

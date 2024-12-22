@@ -30,6 +30,7 @@ spring:
         private-key: ${APPLE_SECRET}
       kakao:
         redirect-uri: http://ttakkeun.com:8080/oauth/kakao/callback
+        admin-key: ${KAKAO_ADMIN_KEY}
   servlet:
     multipart:
       max-file-size: 50MB
@@ -64,7 +65,3 @@ openai:
     model: "https://api.openai.com/v1/models"
     model-list: "https://api.openai.com/v1/models/"
     prompt: "https://api.openai.com/v1/chat/completions"
-
-discord:
-  webhook:
-    url: "https://discord.com/api/webhooks/1318443936519553095/VHLShtN3csltRac-vzwV3Q2a5Kj8Gu0mV4TWUBQaI810rFZIpoDxfb_IaSrfXo6UNz4o"

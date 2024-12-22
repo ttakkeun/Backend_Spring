@@ -46,19 +46,20 @@ public class RecordService {
     private final S3ImageService s3ImageService;
     private final ResultRepository resultRepository;
 
-    public List<RecordListResponseDto> getRecordsByCategory(Member member, Long petId, Category category) {
+    public List<RecordListResponseDto> getRecordsByCategory(Member member, Long petId, Category category, int page, int size) {
         if (member == null || member.getMemberId() == null) {
             throw new MemberHandler(MEMBER_NOT_FOUND);
         }
         //memberId로 petId를 확인
         Pet pet = petRepository.findByPetIdAndMember(petId, member).orElseThrow(() -> new PetHandler(PET_NOT_FOUND));
 
-        List<Record> records = recordRepository.findByPet_PetIdAndCategory(pet.getPetId(), category);
+        // 페이지 요청 생성 (createdAt 기준으로 정렬)
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<Record> recordPage = recordRepository.findByPet_PetIdAndCategory(pet.getPetId(), category, pageable);
 
         // DTO로 변환 및 정렬
-        return records.stream()
-                .map(RecordConverter::t0RecordListResponseDto)
-                .sorted((r1, r2) -> {
+        return recordPage.stream()
+                .map(RecordConverter::t0RecordListResponseDto).sorted((r1, r2) -> {
                     int dateComparison = r2.getCreatedAtDate().compareTo(r1.getCreatedAtDate());
                     if (dateComparison != 0) {
                         return dateComparison;
@@ -191,7 +192,7 @@ public class RecordService {
         }
     }
 
-    public List<RecordListResponseDto> getRecordsAtDate(Member member, Long petId, Category category, int page, int size, String date) {
+    public List<RecordListResponseDto> getRecordsAtDate(Member member, Long petId, Category category, String date) {
         if (member == null || member.getMemberId() == null) {
             throw new ExceptionHandler(MEMBER_NOT_FOUND);
         }
@@ -207,19 +208,12 @@ public class RecordService {
         LocalDateTime startOfDay = targetDate.atStartOfDay();
         LocalDateTime endOfDay = targetDate.atTime(LocalTime.MAX);
 
-        // 페이지 요청 생성 (createdAt 기준으로 정렬)
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-
         // Repository에서 해당 날짜의 기록 조회
-        Page<Record> recordPage = recordRepository.findByPet_PetIdAndCategoryAndCreatedAtBetween(pet.getPetId(), category, startOfDay, endOfDay, pageable);
+        List<Record> recordPage = recordRepository.findByPet_PetIdAndCategoryAndCreatedAtBetween(pet.getPetId(), category, startOfDay, endOfDay);
 
         // DTO로 변환 및 정렬
         return recordPage.stream()
-                .map(record -> new RecordListResponseDto(
-                        record.getRecordId(),
-                        record.getCreatedAt().toLocalDate(),  // LocalDate 추출
-                        record.getCreatedAt().toLocalTime()   // LocalTime 추출
-                ))
+                .map(RecordConverter::t0RecordListResponseDto)
                 .sorted((r1, r2) -> {
                     int dateComparison = r2.getCreatedAtDate().compareTo(r1.getCreatedAtDate());
                     if (dateComparison != 0) {
