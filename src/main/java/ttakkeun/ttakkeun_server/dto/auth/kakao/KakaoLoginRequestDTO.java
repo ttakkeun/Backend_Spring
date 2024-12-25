@@ -12,7 +12,6 @@ public class KakaoLoginRequestDTO {
     @NotEmpty
     private String accessToken;
 
-    @NotEmpty
     private String email;
     private String name;
 }

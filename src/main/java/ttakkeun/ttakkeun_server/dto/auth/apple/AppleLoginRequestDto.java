@@ -12,7 +12,6 @@ public class AppleLoginRequestDto {
     @NotEmpty
     private String identityToken;
 
-    @NotEmpty
     private String email;
     private String name;
 }
