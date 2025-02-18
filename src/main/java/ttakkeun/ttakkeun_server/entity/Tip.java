@@ -54,4 +54,5 @@ public class Tip extends BaseEntity {
         image.setTip(this);
         this.images.add(image);
     }
+
 }
