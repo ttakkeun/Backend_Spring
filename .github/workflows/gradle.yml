@@ -86,5 +86,5 @@ jobs:
                            -e AWS_ACCESS=${AWS_ACCESS} -e AWS_SECRET=${AWS_SECRET} \
                            -e OPENAI_KEY=${OPENAI_KEY} -e KAKAO_ADMIN_KEY=${KAKAO_ADMIN_KEY} -e DISCORD_WEBHOOK=${DISCORD_WEBHOOK} \
                            -e TZ=Asia/Seoul \
-                            -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/ttakkeun
+                           -d -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/ttakkeun
           sudo docker image prune -f
