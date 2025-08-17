@@ -13,6 +13,7 @@ import ttakkeun.ttakkeun_server.client.KakaoUnlinkClient;
 import ttakkeun.ttakkeun_server.client.DiscordMessageProvider;
 import ttakkeun.ttakkeun_server.converter.MemberConverter;
 import ttakkeun.ttakkeun_server.dto.auth.LoginResponseDto;
+import ttakkeun.ttakkeun_server.dto.auth.WithdrawalRequestDto;
 import ttakkeun.ttakkeun_server.dto.auth.apple.AppleAuthClient;
 import ttakkeun.ttakkeun_server.dto.auth.apple.AppleLoginRequestDto;
 import ttakkeun.ttakkeun_server.dto.auth.apple.AppleRevokeRequest;
@@ -21,9 +22,11 @@ import ttakkeun.ttakkeun_server.dto.auth.kakao.KakaoLoginRequestDTO;
 import ttakkeun.ttakkeun_server.dto.auth.kakao.KakaoSignUpRequestDTO;
 import ttakkeun.ttakkeun_server.dto.auth.kakao.KakaoUserDTO;
 import ttakkeun.ttakkeun_server.entity.Member;
+import ttakkeun.ttakkeun_server.entity.Withdrawal;
 import ttakkeun.ttakkeun_server.entity.enums.EventMessage;
 import ttakkeun.ttakkeun_server.entity.enums.LoginType;
 import ttakkeun.ttakkeun_server.repository.MemberRepository;
+import ttakkeun.ttakkeun_server.repository.WithdrawalRepository;
 import ttakkeun.ttakkeun_server.service.MemberService;
 import ttakkeun.ttakkeun_server.utils.AppleClientSecretGenerator;
 import ttakkeun.ttakkeun_server.utils.AppleOAuthProvider;
@@ -50,6 +53,7 @@ public class OAuthService {
     private final KakaoService kakaoService;
     private final DiscordMessageProvider discordMessageProvider;
     private final KakaoUnlinkClient kakaoUnlinkClient;
+    private final WithdrawalRepository withdrawalRepository;
 
     @Value("${spring.social-login.provider.apple.client-id}")
     private String clientId;
@@ -164,7 +168,7 @@ public class OAuthService {
     }
 
     @Transactional
-    public void appleDelete(Member member, String code) {
+    public void appleDelete(Member member, String code, WithdrawalRequestDto withdrawalDto) {
         try {
             String clientSecret = appleClientSecretGenerator.createClientSecret();
             String refreshToken = appleOAuthProvider.getAppleRefreshToken(code, clientSecret);
@@ -183,6 +187,9 @@ public class OAuthService {
         }
         log.info("애플 탈퇴 성공");
         log.info("member id :: " + member.getMemberId());
+
+        // 탈퇴 사유 저장
+        saveWithdrawalReason(member.getMemberId(), withdrawalDto);
 
         memberService.deleteMember(member);
     }
@@ -235,8 +242,12 @@ public class OAuthService {
         return createToken(signUpMember);
     }
 
-    public void kakaoDelete(Member member) {
+    public void kakaoDelete(Member member, WithdrawalRequestDto withdrawalDto) {
         kakaoUnlinkClient.unlinkUser("KakaoAK " + kakaoAdminKey, "user_id", member.getKakaoUserId());
+
+        // 탈퇴 사유 저장
+        saveWithdrawalReason(member.getMemberId(), withdrawalDto);
+
         memberService.deleteMember(member);
     }
 
@@ -250,5 +261,21 @@ public class OAuthService {
 
         member.refreshTokenExpires();
         memberRepository.save(member);
+    }
+
+    // 탈퇴 사유 저장
+    private void saveWithdrawalReason(Long memberId, WithdrawalRequestDto withdrawalDto) {
+        // 유효성 검증
+        if (!withdrawalDto.isValid()) {
+            throw new ExceptionHandler(WITHDRAWAL_REASON_EMPTY);
+        }
+
+        Withdrawal withdrawal = Withdrawal.builder()
+                .userId(memberId)
+                .reasonType(withdrawalDto.getReasonType())
+                .customReason(withdrawalDto.getCustomReason())
+                .build();
+
+        withdrawalRepository.save(withdrawal);
     }
 }
