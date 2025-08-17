@@ -3,6 +3,7 @@ package ttakkeun.ttakkeun_server.controller;
 import io.micrometer.common.lang.Nullable;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.util.StringUtils;
@@ -12,6 +13,7 @@ import ttakkeun.ttakkeun_server.apiPayLoad.ApiResponse;
 import ttakkeun.ttakkeun_server.apiPayLoad.exception.ExceptionHandler;
 import ttakkeun.ttakkeun_server.apiPayLoad.exception.OAuthHandler;
 import ttakkeun.ttakkeun_server.dto.auth.LoginResponseDto;
+import ttakkeun.ttakkeun_server.dto.auth.WithdrawalRequestDto;
 import ttakkeun.ttakkeun_server.dto.auth.apple.AppleLoginRequestDto;
 import ttakkeun.ttakkeun_server.dto.auth.apple.AppleSignUpRequestDto;
 import ttakkeun.ttakkeun_server.dto.auth.kakao.KakaoLoginRequestDTO;
@@ -68,8 +70,9 @@ public class OAuthController {
     @Operation(summary = "애플 탈퇴 API")
     @DeleteMapping("/delete/apple")
     public ApiResponse<String> appleWithdraw(@AuthenticationPrincipal Member member,
-                                @Nullable @RequestHeader("authorization-code") final String code){
-        oAuthService.appleDelete(member, code);
+                                             @Nullable @RequestHeader("authorization-code") final String code,
+                                             @Valid @RequestBody WithdrawalRequestDto withdrawalRequestDto){
+        oAuthService.appleDelete(member, code, withdrawalRequestDto);
 
         return ApiResponse.onSuccess("apple delete success");
     }
@@ -92,8 +95,9 @@ public class OAuthController {
 
     @Operation(summary = "카카오 탈퇴 API")
     @DeleteMapping("/delete/kakao")
-    public ApiResponse<String> kakaoWithdraw(@AuthenticationPrincipal Member member){
-        oAuthService.kakaoDelete(member);
+    public ApiResponse<String> kakaoWithdraw(@AuthenticationPrincipal Member member,
+                                             @Valid @RequestBody WithdrawalRequestDto withdrawalDto){
+        oAuthService.kakaoDelete(member, withdrawalDto);
         return ApiResponse.onSuccess("kakao delete success");
     }
 
