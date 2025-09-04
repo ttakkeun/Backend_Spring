@@ -39,6 +39,7 @@ public enum ErrorStatus implements BaseErrorCode {
     MEMBER_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "MEMBER4007", "이미 가입한 회원입니다."),
     MEMBER_CONFLICT(HttpStatus.BAD_REQUEST, "MEMBER4008", "이메일과 멤버ID가 일치하지 않습니다."),
     WITHDRAWAL_REASON_EMPTY(HttpStatus.BAD_REQUEST, "MEMBER4009", "기타 사유 선택 시 상세 내용을 입력해주세요."),
+    MEMBER_NOT_MATCH(HttpStatus.BAD_REQUEST, "MEMBER4010", "사용자가 일치하지 않습니다."),
 
     //Record 에러
     RECORD_NOT_FOUND(HttpStatus.BAD_REQUEST, "RECORD4000", "해당하는 일지를 찾을 수 없습니다."),

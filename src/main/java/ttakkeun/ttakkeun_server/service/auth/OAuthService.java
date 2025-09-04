@@ -172,6 +172,14 @@ public class OAuthService {
         try {
             String clientSecret = appleClientSecretGenerator.createClientSecret();
             String refreshToken = appleOAuthProvider.getAppleRefreshToken(code, clientSecret);
+            String idToken = appleOAuthProvider.getAppleIdToken(code, clientSecret);
+            Claims claims = validateAndGetClaims(idToken);
+            String sub = claims.getSubject();
+
+            // 회원 정보 일치 검사
+            if (!sub.equals(member.getAppleSub())) {
+                throw new MemberHandler(MEMBER_NOT_MATCH);
+            }
 
             AppleRevokeRequest appleRevokeRequest = AppleRevokeRequest.builder()
                     .client_id(clientId)
@@ -192,6 +200,13 @@ public class OAuthService {
         saveWithdrawalReason(member.getMemberId(), withdrawalDto);
 
         memberService.deleteMember(member);
+    }
+
+    private Claims validateAndGetClaims(String identityToken) {
+        Map<String, String> headers = jwtService.parseHeader(identityToken);
+        PublicKey publicKey = applePublicKeyGenerator.generatePublicKey(headers,
+                appleAuthClient.getAppleAuthPublicKey());
+        return jwtService.getTokenClaims(identityToken, publicKey);
     }
 
     @Transactional
