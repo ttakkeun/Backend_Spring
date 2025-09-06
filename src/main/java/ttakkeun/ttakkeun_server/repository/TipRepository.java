@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ttakkeun.ttakkeun_server.entity.Member;
 import ttakkeun.ttakkeun_server.entity.Tip;
@@ -28,6 +29,7 @@ public interface TipRepository extends JpaRepository<Tip, Long> {
     //페이징을 이용해 10개 단위로 작성한 팁 가져오기
     Page<Tip> findByMember(Member member, Pageable pageable);
 
-    Optional<Member> findMemberByTipId(Long tipId);
+    @Query("SELECT t.member FROM Tip t WHERE t.tipId = :tipId")
+    Optional<Member> findMemberByTipId(@Param("tipId") Long tipId);
 }
 
