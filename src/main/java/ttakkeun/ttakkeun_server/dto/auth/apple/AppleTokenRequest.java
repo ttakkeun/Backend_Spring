@@ -10,6 +10,6 @@ import lombok.ToString;
 public class AppleTokenRequest {
     private String client_id;
     private String client_secret;
-    private String authorization_code;
+    private String code;
     private String grant_type;
 }

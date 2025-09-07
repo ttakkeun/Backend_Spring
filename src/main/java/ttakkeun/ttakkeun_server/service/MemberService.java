@@ -20,7 +20,9 @@ import java.util.Optional;
 public class MemberService {
     private final MemberRepository memberRepository;
     private final PetRepository petRepository;
-
+    private final PointRepository pointRepository;
+    private final InquiryRepository inquiryRepository;
+    private final ReportTipRepository reportTipRepository;
     private final PetService petService;
     private final LikeTipService likeTipService;
     private final LikeService likeService;
@@ -42,9 +44,16 @@ public class MemberService {
         removeTipAuthor(member);
         //스크랩한 팁 삭제
         deleteScrapTip(member);
+        //포인트 삭제
+        deletePoint(member);
+        //문의하기 삭제
+        deleteInquiry(member);
+        //팁 신고하기 삭제
+        deleteReportTip(member);
 
-        //멤버 삭제
-        memberRepository.deleteById(member.getMemberId());
+        //멤버 탈퇴 처리
+        member.withdraw();
+        memberRepository.save(member);
     }
 
     public void deletePet(Member member) {
@@ -72,6 +81,18 @@ public class MemberService {
 
     public void deleteLikeProduct(Member member) {
         likeService.deleteAllByMember(member);
+    }
+
+    public void deletePoint(Member member) {
+        pointRepository.deleteByMember(member);
+    }
+
+    public void deleteInquiry(Member member) {
+        inquiryRepository.deleteAllByMember(member);
+    }
+
+    public void deleteReportTip(Member member) {
+        reportTipRepository.deleteAllByMember(member);
     }
 
     public Member getMemberInfo(Long memberId) {

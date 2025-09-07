@@ -12,4 +12,6 @@ import java.util.List;
 @Repository
 public interface InquiryRepository extends JpaRepository<Inquiry, Long> {
     List<Inquiry> findByMember(Member member);
+
+    void deleteAllByMember(Member member);
 }

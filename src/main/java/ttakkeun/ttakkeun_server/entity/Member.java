@@ -6,6 +6,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import ttakkeun.ttakkeun_server.entity.common.BaseEntity;
 import ttakkeun.ttakkeun_server.entity.enums.LoginType;
+import ttakkeun.ttakkeun_server.entity.enums.MemberStatus;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -43,6 +44,11 @@ public class Member extends BaseEntity implements UserDetails {
     @Column(nullable = false)
     private LocalDateTime refreshTokenExpiresAt;    //토큰 만료 일자
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    @Builder.Default // Set default value for builder
+    private MemberStatus status = MemberStatus.ACTIVE;
+
     // refreshToken 재발급
     public void updateRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
@@ -59,6 +65,15 @@ public class Member extends BaseEntity implements UserDetails {
             throw new IllegalArgumentException("닉네임은 비어 있을 수 없습니다.");
         }
         this.username = newUsername;
+    }
+
+    //탈퇴
+    public void withdraw() {
+        this.status = MemberStatus.WITHDRAWN;
+        this.appleSub = null;
+        this.kakaoUserId = null;
+        this.refreshToken = "WITHDRAWN"; // Refresh token 무효화
+        this.refreshTokenExpiresAt = LocalDateTime.now();
     }
 
     @Override

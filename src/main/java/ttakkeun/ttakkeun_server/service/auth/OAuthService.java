@@ -171,22 +171,18 @@ public class OAuthService {
     public void appleDelete(Member member, String code, WithdrawalRequestDto withdrawalDto) {
         try {
             String clientSecret = appleClientSecretGenerator.createClientSecret();
+            log.info("appleDelete client secret: {}", clientSecret);
+//
             String refreshToken = appleOAuthProvider.getAppleRefreshToken(code, clientSecret);
-            String idToken = appleOAuthProvider.getAppleIdToken(code, clientSecret);
-            Claims claims = validateAndGetClaims(idToken);
-            String sub = claims.getSubject();
-
-            // 회원 정보 일치 검사
-            if (!sub.equals(member.getAppleSub())) {
-                throw new MemberHandler(MEMBER_NOT_MATCH);
-            }
+            log.info("appleDelete refresh token: {}", refreshToken);
 
             AppleRevokeRequest appleRevokeRequest = AppleRevokeRequest.builder()
                     .client_id(clientId)
-                    .refresh_token(refreshToken)
+                    .token(refreshToken)
                     .client_secret(clientSecret)
-                    .token_type("REFRESH_TOKEN")
+                    .token_type_hint("refresh_token")
                     .build();
+            log.info("appleDelete apple revoke request: {}", appleRevokeRequest);
             appleAuthClient.revoke(appleRevokeRequest);
         } catch (HttpClientErrorException e) {
             throw new RuntimeException("Apple Revoke Error");
