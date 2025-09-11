@@ -408,7 +408,7 @@ public class DiagnoseChatGPTService {
             ChatGPTCompletionDTO chatGPTCompletionDTO = new ChatGPTCompletionDTO("user", question);
 
             // String으로 받아온 questions를 DTO에 넣어서 DTO 구성
-            ChatGPTRequestDTO chatGPTRequestDTO = new ChatGPTRequestDTO("gpt-4o", List.of(chatGPTCompletionDTO));
+            ChatGPTRequestDTO chatGPTRequestDTO = new ChatGPTRequestDTO("gpt-5-nano", List.of(chatGPTCompletionDTO));
             // System.out.println("chatGPTRequestDTO is  : " + chatGPTRequestDTO);
 
             // ObjectMapper를 사용하여 DTO를 JSON 문자열로 변환
