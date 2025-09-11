@@ -423,6 +423,7 @@ public class DiagnoseChatGPTService {
 //            System.out.println("Request Headers: " + headers);
 //            System.out.println("Request Body: " + jsonPayload);
 
+
             ResponseEntity<String> response = chatGPTConfig.restTemplate()
                     .exchange(promptUrl, HttpMethod.POST, requestEntity, String.class);
 
