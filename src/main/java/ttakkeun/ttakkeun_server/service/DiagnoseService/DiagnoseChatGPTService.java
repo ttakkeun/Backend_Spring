@@ -368,7 +368,8 @@ public class DiagnoseChatGPTService {
                 question += "\n";
             }
 
-            question += "아래형식을 반드시지켜서 등호의오른쪽에 답변내용을 넣어줘. 점수는100점만점으로숫자만넣어줘. 추천제품은 구체적인제품명을 영어는최대한적지말고 한국어로알려줘\n" +
+            // care 답변 길이가 varchar(255)를 넘는 경우가 있어 255자 이내로 요약해달라는 내용 추가함
+            question += "아래형식을 반드시지켜서 등호의오른쪽에 답변내용을 넣어줘. 점수는100점만점으로 숫자만 넣어줘. 추천제품은 구체적인제품명을 영어는최대한적지말고 한국어로알려주고, detail과 care는 각각 255자 이내로 요약해줘.\n" +
                     "위 기록의 점수는 [score=점수]점입니다. [detail=세부설명] [care=추후관리법] 추천 제품은 다음과 같습니다. " +
                     "[product1=추천제품] [product2=추천제품] [product3=추천제품] [product4=추천제품] [product5=추천제품]";
 
@@ -408,7 +409,7 @@ public class DiagnoseChatGPTService {
             ChatGPTCompletionDTO chatGPTCompletionDTO = new ChatGPTCompletionDTO("user", question);
 
             // String으로 받아온 questions를 DTO에 넣어서 DTO 구성
-            ChatGPTRequestDTO chatGPTRequestDTO = new ChatGPTRequestDTO("gpt-4o", List.of(chatGPTCompletionDTO));
+            ChatGPTRequestDTO chatGPTRequestDTO = new ChatGPTRequestDTO("gpt-5-nano", List.of(chatGPTCompletionDTO));
             // System.out.println("chatGPTRequestDTO is  : " + chatGPTRequestDTO);
 
             // ObjectMapper를 사용하여 DTO를 JSON 문자열로 변환
