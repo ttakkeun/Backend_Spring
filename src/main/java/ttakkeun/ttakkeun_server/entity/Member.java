@@ -73,6 +73,7 @@ public class Member extends BaseEntity implements UserDetails {
         this.appleSub = null;
         this.kakaoUserId = null;
         this.refreshToken = "WITHDRAWN"; // Refresh token 무효화
+        this.email = "WITHDRAWN";
         this.refreshTokenExpiresAt = LocalDateTime.now();
     }
 
