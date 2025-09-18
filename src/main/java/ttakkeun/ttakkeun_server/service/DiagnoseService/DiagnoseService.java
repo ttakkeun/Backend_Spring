@@ -63,7 +63,7 @@ public class DiagnoseService {
             // 포인트 객체가 없을 경우 객체를 생성함
             point = Point.builder()
                     .member(managedMember)
-                    .points(10)
+                    .points(3)
                     .updatedAt(LocalDateTime.now())
                     .build();
 
@@ -79,11 +79,12 @@ public class DiagnoseService {
         if (isToday(updatedAt)) { // 최근 포인트 업데이트 날짜가 오늘이라면 그대로 해당 포인트를 반환함
             return points;
         } else {
-            // 최근 포인트 업데이트 날짜가 오늘이 아니라면 10점으로 초기화 후 반환함
-            point.setPoints(10);
+            // 최근 포인트 업데이트 날짜가 오늘이 아니라면 3점으로 초기화 후 반환함
+            // 기존 10점 -> 3점으로 변경
+            point.setPoints(3);
             point.setUpdatedAt(LocalDateTime.now());
             pointRepository.save(point);
-            return 10;
+            return 3;
         }
     }
 
