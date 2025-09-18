@@ -53,6 +53,7 @@ public class MemberService {
 
         //멤버 탈퇴 처리
         member.withdraw();
+        log.info("member deleted: {}", member.getMemberId());
         memberRepository.save(member);
     }
 
@@ -61,14 +62,17 @@ public class MemberService {
         for (Pet pet : petList) {
             petService.deletePet(pet.getPetId());
         }
+        log.info("pet 성공");
     }
 
     public void deleteLikeTip(Member member) {
         likeTipService.deleteAllByMember(member);
+        log.info("liketip");
     }
 
     public void deleteScrapTip(Member member) {
         scrapTipService.deleteAllByMember(member);
+        log.info("scraptip");
     }
 
     public void removeTipAuthor(Member member) {
@@ -77,22 +81,27 @@ public class MemberService {
             tip.setMember(null);
         }
         tipRepository.saveAll(tips);
+        log.info("Tipauthor");
     }
 
     public void deleteLikeProduct(Member member) {
         likeService.deleteAllByMember(member);
+        log.info("likeproduct");
     }
 
     public void deletePoint(Member member) {
         pointRepository.deleteByMember(member);
+        log.info("point");
     }
 
     public void deleteInquiry(Member member) {
         inquiryRepository.deleteAllByMember(member);
+        log.info("inquiry");
     }
 
     public void deleteReportTip(Member member) {
         reportTipRepository.deleteAllByMember(member);
+        log.info("reportTip");
     }
 
     public Member getMemberInfo(Long memberId) {

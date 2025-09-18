@@ -77,6 +77,20 @@ public class OAuthController {
         return ApiResponse.onSuccess("apple delete success");
     }
 
+//    @Operation(summary = "탈퇴테스트 API")
+//    @DeleteMapping("/delete/test/withdraw/{memberId}")
+//    public ApiResponse<String> withdrawMember(@PathVariable("memberId") Long memberId) {
+//
+//        // 1. memberId를 사용해 DB에서 Member 객체를 찾습니다.
+//        Member member = memberRepository.findById(memberId)
+//                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 회원을 찾을 수 없습니다: " + memberId));
+//
+//        // 2. 찾은 Member 객체로 서비스 메소드를 호출합니다.
+//        memberService.deleteMember(member);
+//
+//        return ApiResponse.onSuccess("apple delete success");
+//    }
+
     @Operation(summary = "카카오 로그인 API")
     @PostMapping("/kakao/login")
     public ApiResponse<LoginResponseDto> kakaoLogin(@RequestBody @Validated KakaoLoginRequestDTO kakaoReqDto) {
